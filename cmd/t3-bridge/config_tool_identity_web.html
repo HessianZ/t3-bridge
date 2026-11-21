@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>核验飞书工具身份 · T3 Bridge</title>
+  <script defer src="/workspace-session.js"></script>
+  <link rel="stylesheet" href="/workspace.css">
+</head>
+<body>
+<div class="shell">
+{{template "workspace-header" (workspaceNav "advanced" .Source.ID)}}
+<main class="container tool-page inline-forms">
+  <nav aria-label="工具身份核验导航"><a href="/{{if .Source.ID}}?source={{.Source.ID}}{{end}}">配置工作台</a></nav>
+  <h1>核验飞书工具身份</h1>
+  <p>核验会启动当前主机上的 lark-cli，并按所选路由的配置调用飞书或 Lark 的只读 API。</p>
+  {{if and .Error (not .Checked)}}<p role="alert">{{.Error}}</p>{{end}}
+  {{if .Sources}}
+  <form method="get" action="/tool-identity">
+    <label>已保存配置<select name="source">
+      {{range .Sources}}<option value="{{.ID}}"{{if eq .ID $.Source.ID}} selected{{end}}>{{.Label}}</option>{{end}}
+    </select></label>
+    <button type="submit">打开配置</button>
+  </form>
+  {{if .Choices}}
+  <section aria-label="选择工具身份路由">
+    <form method="post" action="/tool-identity">
+      <input type="hidden" name="workspaceSession" value="">
+      <input type="hidden" name="source" value="{{.Source.ID}}">
+      <input type="hidden" name="revision" value="{{.Source.Revision}}">
+      <label>应用 · 路由 · 模式<select name="choice" required>
+        <option value="" selected disabled>请选择路由</option>
+        {{range $index, $choice := .Choices}}<option value="{{$index}}">{{$choice.AppID}} · {{$choice.RouteID}} · {{$choice.Identity}}</option>{{end}}
+      </select></label>
+      <button type="submit">开始核验</button>
+      <span role="status"></span>
+    </form>
+  </section>
+  {{else if and .Source.ID (not .Error)}}<p>此配置没有绑定飞书工具身份的路由。</p>{{end}}
+  {{else}}<p>请先在配置工作台保存有效的本机私有 JSON 配置。</p>{{end}}
+  {{with .Checked}}
+  <section aria-label="工具身份核验结果">
+    {{if $.Error}}<h2 role="alert">核验未通过</h2><p>{{$.Error}}</p>{{else}}<h2 role="status">核验通过</h2>{{end}}
+    <dl>
+      <dt>应用 ID</dt><dd><code>{{.AppID}}</code></dd>
+      <dt>路由 ID</dt><dd><code>{{.RouteID}}</code></dd>
+      <dt>身份模式</dt><dd><code>{{.Identity}}</code></dd>
+    </dl>
+  </section>
+  {{end}}
+</main>
+</div>
+</body>
+</html>

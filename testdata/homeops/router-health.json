@@ -1,0 +1,12 @@
+{
+  "node": "example-router",
+  "sampled": "2026-11-17T12:00:00.123456789Z",
+  "collector_ok": true,
+  "notify_failures": 0,
+  "active_incidents": [
+    "hardware:smart"
+  ],
+  "incident_starts": {
+    "hardware:smart": "2026-11-17T11:57:00.123456Z"
+  }
+}

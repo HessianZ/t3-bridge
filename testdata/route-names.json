@@ -1,0 +1,12 @@
+{
+  "routes": {
+    "nas": {
+      "hostName": "example-nas",
+      "aliases": ["NAS主机"]
+    },
+    "mac": {
+      "hostName": "example-mac",
+      "aliases": ["MacBook"]
+    }
+  }
+}

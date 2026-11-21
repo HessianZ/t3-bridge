@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>命名配置 · T3 Bridge</title>
+  <link rel="stylesheet" href="/workspace.css">
+  <style>
+    form, li { display: flex; align-items: baseline; flex-wrap: wrap; gap: 6px 9px; }
+    li { padding-block: 6px; border-top: 1px solid var(--line); }
+    .tool-page ul { padding: 0; margin: 0; }
+  </style>
+</head>
+<body>
+<div class="shell">
+{{template "workspace-header" (workspaceNav "advanced" "")}}
+<main class="container tool-page">
+  <a href="/">返回配置工作台</a>
+  <h1>命名配置</h1>
+  <p>默认配置 {{if .Active}}<strong>{{.Active}}</strong>{{else}}<span class="muted">未设置</span>{{end}}</p>
+  <section aria-label="创建命名配置">
+    <h2>创建</h2>
+    <form method="post" action="/profiles">
+      <label>名称 <input name="name" maxlength="48" pattern="[a-z0-9][a-z0-9\-]{0,47}" required></label>
+      <label>来源 <select name="from"><option value="">单路由模板</option>{{range .Names}}<option>{{.}}</option>{{end}}</select></label>
+      <button name="action" value="create">创建并编辑</button>
+    </form>
+    <p class="muted">新配置拥有独立状态目录，接收授权初始关闭。</p>
+    <a href="/profiles/import">导入私有包</a>
+  </section>
+  <section aria-label="已保存的命名配置">
+    <h2>已保存</h2>
+    {{if .Names}}<ul>{{range .Names}}<li>
+      <a href="/?source=profile-{{.}}"><strong>{{.}}</strong> · 编辑</a>
+      <a href="/profiles/export?name={{.}}">导出 JSON</a>
+      <a href="/profiles/lifecycle?name={{.}}">私有导出（含 App Secret）</a>
+      <form method="post" action="/profiles">
+        <input type="hidden" name="name" value="{{.}}">
+        {{if ne . $.Active}}<button name="action" value="use">设为默认</button>{{end}}
+        <button name="action" value="archive">归档</button>
+      </form>
+      <form method="post" action="/profiles/lifecycle">
+        <input type="hidden" name="name" value="{{.}}">
+        <input type="hidden" name="operation" value="purge">
+        <button name="action" value="preview">预览永久清除</button>
+      </form>
+    </li>{{end}}</ul>{{else}}<p class="muted">暂无已保存的命名配置。</p>{{end}}
+  </section>
+  {{if .Archives}}<section aria-label="已归档的命名配置">
+    <h2>归档</h2><ul>{{range .Archives}}<li>
+      <strong>{{.Name}}</strong><small class="muted">{{.ID}}</small>
+      <form method="post" action="/profiles"><input type="hidden" name="name" value="{{.ID}}">
+        <button name="action" value="restore">恢复</button>
+      </form>
+    </li>{{end}}</ul>
+  </section>{{end}}
+</main>
+</div>
+</body>
+</html>

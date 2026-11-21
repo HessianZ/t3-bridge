@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>按 App 准备启用接收 · T3 Bridge</title>
+  <link rel="stylesheet" href="/workspace.css">
+</head>
+<body>
+<div class="shell">
+{{template "workspace-header" (workspaceNav "runtime" .Source.ID)}}
+<main class="container tool-page inline-forms">
+  <nav aria-label="接收预检导航"><a href="/runtime/install?source={{.Source.ID}}">接收预检</a></nav>
+  <h1>按 App 准备启用接收</h1>
+  <p>已保存配置 · {{.Source.Label}}</p>
+  {{if .Choices}}
+  <form method="post" action="/runtime/receiver-enable">
+    <input type="hidden" name="source" value="{{.Source.ID}}">
+    <input type="hidden" name="revision" value="{{.Source.Revision}}">
+    <label>待启用的 App
+      <select name="appId" required>
+        <option value="">请选择</option>
+        {{range .Choices}}
+        <option value="{{.AppID}}"{{if eq .AppID $.AppID}} selected{{end}}>{{if eq .Tenant "lark"}}Lark{{else}}飞书{{end}} · {{.AppID}}{{if .ReceiverMachine}} · {{.ReceiverMachine}}{{end}}</option>
+        {{end}}
+      </select>
+    </label>
+    <button type="submit">只读检查</button>
+  </form>
+  {{else}}
+  <p>此配置没有待启用的 App。</p>
+  {{end}}
+  {{with .Report}}
+  <section aria-label="所选 App 的检查结果">
+    <h2>检查结果</h2>
+    {{if $.Candidate}}
+    <p role="status">检查通过。请核对启用草稿的差异，再决定是否保存。</p>
+    {{else}}
+    <p role="status">检查未通过。请核对下列检查项。</p>
+    {{end}}
+    {{range .Accounts}}
+    <h3>{{if eq .Tenant "lark"}}Lark{{else}}飞书{{end}} · <code>{{.AppID}}</code></h3>
+    {{with .Checks}}<ul>{{range .}}<li>
+      {{if eq .Check "setup"}}启动配置{{else if eq .Check "feishu"}}飞书应用身份{{else if eq .Check "t3"}}T3 环境{{else if eq .Check "receiver-lock"}}本机 t3-bridge 接收锁{{else if eq .Check "legacy-receiver-lock"}}本机旧桥接收锁{{else if eq .Check "state-lock"}}状态目录锁{{else}}T3 路由 <code>{{.Route}}</code>{{end}}
+      · {{if eq .Status "ok"}}通过{{else if eq .Status "failed"}}失败{{else if eq .Status "unknown"}}未确认{{else if eq .Status "disabled"}}已停用{{else}}未检查{{end}}
+      {{if .Detail}} · {{.Detail}}{{end}}
+      {{with .Fields}}<ul>{{range .}}<li><code>{{.}}</code></li>{{end}}</ul>{{end}}
+      {{with .LockHolder}}<br>旧锁记录 · profile <code>{{.Profile}}</code> · PID <code>{{.PID}}</code>{{end}}
+    </li>{{end}}</ul>{{end}}
+    {{end}}
+    {{if $.Candidate}}
+    <form method="post" action="/?source={{$.Source.ID}}">
+      <input type="hidden" name="revision" value="{{$.Source.Revision}}">
+      <input type="hidden" name="config" value="{{$.Candidate}}">
+      <button type="submit" name="action" value="check">校验并查看差异</button>
+    </form>
+    {{end}}
+  </section>
+  {{end}}
+</main>
+</div>
+</body>
+</html>

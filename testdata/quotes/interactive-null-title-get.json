@@ -1,0 +1,24 @@
+{
+  "code": 0,
+  "msg": "success",
+  "data": {
+    "items": [
+      {
+        "message_id": "completed-card",
+        "chat_id": "chat",
+        "thread_id": "topic",
+        "msg_type": "interactive",
+        "deleted": false,
+        "updated": false,
+        "sender": {
+          "id": "synthetic-homeops-app",
+          "id_type": "app_id",
+          "sender_type": "app"
+        },
+        "body": {
+          "content": "{\"title\":null,\"elements\":[[{\"tag\":\"text\",\"text\":\"synthetic-content\"}]]}"
+        }
+      }
+    ]
+  }
+}

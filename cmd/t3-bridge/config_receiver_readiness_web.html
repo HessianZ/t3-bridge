@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>接收就绪状态 · T3 Bridge</title>
+  <link rel="stylesheet" href="/workspace.css">
+</head>
+<body>
+<div class="shell">
+{{template "workspace-header" (workspaceNav "runtime" .Source.ID)}}
+<main class="container tool-page inline-forms">
+  <nav aria-label="接收就绪导航">
+    <a href="/{{if .Source.ID}}?source={{.Source.ID}}{{end}}">配置工作台</a>
+    <a href="/runtime">运行状态</a>
+    {{if .Source.ID}}<a href="/runtime/receiver-readiness?source={{.Source.ID}}">刷新状态</a>{{end}}
+  </nav>
+  <h1>接收就绪状态</h1>
+  <p>仅查看本机接收进程的登记信息和最近诊断采样。刷新时重新读取已保存的配置。</p>
+  {{if .Error}}<p role="alert">{{.Error}}</p>{{end}}
+  {{if .Sources}}
+  <form method="get" action="/runtime/receiver-readiness">
+    <label>已保存配置<select name="source">
+      {{range .Sources}}<option value="{{.ID}}"{{if eq .ID $.Source.ID}} selected{{end}}>{{.Label}}</option>{{end}}
+    </select></label>
+    <button type="submit">查看状态</button>
+  </form>
+  {{else}}<p>请先在配置工作台保存本机私有 JSON 配置。</p>{{end}}
+  {{with .Report}}
+  <section aria-labelledby="readiness-result">
+    <h2 id="readiness-result">配置就绪状态</h2>
+    <p role="status"><strong>{{if .Ready}}已启用的 App 均已就绪{{else}}接收未就绪{{end}}</strong></p>
+    <dl>
+      <dt>配置文件</dt><dd><code>{{$.Source.Path}}</code></dd>
+      <dt>已保存版本</dt><dd><code>{{.Revision}}</code></dd>
+    </dl>
+  </section>
+  {{range .Accounts}}
+  <section aria-label="{{.Tenant}} {{.AppID}}">
+    <h2>{{.Tenant}} · <code>{{.AppID}}</code></h2>
+    <p><strong>{{readinessStatus .State}}</strong></p>
+    {{if .Process}}
+    <dl>
+      <dt>进程 ID</dt><dd><code>{{.Process}}</code>{{if gt .PID 0}} · PID {{.PID}}{{end}}</dd>
+      <dt>程序版本</dt><dd>{{if .Version}}<code>{{.Version}}</code>{{else}}未知{{end}}</dd>
+      <dt>进程配置版本</dt><dd>{{if .ProcessRevision}}<code>{{.ProcessRevision}}</code>{{else}}未知{{end}}</dd>
+    </dl>
+    {{end}}
+    {{with .Worker}}
+    <p>采样于 <time datetime="{{dateTime .At}}">{{localTime .At}}</time> · 已失败 {{.Attempts}} 次{{with receiverFailure .Failure}} · {{.}}{{end}}</p>
+    {{if not .RetryAt.IsZero}}<p>下次自动重试 <time datetime="{{dateTime .RetryAt}}">{{localTime .RetryAt}}</time></p>{{end}}
+    {{end}}
+    {{with .Sample}}
+    <p>采样于 <time datetime="{{dateTime .At}}">{{localTime .At}}</time></p>
+    {{with .Data}}
+    <p>飞书 WebSocket {{if .FeishuReady}}已就绪{{else}}未就绪{{end}}。T3 环境{{if .MCPVerified}}最近建连时核验通过{{else}}尚未核验{{end}}。</p>
+    <p>入站 {{.Inbox}} · 在途 {{.InFlight}} · 待核对 {{.Reconcile}} · 送达缺口 {{.DeliveryPending}}</p>
+    {{end}}
+    {{end}}
+  </section>
+  {{end}}
+  {{end}}
+</main>
+</div>
+</body>
+</html>

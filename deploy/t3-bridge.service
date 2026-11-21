@@ -1,0 +1,24 @@
+# Install the binary and configuration before enabling this example unit.
+[Unit]
+Description=T3 Bridge for Feishu
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+Type=simple
+User=t3-bridge
+ExecStart=/opt/t3-bridge/bin/t3-bridge -config /etc/t3-bridge/config.json
+Restart=on-failure
+RestartSec=10
+TimeoutStopSec=30
+UMask=0077
+StateDirectory=t3-bridge
+StateDirectoryMode=0700
+Environment=XDG_CONFIG_HOME=/var/lib/t3-bridge
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=read-only
+
+[Install]
+WantedBy=multi-user.target

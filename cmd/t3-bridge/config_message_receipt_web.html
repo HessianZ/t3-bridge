@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>飞书消息回执 · T3 Bridge</title>
+  <link rel="stylesheet" href="/workspace.css">
+  <style>
+    .query label { margin-bottom: 8px; }
+  </style>
+</head>
+<body>
+<div class="shell">
+{{template "workspace-header" (workspaceNav "runtime" .Source.ID)}}
+<main class="container tool-page">
+  <nav aria-label="消息回执导航"><a href="/{{if .Source.ID}}?source={{.Source.ID}}{{end}}">配置工作台</a><a href="/runtime">运行状态</a></nav>
+  <h1>飞书消息回执</h1>
+  <p>按飞书原消息 ID 查询本机回执，核对该轮对应的 T3 Thread ID 和 Run ID。</p>
+  {{if .Error}}<p class="error" role="alert">{{.Error}}</p>{{end}}
+  {{if .Sources}}
+  <form class="actions" method="get" action="/message-receipt">
+    <label>已保存的配置<select name="source">
+      {{range .Sources}}<option value="{{.ID}}"{{if eq .ID $.Source.ID}} selected{{end}}>{{.Label}}</option>{{end}}
+    </select></label>
+    <button type="submit">打开配置</button>
+  </form>
+  {{if .Source.ID}}
+  <form class="query" method="post" action="/message-receipt">
+    <input type="hidden" name="source" value="{{.Source.ID}}">
+    <label>App ID（可选，留空使用主账号）<input name="appId" value="{{.AppID}}" spellcheck="false" autocomplete="off"></label>
+    <label>飞书原消息 ID<input name="messageId" value="{{.MessageID}}" placeholder="om_…" required maxlength="128" spellcheck="false" autocomplete="off"></label>
+    <button type="submit">查询回执</button>
+  </form>
+  {{else}}<p>所选配置不可用，请重新选择。</p>{{end}}
+  {{else}}<p>请先在配置工作台保存本机 JSON 配置。</p>{{end}}
+  {{with .Receipt}}
+  <section aria-labelledby="receipt-title">
+    <h2 id="receipt-title">回执详情</h2>
+    <dl>
+      <dt>App ID</dt><dd>{{template "receipt-value" .AppID}}</dd>
+      <dt>飞书原消息 ID</dt><dd>{{template "receipt-value" .MessageID}}</dd>
+      <dt>本轮入站 ID</dt><dd>{{template "receipt-value" .InputID}}</dd>
+      <dt>任务 ID</dt><dd>{{template "receipt-value" .TaskID}}</dd>
+      <dt>路由 ID</dt><dd>{{template "receipt-value" .RouteID}}</dd>
+      <dt>T3 环境 ID</dt><dd>{{template "receipt-value" .EnvironmentID}}</dd>
+      <dt>T3 项目 ID</dt><dd>{{template "receipt-value" .ProjectID}}</dd>
+      <dt>阶段</dt><dd>{{template "receipt-value" .Phase}}</dd>
+      <dt>终态回复投递</dt><dd>{{deliveryText .DeliveryState}}{{if deliveryConfirmed .DeliveryState}}<br>此状态依据本机持有的飞书 API 回执，卡片 ID 复用与客户端阅读状态需分别核对。{{end}}</dd>
+      <dt>请求 ID</dt><dd>{{template "receipt-value" .RequestID}}</dd>
+      <dt>T3 Thread ID</dt><dd>{{template "receipt-value" .ThreadID}}</dd>
+      {{with .ThreadURL}}<dt>T3 线程链接</dt><dd><a href="{{.}}" target="_blank" rel="noopener noreferrer">{{.}}</a></dd>{{end}}
+      <dt>T3 Run ID</dt><dd>{{template "receipt-value" .RunID}}</dd>
+      <dt>飞书回复 ID</dt><dd>{{template "receipt-value" .ReplyID}}</dd>
+      <dt>轮次</dt><dd>{{if .Historical}}历史轮次{{else}}当前轮次{{end}}</dd>
+      <dt>待核对</dt><dd>{{if .NeedsReconcile}}是{{else}}否{{end}}</dd>
+    </dl>
+  </section>
+  {{end}}
+</main>
+</div>
+</body>
+</html>
+{{define "receipt-value"}}{{if .}}<code>{{.}}</code>{{else}}未记录{{end}}{{end}}

@@ -1,0 +1,18 @@
+{
+  "synthetic": true,
+  "now": "2026-11-17T12:00:00.123456789Z",
+  "recovery_floor": "2026-11-17T11:00:00Z",
+  "test_only_peer_key_utf8": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  "sources": [
+    {
+      "file": "nas-health.json",
+      "node": "example-nas",
+      "signature": "c009869e30d81b5eb244b0f21036037399e6dde41c109681003a249140a50d2c"
+    },
+    {
+      "file": "router-health.json",
+      "node": "example-router",
+      "signature": "b2a86109cc6b5def262347f320e4939882967d7158d1a24f53eaf7b51e214969"
+    }
+  ]
+}

@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>接收预检与服务安装 · T3 Bridge</title>
+  <link rel="stylesheet" href="/workspace.css">
+</head>
+<body>
+<div class="shell">
+{{template "workspace-header" (workspaceNav "runtime" .Source.ID)}}
+<main class="container tool-page inline-forms">
+  <nav aria-label="后台服务导航"><a href="/">配置工作台</a><a href="/runtime">运行状态</a>{{if .Source.ID}}<a href="/runtime/receiver-readiness?source={{.Source.ID}}">接收就绪状态</a>{{end}}</nav>
+  <h1>接收预检与服务安装</h1>
+  {{if .Message}}<p role="status">{{.Message}}{{if .Installed}} <a href="/runtime">查看运行状态</a>{{end}}</p>{{end}}
+  {{if and .Sources (not .Installed)}}
+  <form method="get" action="/runtime/install">
+    <label>已保存配置<select name="source">
+      {{range .Sources}}<option value="{{.ID}}"{{if eq .ID $.Source.ID}} selected{{end}}>{{.Label}}</option>{{end}}
+    </select></label>
+    <button type="submit">查看配置</button>
+  </form>
+  {{if .Source.Path}}
+  <section aria-label="接收预检与服务安装">
+    <dl>
+      <dt>配置文件</dt><dd><code>{{.Source.Path}}</code></dd>
+      {{if .Binary}}<dt>接收程序</dt><dd><code>{{.Binary}}</code></dd>{{end}}
+    </dl>
+    <p>安装为当前用户的后台服务。启动和登录自启在运行状态页确认。</p>
+    <p>检查启动条件时，仅对已启用账号核验飞书身份和 T3 路由。检查全部账号时，也会核验接收授权尚未启用的账号。</p>
+    <form method="post" action="/runtime/install">
+      <input type="hidden" name="source" value="{{.Source.ID}}">
+      <input type="hidden" name="revision" value="{{.Source.Revision}}">
+      <label>实例名<input name="instance" value="{{.Instance}}" required maxlength="48" pattern="[a-z0-9][a-z0-9\x2d]{0,47}" aria-describedby="instance-help"></label>
+      <button type="submit" name="action" value="install">安装服务</button>
+      <button type="submit" name="action" value="preflight" formnovalidate>检查启动条件</button>
+      <button type="submit" name="action" value="preflight-all" formnovalidate>检查全部账号（含未启用）</button>
+    </form>
+    <p id="instance-help">用小写字母、数字和连字符，以字母或数字开头。</p>
+    {{if .Apps}}
+    <form method="post" action="/runtime/install">
+      <input type="hidden" name="source" value="{{.Source.ID}}">
+      <input type="hidden" name="revision" value="{{.Source.Revision}}">
+      <label>按 App 预检<select name="appId" required>
+        <option value="">请选择 App</option>
+        {{range .Apps}}<option value="{{.AppID}}"{{if eq .AppID $.AppID}} selected{{end}}>{{if eq .Tenant "lark"}}Lark{{else}}飞书{{end}} · {{.AppID}} · {{if .Enabled}}已启用接收{{else}}未启用接收{{end}}</option>{{end}}
+      </select></label>
+      <button type="submit" name="action" value="preflight-app">检查所选 App</button>
+    </form>
+    {{end}}
+    <a href="/runtime/receiver-enable?source={{.Source.ID}}">按 App 准备启用接收</a>
+  </section>
+  {{with $report := .Preflight}}
+  <section aria-label="启动预检结果">
+    <h2>接收预检结果</h2>
+    {{if $.AppID}}
+    <p><strong>所选 App 预检{{if and .AllAccounts .AllAccounts.Passed}}通过{{else}}未通过{{end}}</strong></p>
+    {{else}}
+    <p><strong>已启用账号启动预检{{if .Passed}}通过{{else}}未通过{{end}}</strong></p>
+    {{with .AllAccounts}}<p><strong>全账号预检{{if .Passed}}通过{{else}}未通过{{end}}</strong></p>{{end}}
+    {{end}}
+    <p>本次预检核对模板字段、本机接收锁和状态目录锁。配置齐全的账号可核验飞书身份和 T3 路由。</p>
+    {{range .Accounts}}
+    <h3>{{.Tenant}} · <code>{{.AppID}}</code></h3>
+    {{if not .Enabled}}<p>{{if $.AppID}}启动未就绪。{{end}}接收授权未启用。{{if $report.AllAccounts}}仅参与本次核验。{{else}}跳过飞书和 T3 核验。{{end}}</p>{{end}}
+    {{with .Checks}}<ul>{{range .}}<li>
+      {{if eq .Check "setup"}}启动配置{{else if eq .Check "feishu"}}飞书应用身份{{else if eq .Check "t3"}}T3 环境{{else if eq .Check "receiver-lock"}}本机 t3-bridge 接收锁{{else if eq .Check "legacy-receiver-lock"}}本机旧桥接收锁{{else if eq .Check "state-lock"}}状态目录锁{{else}}T3 路由 <code>{{.Route}}</code>{{end}}
+      · {{if eq .Status "ok"}}通过{{else if eq .Status "failed"}}失败{{else if eq .Status "unknown"}}未确认{{else if eq .Status "disabled"}}已停用{{else}}未检查{{end}}
+      {{if .Detail}} · {{.Detail}}{{end}}
+      {{with .Fields}}<ul>{{range .}}<li><code>{{.}}</code></li>{{end}}</ul>{{end}}
+      {{with .LockHolder}}<br>旧锁记录 · profile <code>{{.Profile}}</code> · PID <code>{{.PID}}</code>{{end}}
+    </li>{{end}}</ul>{{end}}
+    {{end}}
+  </section>
+  {{end}}
+  {{else}}<p>所选配置不可用。请重新选择。</p>{{end}}
+  {{else if not .Installed}}<p>请先在配置工作台保存一份私有 JSON 文件。</p>{{end}}
+</main>
+</div>
+</body>
+</html>

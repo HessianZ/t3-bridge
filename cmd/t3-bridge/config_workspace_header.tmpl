@@ -1,0 +1,14 @@
+{{define "workspace-brand"}}<img src="/workspace-icon.png" alt="" width="24" height="24">T3 Bridge{{end}}
+
+{{define "workspace-header"}}
+{{$source := .Source}}
+<header class="top">
+  <a class="brand" href="/{{if $source}}?source={{$source}}{{end}}">{{template "workspace-brand"}}</a>
+  <nav class="tabs" aria-label="工作台页面">
+    <a href="/{{if $source}}?source={{$source}}{{end}}#accounts">账号</a>
+    <a href="/{{if $source}}?source={{$source}}{{end}}#routes">项目与路由</a>
+    <a href="/{{if $source}}?source={{$source}}{{end}}#runtime"{{if eq .Section "runtime"}} aria-current="page"{{end}}>运行</a>
+    <a href="/{{if $source}}?source={{$source}}{{end}}#advanced"{{if eq .Section "advanced"}} aria-current="page"{{end}}>高级</a>
+  </nav>
+</header>
+{{end}}

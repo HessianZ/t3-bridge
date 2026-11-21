@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>从草稿登记 T3 项目 · T3 Bridge</title>
+  <link rel="stylesheet" href="/workspace.css">
+  <style>
+    form, .field { display: grid; gap: 7px; }
+    button { justify-self: start; }
+  </style>
+</head>
+<body>
+<div class="shell">
+{{template "workspace-header" (workspaceNav "advanced" .Source.ID)}}
+<main class="container tool-page">
+  <h1>从草稿登记 T3 项目</h1>
+  <p>配置草稿 · {{.Source.Label}}</p>
+  {{if .Error}}<p role="alert">{{.Error}}</p>{{end}}
+  <section aria-label="所选登记目标">
+    <dl>
+      <dt>应用 ID</dt><dd><code>{{.Route.AppID}}</code></dd>
+      <dt>路由 ID</dt><dd><code>{{.Route.RouteID}}</code></dd>
+      <dt>T3 环境 ID</dt><dd><code>{{.Route.EnvironmentID}}</code></dd>
+      {{if .Route.HostName}}<dt>目标机</dt><dd>{{.Route.HostName}}</dd>{{end}}
+      {{if .Directory}}<dt>{{if .Managed}}本机工作区路径{{else}}目标目录{{end}}</dt><dd><code>{{.Directory}}</code></dd>{{end}}
+      {{if and .Ticket .Directory .SetupAuthorized}}<dt>登记授权</dt><dd>使用另行指定的私有 OAuth 文件</dd>{{end}}
+    </dl>
+    {{if .Candidate}}
+    <p role="status">T3 项目已登记，草稿已更新。请校验并查看差异，再决定是否保存配置。</p>
+    {{else if and .Ticket .Directory}}
+    <p>{{if .Managed}}确认后将在本机准备该工作区并登记为 T3 项目。{{else}}确认后将在所选 T3 环境登记或复用该目录。{{end}}登记完成后可审阅并保存配置草稿。</p>
+    <form method="post" action="/project-register/draft">
+      <input type="hidden" name="ticket" value="{{.Ticket}}">
+      <input type="hidden" name="action" value="confirm">
+      <label><input type="checkbox" name="confirm" value="register" required>确认在所选 T3 环境登记此目录</label>
+      <button type="submit">{{if .Managed}}确认准备并登记{{else}}确认登记项目{{end}}</button>
+    </form>
+    {{else if .Ticket}}
+    <form method="post" action="/project-register/draft" autocomplete="off">
+      <input type="hidden" name="ticket" value="{{.Ticket}}">
+      <input type="hidden" name="action" value="preview">
+      <label class="field">目标机上的已有目录
+        <input type="text" name="directory" spellcheck="false" maxlength="4096" aria-describedby="draft-directory-help">
+        <small id="draft-directory-help">填写目标机上的绝对路径，再预览已有目录登记。</small>
+      </label>
+      <label class="field">单独授权的私有 OAuth JSON 文件路径（可选）
+        <input type="text" name="setupTokenFile" spellcheck="false" maxlength="4096" aria-describedby="draft-token-help">
+        <small id="draft-token-help">留空使用草稿中的授权。本次登记使用的专用授权独立于配置草稿。</small>
+      </label>
+      <button type="submit" name="mode" value="existing">预览登记已有目录</button>
+      {{if .ManagedDirectory}}
+      <dl><dt>本机工作区路径</dt><dd><code>{{.ManagedDirectory}}</code></dd></dl>
+      <button type="submit" name="mode" value="managed">预览准备本机专用工作区</button>
+      {{end}}
+    </form>
+    {{end}}
+  </section>
+  <form method="post" action="/?source={{.Source.ID}}">
+    <input type="hidden" name="revision" value="{{.Source.Revision}}">
+    <input type="hidden" name="config" value="{{or .Candidate .Draft}}">
+    <button type="submit" name="action" value="check">{{if .Candidate}}校验并查看差异{{else}}返回配置草稿{{end}}</button>
+  </form>
+</main>
+</div>
+</body>
+</html>

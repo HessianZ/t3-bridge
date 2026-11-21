@@ -1,0 +1,402 @@
+[
+  {
+    "id": "R01",
+    "category": "explicit_nas",
+    "text": "NAS检查磁盘",
+    "routeId": "nas",
+    "action": "new_task",
+    "bound": ""
+  },
+  {
+    "id": "R02",
+    "category": "explicit_nas",
+    "text": "请在NAS上升级Gitea",
+    "routeId": "nas",
+    "action": "new_task",
+    "bound": ""
+  },
+  {
+    "id": "R03",
+    "category": "explicit_nas",
+    "text": "帮我NAS重启容器",
+    "routeId": "nas",
+    "action": "new_task",
+    "bound": ""
+  },
+  {
+    "id": "R04",
+    "category": "explicit_nas",
+    "text": "在example-nas上查看负载",
+    "routeId": "nas",
+    "action": "new_task",
+    "bound": ""
+  },
+  {
+    "id": "R05",
+    "category": "explicit_nas",
+    "text": "/nas 核对磁盘状态",
+    "routeId": "nas",
+    "action": "new_task",
+    "bound": ""
+  },
+  {
+    "id": "R06",
+    "category": "explicit_nas",
+    "text": "NAS备份配置",
+    "routeId": "nas",
+    "action": "new_task",
+    "bound": ""
+  },
+  {
+    "id": "R07",
+    "category": "explicit_nas",
+    "text": "NAS排查告警",
+    "routeId": "nas",
+    "action": "new_task",
+    "bound": ""
+  },
+  {
+    "id": "R08",
+    "category": "explicit_nas",
+    "text": "NAS执行只读健康检查",
+    "routeId": "nas",
+    "action": "new_task",
+    "bound": ""
+  },
+  {
+    "id": "R09",
+    "category": "explicit_mac",
+    "text": "Mac检查磁盘",
+    "routeId": "mac",
+    "action": "new_task",
+    "bound": ""
+  },
+  {
+    "id": "R10",
+    "category": "explicit_mac",
+    "text": "请在Mac上更新软件",
+    "routeId": "mac",
+    "action": "new_task",
+    "bound": ""
+  },
+  {
+    "id": "R11",
+    "category": "explicit_mac",
+    "text": "MacBook查看内存",
+    "routeId": "mac",
+    "action": "new_task",
+    "bound": ""
+  },
+  {
+    "id": "R12",
+    "category": "explicit_mac",
+    "text": "/mac 检查构建结果",
+    "routeId": "mac",
+    "action": "new_task",
+    "bound": ""
+  },
+  {
+    "id": "R13",
+    "category": "explicit_mac",
+    "text": "帮我Mac修复编译错误",
+    "routeId": "mac",
+    "action": "new_task",
+    "bound": ""
+  },
+  {
+    "id": "R14",
+    "category": "explicit_mac",
+    "text": "在Mac上运行测试",
+    "routeId": "mac",
+    "action": "new_task",
+    "bound": ""
+  },
+  {
+    "id": "R15",
+    "category": "negation_or_quote",
+    "text": "不要升级NAS",
+    "routeId": "",
+    "action": "clarify",
+    "bound": ""
+  },
+  {
+    "id": "R16",
+    "category": "negation_or_quote",
+    "text": "别执行NAS重启",
+    "routeId": "",
+    "action": "clarify",
+    "bound": ""
+  },
+  {
+    "id": "R17",
+    "category": "negation_or_quote",
+    "text": "不在NAS上部署",
+    "routeId": "",
+    "action": "clarify",
+    "bound": ""
+  },
+  {
+    "id": "R18",
+    "category": "negation_or_quote",
+    "text": "写一篇NAS升级文章",
+    "routeId": "",
+    "action": "clarify",
+    "bound": ""
+  },
+  {
+    "id": "R19",
+    "category": "negation_or_quote",
+    "text": "介绍Mac和NAS",
+    "routeId": "",
+    "action": "clarify",
+    "bound": ""
+  },
+  {
+    "id": "R20",
+    "category": "negation_or_quote",
+    "text": "假设NAS需要重启",
+    "routeId": "",
+    "action": "clarify",
+    "bound": ""
+  },
+  {
+    "id": "R21",
+    "category": "negation_or_quote",
+    "text": "引用：NAS升级Gitea",
+    "routeId": "",
+    "action": "clarify",
+    "bound": ""
+  },
+  {
+    "id": "R22",
+    "category": "negation_or_quote",
+    "text": "例如NAS重启服务",
+    "routeId": "",
+    "action": "clarify",
+    "bound": ""
+  },
+  {
+    "id": "R23",
+    "category": "negation_or_quote",
+    "text": "先讨论NAS升级方案",
+    "routeId": "",
+    "action": "clarify",
+    "bound": ""
+  },
+  {
+    "id": "R24",
+    "category": "negation_or_quote",
+    "text": "“NAS重启Gitea”",
+    "routeId": "",
+    "action": "clarify",
+    "bound": ""
+  },
+  {
+    "id": "R25",
+    "category": "negation_or_quote",
+    "text": "> NAS重启Gitea",
+    "routeId": "",
+    "action": "clarify",
+    "bound": ""
+  },
+  {
+    "id": "R26",
+    "category": "negation_or_quote",
+    "text": "```NAS重启```",
+    "routeId": "",
+    "action": "clarify",
+    "bound": ""
+  },
+  {
+    "id": "R27",
+    "category": "multiple_targets",
+    "text": "NAS和Mac都检查磁盘",
+    "routeId": "",
+    "action": "coordinate",
+    "bound": ""
+  },
+  {
+    "id": "R28",
+    "category": "multiple_targets",
+    "text": "先NAS升级，再Mac构建",
+    "routeId": "",
+    "action": "coordinate",
+    "bound": ""
+  },
+  {
+    "id": "R29",
+    "category": "explicit_multiple_targets",
+    "text": "/nas 检查NAS及Mac",
+    "routeId": "",
+    "action": "clarify",
+    "bound": ""
+  },
+  {
+    "id": "R30",
+    "category": "multiple_targets",
+    "text": "Mac与example-nas同步升级",
+    "routeId": "",
+    "action": "coordinate",
+    "bound": ""
+  },
+  {
+    "id": "R31",
+    "category": "unknown_or_pronoun",
+    "text": "检查一下它",
+    "routeId": "",
+    "action": "clarify",
+    "bound": ""
+  },
+  {
+    "id": "R32",
+    "category": "unknown_or_pronoun",
+    "text": "升级那个服务",
+    "routeId": "",
+    "action": "clarify",
+    "bound": ""
+  },
+  {
+    "id": "R33",
+    "category": "unknown_or_pronoun",
+    "text": "查看VPS状态",
+    "routeId": "",
+    "action": "clarify",
+    "bound": ""
+  },
+  {
+    "id": "R34",
+    "category": "unknown_or_pronoun",
+    "text": "看看Windows的磁盘",
+    "routeId": "",
+    "action": "clarify",
+    "bound": ""
+  },
+  {
+    "id": "R35",
+    "category": "unknown_or_pronoun",
+    "text": "[图片]",
+    "routeId": "",
+    "action": "clarify",
+    "bound": ""
+  },
+  {
+    "id": "R36",
+    "category": "unknown_or_pronoun",
+    "text": "继续",
+    "routeId": "",
+    "action": "clarify",
+    "bound": ""
+  },
+  {
+    "id": "R37",
+    "category": "unknown_or_pronoun",
+    "text": "NAS怎么用",
+    "routeId": "",
+    "action": "clarify",
+    "bound": ""
+  },
+  {
+    "id": "R38",
+    "category": "unknown_or_pronoun",
+    "text": "这张图有问题吗",
+    "routeId": "",
+    "action": "clarify",
+    "bound": ""
+  },
+  {
+    "id": "R39",
+    "category": "bound_reference",
+    "text": "继续核对",
+    "routeId": "nas",
+    "action": "continue",
+    "bound": "nas"
+  },
+  {
+    "id": "R40",
+    "category": "bound_reference",
+    "text": "把结果简短列出来",
+    "routeId": "nas",
+    "action": "continue",
+    "bound": "nas"
+  },
+  {
+    "id": "R41",
+    "category": "bound_reference",
+    "text": "核对这张图片",
+    "routeId": "nas",
+    "action": "continue",
+    "bound": "nas"
+  },
+  {
+    "id": "R42",
+    "category": "bound_reference",
+    "text": "继续",
+    "routeId": "mac",
+    "action": "continue",
+    "bound": "mac"
+  },
+  {
+    "id": "R43",
+    "category": "bound_wrong_machine",
+    "text": "Mac重启服务",
+    "routeId": "",
+    "action": "clarify",
+    "bound": "nas"
+  },
+  {
+    "id": "R44",
+    "category": "bound_wrong_machine",
+    "text": "/mac 检查日志",
+    "routeId": "",
+    "action": "clarify",
+    "bound": "nas"
+  },
+  {
+    "id": "R45",
+    "category": "control",
+    "text": "停止",
+    "routeId": "",
+    "action": "stop",
+    "bound": "nas"
+  },
+  {
+    "id": "R46",
+    "category": "control",
+    "text": "拒绝",
+    "routeId": "",
+    "action": "stop",
+    "bound": "nas"
+  },
+  {
+    "id": "R47",
+    "category": "control",
+    "text": "不要执行",
+    "routeId": "",
+    "action": "stop",
+    "bound": "nas"
+  },
+  {
+    "id": "R48",
+    "category": "control",
+    "text": "/stop",
+    "routeId": "",
+    "action": "stop",
+    "bound": "nas"
+  },
+  {
+    "id": "R49",
+    "category": "control",
+    "text": "取消这个任务",
+    "routeId": "",
+    "action": "stop",
+    "bound": "nas"
+  },
+  {
+    "id": "R50",
+    "category": "control",
+    "text": "不用了",
+    "routeId": "",
+    "action": "stop",
+    "bound": "nas"
+  }
+]

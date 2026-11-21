@@ -1,0 +1,69 @@
+{
+  "receiverMachine": "bridge",
+  "receiverAuthorized": false,
+  "stateDir": "/var/lib/t3-bridge",
+  "appId": "REPLACE_APP_ID",
+  "appSecretFile": "/etc/t3-bridge/app.secret",
+  "users": [
+    "REPLACE_OPEN_ID"
+  ],
+  "chats": [
+    "REPLACE_CHAT_ID"
+  ],
+  "mcp": {
+    "endpoint": "http://127.0.0.1:3773/mcp",
+    "tokenFile": "/etc/t3-bridge/t3-token.secret",
+    "environmentId": "REPLACE_ENVIRONMENT_ID"
+  },
+  "defaultRoute": "work",
+  "reviewRoute": "review",
+  "routes": {
+    "work": {
+      "hostName": "workstation",
+      "aliases": [
+        "工作机"
+      ],
+      "environmentId": "REPLACE_ENVIRONMENT_ID",
+      "projectId": "REPLACE_PROJECT_ID",
+      "driver": "codex",
+      "providerId": "REPLACE_PROVIDER_INSTANCE_ID",
+      "model": "REPLACE_MODEL_ID",
+      "options": {},
+      "runtimeMode": "approval-required",
+      "interactionMode": "default",
+      "users": [
+        "REPLACE_OPEN_ID"
+      ]
+    },
+    "build": {
+      "hostName": "builder",
+      "aliases": [
+        "构建机"
+      ],
+      "environmentId": "REPLACE_BUILD_ENVIRONMENT_ID",
+      "projectId": "REPLACE_BUILD_PROJECT_ID",
+      "driver": "opencode",
+      "providerId": "REPLACE_BUILD_PROVIDER_INSTANCE_ID",
+      "model": "REPLACE_BUILD_MODEL_ID",
+      "options": {},
+      "runtimeMode": "approval-required",
+      "interactionMode": "default",
+      "users": [
+        "REPLACE_OPEN_ID"
+      ]
+    },
+    "review": {
+      "environmentId": "REPLACE_ENVIRONMENT_ID",
+      "projectId": "REPLACE_PROJECT_ID",
+      "driver": "codex",
+      "providerId": "REPLACE_REVIEW_PROVIDER_INSTANCE_ID",
+      "model": "REPLACE_REVIEW_MODEL_ID",
+      "options": {},
+      "runtimeMode": "approval-required",
+      "interactionMode": "default",
+      "users": [
+        "REPLACE_OPEN_ID"
+      ]
+    }
+  }
+}

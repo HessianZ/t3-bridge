@@ -1,0 +1,11 @@
+data: {"id":"synthetic-stream","object":"chat.completion.chunk","model":"hy4-flash","choices":[{"index":0,"delta":{"role":"assistant","content":"","reasoning_content":""},"finish_reason":""}]}
+
+data: {"id":"synthetic-stream","object":"chat.completion.chunk","model":"hy4-flash","choices":[{"index":0,"delta":{"content":"{\"routeId\":\"nas\",","reasoning_content":""},"finish_reason":""}]}
+
+data: {"id":"synthetic-stream","object":"chat.completion.chunk","model":"hy4-flash","choices":[{"index":0,"delta":{"content":"\"action\":\"new_task\"}","reasoning_content":""},"finish_reason":""}]}
+
+data: {"id":"synthetic-stream","object":"chat.completion.chunk","model":"hy4-flash","choices":[{"index":0,"delta":{"content":"","reasoning_content":""},"finish_reason":"stop"}]}
+
+data: [DONE]
+
+: synthetic fixture end

@@ -1,0 +1,23 @@
+{
+  "ok": true,
+  "operations": [
+    {
+      "check": "hardware:smart",
+      "owner_thread": "t3-thread://v2/synthetic/synthetic-owner",
+      "reason": "合成磁盘维护",
+      "started": "2026-11-17T11:00:00+00:00",
+      "until": "2026-11-17T11:50:00+00:00",
+      "expired": true,
+      "repair_blocked": true
+    },
+    {
+      "check": "example-router:hardware:smart",
+      "owner_thread": "t3-thread://v2/synthetic/synthetic-router-owner",
+      "reason": "合成路由器维护",
+      "started": "2026-11-17T11:50:00+00:00",
+      "until": "2026-11-17T12:20:00+00:00",
+      "expired": false,
+      "repair_blocked": true
+    }
+  ]
+}

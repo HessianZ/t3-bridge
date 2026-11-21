@@ -1,0 +1,24 @@
+{
+  "code": 0,
+  "msg": "success",
+  "data": {
+    "items": [
+      {
+        "message_id": "card2-message",
+        "chat_id": "chat",
+        "thread_id": "topic",
+        "msg_type": "interactive",
+        "deleted": false,
+        "updated": true,
+        "sender": {
+          "id": "synthetic-homeops-app",
+          "id_type": "app_id",
+          "sender_type": "app"
+        },
+        "body": {
+          "content": "{\"title\":null,\"elements\":[[{\"tag\":\"img\",\"image_key\":\"synthetic-card-preview\"},{\"tag\":\"text\",\"text\":\"目标：nas · 执行器：opencode / synthetic-model\\n状态：completed\"},{\"tag\":\"text\",\"text\":\"会话：t3-thread://v2/test/thread\"}]]}"
+        }
+      }
+    ]
+  }
+}

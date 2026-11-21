@@ -1,0 +1,58 @@
+{
+  "receiverMachine": "monitor-node",
+  "receiverAuthorized": false,
+  "stateDir": "/var/lib/t3-bridge",
+  "appId": "REPLACE_APP_ID",
+  "appSecretFile": "/etc/t3-bridge/app.secret",
+  "users": [
+    "REPLACE_OPEN_ID"
+  ],
+  "chats": [
+    "REPLACE_CHAT_ID"
+  ],
+  "mcp": {
+    "endpoint": "http://127.0.0.1:3773/mcp",
+    "tokenFile": "/etc/t3-bridge/t3-token.secret",
+    "environmentId": "REPLACE_ENVIRONMENT_ID"
+  },
+  "coordinationCommand": "/usr/local/bin/homeops-coordination",
+  "defaultRoute": "operations",
+  "routes": {
+    "operations": {
+      "kind": "nas",
+      "hostName": "monitor-host",
+      "environmentId": "REPLACE_ENVIRONMENT_ID",
+      "projectId": "REPLACE_PROJECT_ID",
+      "driver": "opencode",
+      "providerId": "REPLACE_PROVIDER_INSTANCE_ID",
+      "model": "REPLACE_MODEL_ID",
+      "options": {},
+      "runtimeMode": "approval-required",
+      "interactionMode": "default",
+      "users": [
+        "REPLACE_OPEN_ID"
+      ],
+      "checks": [
+        "service:example",
+        "security:audit"
+      ]
+    }
+  },
+  "health": [
+    {
+      "url": "http://127.0.0.1:18760/healthz",
+      "localIp": "127.0.0.1",
+      "node": "monitor-node",
+      "keyFile": "/etc/t3-bridge/monitor-hmac.secret"
+    }
+  ],
+  "eventChats": [
+    "REPLACE_CHAT_ID"
+  ],
+  "eventRoutes": {
+    "monitor-node": "operations"
+  },
+  "autoInvestigations": {
+    "enabled": false
+  }
+}

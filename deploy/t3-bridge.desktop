@@ -1,0 +1,7 @@
+[Desktop Entry]
+Type=Application
+Name=T3 Bridge Config
+Comment=Configure the Lark and T3 Code bridge
+Exec=t3-bridge config gui
+Terminal=false
+Categories=Development;

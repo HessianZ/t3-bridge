@@ -1,0 +1,16 @@
+/bin/
+/private/
+/.local-dev/
+*.test
+/state/
+.env
+.env.*
+*.secret
+*.secret.*
+*.pem
+*.key
+/config/local*.json
+/config/local*.yaml
+/config/local*.yml
+
+.DS_Store

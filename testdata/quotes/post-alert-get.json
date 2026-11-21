@@ -1,0 +1,24 @@
+{
+  "code": 0,
+  "msg": "success",
+  "data": {
+    "items": [
+      {
+        "message_id": "post-alert",
+        "chat_id": "chat",
+        "thread_id": "topic",
+        "msg_type": "post",
+        "deleted": false,
+        "updated": false,
+        "sender": {
+          "id": "synthetic-homeops-app",
+          "id_type": "app_id",
+          "sender_type": "app"
+        },
+        "body": {
+          "content": "{\"title\":\"合成磁盘告警\",\"content\":[[{\"tag\":\"text\",\"text\":\"仅供调查\\n事件：eb1_2431f23b42c0669411ee7de3e72fcfd9\"}],[{\"tag\":\"img\",\"image_key\":\"synthetic-post-image\"}],[{\"tag\":\"a\",\"text\":\"探针摘要\",\"href\":\"https://example.invalid/eb1_ffffffffffffffffffffffffffffffff\"}]],\"content_v2\":[[{\"tag\":\"md\",\"text\":\"ignored-v2 eb1_ffffffffffffffffffffffffffffffff\"}]],\"value\":{\"text\":\"hidden-value Mac重启\",\"event_id\":\"eb1_ffffffffffffffffffffffffffffffff\"}}"
+        }
+      }
+    ]
+  }
+}

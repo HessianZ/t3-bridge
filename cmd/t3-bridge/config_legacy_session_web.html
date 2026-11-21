@@ -1,0 +1,139 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>转接旧会话 · T3 Bridge</title>
+  <link rel="stylesheet" href="/workspace.css">
+</head>
+<body>
+<div class="shell">
+{{template "workspace-header" (workspaceNav "advanced" .Source.ID)}}
+<main class="container tool-page">
+  <nav aria-label="旧会话转接导航"><a href="/{{if .Source.ID}}?source={{.Source.ID}}{{end}}">配置工作台</a><a href="/runtime">运行状态</a></nav>
+  <h1>转接旧会话</h1>
+  <p>请先停止原接收端。确认写入时，目标接收端也必须停止，目标状态目录须处于离线状态。</p>
+  <p>目录查询和普通预览只读取本机文件。「预览并核验 T3」还会通过已保存的目标配置读取原线程信息。确认时仅在目标状态中登记转接元数据，接收端沿用现有授权。</p>
+  {{if .Error}}<p class="error" role="alert">{{.Error}}</p>{{end}}
+  {{if .Sources}}
+  <form class="actions" method="get" action="/legacy-session-import">
+    <label>已保存的目标配置<select name="source">
+      {{range .Sources}}<option value="{{.ID}}"{{if eq .ID $.Source.ID}} selected{{end}}>{{.Label}}</option>{{end}}
+    </select></label>
+    <button type="submit">打开目标配置</button>
+  </form>
+  {{if .Source.ID}}
+  <form method="post" action="/legacy-session-import">
+    <input type="hidden" name="source" value="{{.Source.ID}}">
+    <input type="hidden" name="revision" value="{{.Source.Revision}}">
+    <input type="hidden" name="review" value="{{.Review}}">
+    <section aria-label="转接输入">
+      <p>目标配置 <code>{{.Source.Path}}</code></p>
+      <div class="fields">
+        <label>目标 App ID<input name="appId" value="{{.Request.AppID}}" placeholder="留空使用已保存配置的主 App" spellcheck="false"></label>
+        <label>旧 config.json 的本机绝对路径<input name="legacyConfig" value="{{.Request.LegacyConfig}}" required spellcheck="false"></label>
+        <label>旧 T3 profile 名称<input name="legacyProfile" value="{{.Request.LegacyProfile}}" placeholder="留空匹配同 App、同租户的唯一 T3 V2 profile" spellcheck="false"></label>
+        <label>聊天类型<select name="chatType" aria-describedby="legacy-chat-help">
+          <option value="p2p"{{if ne .Request.ChatType "group"}} selected{{end}}>私聊</option>
+          <option value="group"{{if eq .Request.ChatType "group"}} selected{{end}}>群聊</option>
+        </select></label>
+        <label>完整聊天 ID<input name="chatId" value="{{.Request.ChatID}}"{{if .ChatIDs}} list="legacy-session-chats"{{end}} placeholder="oc_example" required spellcheck="false" aria-describedby="legacy-chat-help"></label>
+        {{if .ChatIDs}}
+        <datalist id="legacy-session-chats">
+          {{range .ChatIDs}}<option value="{{.}}"></option>{{end}}
+        </datalist>
+        {{end}}
+        <label>完整话题 ID（可选，仅群聊）<input name="topicId" value="{{.Request.TopicID}}" placeholder="留空选择群聊主会话" spellcheck="false"></label>
+        <label>原 T3 Thread ID<input name="threadId" value="{{.Request.ThreadID}}"{{if and .Inspection .Inspection.Candidates}} list="legacy-session-candidates"{{end}} required spellcheck="false"></label>
+        {{if and .Inspection .Inspection.Candidates}}
+        <datalist id="legacy-session-candidates">
+          {{range .Inspection.Candidates}}<option value="{{.ThreadID}}" label="{{.ProjectPath}}"></option>{{end}}
+        </datalist>
+        {{end}}
+        <label>用户 Open ID<input name="userId" value="{{.Request.UserID}}" placeholder="ou_example" required spellcheck="false"></label>
+        <label>目标路由 ID<input name="routeId" value="{{.Request.RouteID}}" required spellcheck="false"></label>
+      </div>
+      <p id="legacy-chat-help">留空聊天和话题 ID 可盘点旧目录。查询前请核对原聊天类型和完整 ID。私聊须为所填用户的原私聊。</p>
+      <div class="actions">
+        <button type="submit" name="action" value="preview">预览转接</button>
+        <button type="submit" name="action" value="check">预览并核验 T3</button>
+        <button type="submit" name="action" value="prepare-route">采用原线程执行配置并审阅</button>
+        <button type="submit" name="action" value="inspect" formnovalidate>查询旧目录</button>
+      </div>
+    </section>
+    {{with .Inspection}}
+    <section aria-label="旧目录查询结果">
+      {{if .ChatID}}
+      <h2>旧 T3 线程查询结果</h2>
+      <p>目标 App <code>{{.AppID}}</code> · 旧 profile <code>{{.LegacyProfile}}</code> · {{if eq .ChatType "group"}}群聊{{else}}私聊{{end}} <code>{{.ChatID}}</code>{{if eq .ChatType "group"}}{{if .TopicID}} · 话题 <code>{{.TopicID}}</code>{{else}} · 群聊主会话{{end}}{{end}}</p>
+      {{if .Candidates}}
+      <p>在「原 T3 Thread ID」栏中选择或手动填写线程 ID。</p>
+      <ul>
+        {{range .Candidates}}<li><code>{{.ThreadID}}</code> · <code>{{.ProjectPath}}</code>{{if gt .UpdatedAt 0}} · 更新于 {{updatedAt .UpdatedAt}}{{end}}</li>{{end}}
+      </ul>
+      {{else}}<p>没有符合条件的旧 T3 线程。仍可手动填写已知线程 ID。</p>{{end}}
+      {{else}}
+      <h2>旧目录聊天范围</h2>
+      <p>目标 App <code>{{.AppID}}</code> · 旧 profile <code>{{.LegacyProfile}}</code></p>
+      <p>旧目录无法证明聊天类型或参与者。</p>
+      {{if .Scopes}}
+      <ul>
+        {{range .Scopes}}<li>聊天 <code>{{.ChatID}}</code>{{if .TopicID}} · 话题 <code>{{.TopicID}}</code>{{end}} · {{.ActiveThreads}} 个活动 T3 线程 · {{if gt .UpdatedAt 0}}更新于 {{updatedAt .UpdatedAt}}{{else}}更新时间未知{{end}}</li>{{end}}
+      </ul>
+      {{else}}<p>旧目录中没有符合条件的聊天范围。</p>{{end}}
+      {{end}}
+    </section>
+    {{end}}
+    {{with .Result}}
+    <section aria-label="转接结果">
+      {{if .Applied}}<h2 role="status">转接已登记，等待新{{if eq .ChatType "group"}}群聊{{else}}私聊{{end}}消息核验</h2>{{else}}<h2>转接预览</h2>{{end}}
+      <dl>
+        <dt>目标 App ID</dt><dd><code>{{.AppID}}</code></dd>
+        {{if eq .ChatType "group"}}
+        <dt>群聊 ID</dt><dd><code>{{.ChatID}}</code></dd>
+        <dt>话题 ID</dt><dd>{{if .TopicID}}<code>{{.TopicID}}</code>{{else}}无（群聊主会话）{{end}}</dd>
+        {{else}}
+        <dt>私聊 ID</dt><dd><code>{{.ChatID}}</code></dd>
+        {{end}}
+        <dt>用户 Open ID</dt><dd><code>{{.UserID}}</code></dd>
+        <dt>目标路由 ID</dt><dd><code>{{.RouteID}}</code></dd>
+        <dt>原 T3 Thread ID</dt><dd><code>{{.ThreadID}}</code></dd>
+        <dt>T3 环境 ID</dt><dd><code>{{.EnvironmentID}}</code></dd>
+        <dt>T3 项目 ID</dt><dd><code>{{.ProjectID}}</code></dd>
+        <dt>项目路径</dt><dd><code>{{.ProjectPath}}</code></dd>
+        <dt>动作</dt><dd>{{if eq .Action "add"}}登记待核验的转接{{else if eq .Action "unchanged"}}保留已登记的转接{{else}}{{.Action}}{{end}}</dd>
+      </dl>
+      {{with $.CheckLines}}
+      <h3>T3 核验报告</h3>
+      <ul>{{range .}}<li>{{.}}</li>{{end}}</ul>
+      {{if $.Review}}<p>本次 T3 核验通过。停止目标接收端后可确认写入。</p>{{else}}<p>本次核验未通过，当前不可确认写入。请处理报告中列出的问题，再重新核验。</p>{{end}}
+      {{end}}
+      {{if .ArchivedContext}}<p>当前会话已归档，可登记原 T3 线程。</p>{{end}}
+      {{if eq .ChatType "group"}}
+      <p>接收端仅在收到第一条与所选用户、聊天范围和路由匹配且已获授权的新群聊消息时，才会逐条核对原 T3 线程的所有旧输入及其对应的飞书原消息。全部通过后才会续聊。发现其他发言人或缺少证明时，核验失败。</p>
+      {{else}}
+      <p>接收端收到第一条与所选用户、私聊和路由匹配的新私聊消息后，{{if $.CheckLines}}仍会{{else}}才会{{end}}读取 T3 并核验原线程。</p>
+      {{end}}
+      {{if $.Review}}
+      <p>修改表单后请重新预览。</p>
+      <button type="submit" name="action" value="apply">确认写入</button>
+      {{end}}
+    </section>
+    {{end}}
+  </form>
+  {{if .Candidate}}
+  <section aria-label="原线程执行配置候选">
+    <p role="status">原线程执行配置的候选 JSON 已就绪。请查看差异，再决定是否保存。</p>
+    <form method="post" action="/?source={{.Source.ID}}">
+      <input type="hidden" name="revision" value="{{.Source.Revision}}">
+      <input type="hidden" name="config" value="{{.Candidate}}">
+      <button type="submit" name="action" value="check">校验并查看差异</button>
+    </form>
+  </section>
+  {{end}}
+  {{else}}<p>所选配置不可用，请重新选择。</p>{{end}}
+  {{else}}<p>请先在配置工作台保存本机 JSON 配置。</p>{{end}}
+</main>
+</div>
+</body>
+</html>

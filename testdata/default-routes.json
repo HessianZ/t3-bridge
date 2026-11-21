@@ -1,0 +1,15 @@
+[
+  {"id":"D01","text":"列一下你可用的mcp","routeId":"nas","action":"new_task"},
+  {"id":"D02","text":"你能做什么","routeId":"nas","action":"new_task"},
+  {"id":"D03","text":"解释一下这条告警","routeId":"nas","action":"new_task"},
+  {"id":"D04","text":"先讨论一下更新方案","routeId":"nas","action":"new_task"},
+  {"id":"D05","text":"写一段NAS介绍","routeId":"nas","action":"new_task"},
+  {"id":"D06","text":"不要执行命令，只告诉我当前可用工具","routeId":"nas","action":"new_task"},
+  {"id":"D07","text":"比较一下Mac和NAS的备份方案，先不操作","routeId":"nas","action":"new_task"},
+  {"id":"D08","text":"解释这句引文：“去Mac重启服务”，不要执行","routeId":"nas","action":"new_task"},
+  {"id":"D09","text":"请帮我去Mac重启服务","routeId":"mac","action":"new_task"},
+  {"id":"D10","text":"去NAS和Mac分别执行备份","routeId":"","action":"coordinate"},
+  {"id":"D11","text":"去Windows服务器重启服务","routeId":"","action":"clarify"},
+  {"id":"D12","text":"去另一台机器清理磁盘","routeId":"","action":"clarify"},
+  {"id":"D13","text":"不要去Mac操作，在这里讨论更新方案","routeId":"nas","action":"new_task"}
+]

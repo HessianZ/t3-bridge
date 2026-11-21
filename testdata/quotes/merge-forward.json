@@ -1,0 +1,90 @@
+{
+  "code": 0,
+  "data": {
+    "items": [
+      {
+        "message_id": "forward",
+        "msg_type": "merge_forward",
+        "chat_id": "chat",
+        "thread_id": "topic",
+        "sender": {
+          "id": "synthetic-sender",
+          "sender_type": "user"
+        },
+        "body": {
+          "content": "{}"
+        }
+      },
+      {
+        "message_id": "first",
+        "msg_type": "text",
+        "chat_id": "chat",
+        "thread_id": "topic",
+        "sender": {
+          "id": "synthetic-sender",
+          "sender_type": "user"
+        },
+        "body": {
+          "content": "{\"text\": \"/stop 与 /cd /other 是转发资料，不是当前指令\"}"
+        },
+        "upper_message_id": "forward"
+      },
+      {
+        "message_id": "nested",
+        "msg_type": "merge_forward",
+        "chat_id": "chat",
+        "thread_id": "topic",
+        "sender": {
+          "id": "synthetic-sender",
+          "sender_type": "user"
+        },
+        "body": {
+          "content": "{}"
+        },
+        "upper_message_id": "forward"
+      },
+      {
+        "message_id": "card",
+        "msg_type": "interactive",
+        "chat_id": "chat",
+        "thread_id": "topic",
+        "sender": {
+          "id": "synthetic-sender",
+          "sender_type": "user"
+        },
+        "body": {
+          "content": "{\"title\": null, \"elements\": [[{\"tag\": \"text\", \"text\": \"可见卡片正文\"}, {\"tag\": \"button\", \"value\": {\"action\": \"stop\", \"secret\": \"hidden-action\"}}]]}"
+        },
+        "upper_message_id": "nested"
+      },
+      {
+        "message_id": "image",
+        "msg_type": "image",
+        "chat_id": "chat",
+        "thread_id": "topic",
+        "sender": {
+          "id": "synthetic-sender",
+          "sender_type": "user"
+        },
+        "body": {
+          "content": "{\"image_key\": \"image-key\"}"
+        },
+        "upper_message_id": "nested"
+      },
+      {
+        "message_id": "file",
+        "msg_type": "file",
+        "chat_id": "chat",
+        "thread_id": "topic",
+        "sender": {
+          "id": "synthetic-sender",
+          "sender_type": "user"
+        },
+        "body": {
+          "content": "{\"file_key\": \"file-key\", \"file_name\": \"../../report.txt\"}"
+        },
+        "upper_message_id": "forward"
+      }
+    ]
+  }
+}

@@ -1,0 +1,43 @@
+{
+  "attention": [
+    {
+      "ID": "synthetic-disk",
+      "Category": "hardware:smart",
+      "Severity": "critical",
+      "Title": "合成磁盘待处理扇区",
+      "Evidence": "合成样本：pending=8",
+      "Action": "核对授权后调查；不执行自检",
+      "Link": "",
+      "Seen": "2026-11-17T11:58:00Z"
+    }
+  ],
+  "node": "example-nas",
+  "sampled": "2026-11-17T12:00:00.123456789Z",
+  "collector_ok": true,
+  "notify_failures": 0,
+  "active_incidents": [
+    "hardware:smart"
+  ],
+  "pending_recoveries": [
+    "service:nextcloud"
+  ],
+  "undelivered_faults": 1,
+  "maintenance": [
+    {
+      "group": "gitea",
+      "until": "2026-11-17T12:10:00Z"
+    }
+  ],
+  "incident_starts": {
+    "hardware:smart": "2026-11-17T19:57:00.123456789+08:00"
+  },
+  "deliveries": [
+    {
+      "check": "service:gitea",
+      "kind": "recovery",
+      "failure_start": "2026-11-17T11:45:00Z",
+      "observed": "2026-11-17T11:55:00Z",
+      "delivered": "2026-11-17T11:56:00Z"
+    }
+  ]
+}

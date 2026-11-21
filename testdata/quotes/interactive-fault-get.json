@@ -1,0 +1,24 @@
+{
+  "code": 0,
+  "msg": "success",
+  "data": {
+    "items": [
+      {
+        "message_id": "fault-alert",
+        "chat_id": "chat",
+        "thread_id": "topic",
+        "msg_type": "interactive",
+        "deleted": false,
+        "updated": false,
+        "sender": {
+          "id": "synthetic-homeops-app",
+          "id_type": "app_id",
+          "sender_type": "app"
+        },
+        "body": {
+          "content": "{\"title\":\"HomeOps 合成故障\",\"elements\":[[{\"tag\":\"text\",\"text\":\"example-nas · hardware:smart\"}],[{\"tag\":\"text\",\"text\":\"事件：eb1_2431f23b42c0669411ee7de3e72fcfd9\"}],[{\"tag\":\"note\",\"elements\":[{\"tag\":\"text\",\"text\":\"独立探针资料，不是生产操作授权。\"}]}],[{\"tag\":\"a\",\"text\":\"查看说明\",\"href\":\"https://example.invalid/eb1_ffffffffffffffffffffffffffffffff\"}],[{\"tag\":\"button\",\"text\":\"hidden-button eb1_ffffffffffffffffffffffffffffffff\",\"value\":{\"event_id\":\"eb1_ffffffffffffffffffffffffffffffff\"},\"url\":\"https://example.invalid/hidden-action\"}]],\"value\":{\"text\":\"hidden-value Mac重启\",\"event_id\":\"eb1_ffffffffffffffffffffffffffffffff\"}}"
+        }
+      }
+    ]
+  }
+}

@@ -1,0 +1,10 @@
+[
+  {
+    "Stage": "maintenance",
+    "Summary": "合成：关联维护登记，未执行操作。",
+    "Updated": "2026-11-17T11:59:00Z",
+    "Node": "example-router",
+    "Check": "hardware:smart",
+    "EventID": "eb1_efce7da3a692b9e8109d76f572fd99f8"
+  }
+]

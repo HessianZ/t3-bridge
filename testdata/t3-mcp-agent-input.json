@@ -1,0 +1,37 @@
+{
+  "thread": {
+    "threadId": "thread",
+    "projectId": "homeops",
+    "providerInstanceId": "official",
+    "model": "deepseek-v4.1-flash",
+    "runtimeMode": "approval-required",
+    "interactionMode": "default",
+    "activeRunId": null,
+    "pendingRequestCount": 0,
+    "pendingBackgroundTasks": []
+  },
+  "items": [
+    {
+      "position": 72,
+      "itemId": "mcp-input",
+      "runId": "run",
+      "createdBy": "agent",
+      "type": "user_message",
+      "sourceThreadId": "thread",
+      "visibility": "local",
+      "text": "用户原文\nrequestId: request",
+      "textTruncated": false,
+      "nextTextOffset": null
+    }
+  ],
+  "recentRuns": [
+    {
+      "runId": "run",
+      "status": "completed",
+      "providerInstanceId": "official",
+      "model": "deepseek-v4.1-flash"
+    }
+  ],
+  "hasMore": false,
+  "nextPosition": null
+}

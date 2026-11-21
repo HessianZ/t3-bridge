@@ -1,0 +1,26 @@
+[
+  {
+    "Stage": "investigating",
+    "Summary": "合成：正在核对磁盘证据，不执行修复。",
+    "Updated": "2026-11-17T11:58:00Z",
+    "Node": "example-nas",
+    "Check": "hardware:smart",
+    "EventID": "eb1_2431f23b42c0669411ee7de3e72fcfd9"
+  },
+  {
+    "Stage": "blocked",
+    "Summary": "合成：维护登记仍在，等待负责线程；探针仍异常。",
+    "Updated": "2026-11-17T11:59:00Z",
+    "Node": "example-nas",
+    "Check": "hardware:smart",
+    "EventID": "eb1_2431f23b42c0669411ee7de3e72fcfd9"
+  },
+  {
+    "Stage": "resolved",
+    "Summary": "合成：调查完成，恢复以独立探针回执为准。",
+    "Updated": "2026-11-17T11:59:30Z",
+    "Node": "example-nas",
+    "Check": "service:gitea",
+    "EventID": "eb1_d063afc50eb7c0537e543045c0b59493"
+  }
+]

@@ -1,0 +1,44 @@
+[
+  {
+    "event_id": "eb1_2431f23b42c0669411ee7de3e72fcfd9",
+    "schema": "homeops.eventbridge/v1",
+    "node": "example-nas",
+    "check": "hardware:smart",
+    "phase": "fault",
+    "failure_start": "2026-11-17T11:57:00.123456Z",
+    "observed": "2026-11-17T12:00:00.123456Z",
+    "source_sampled": "2026-11-17T12:00:00.123456Z",
+    "notice": "Read-only monitoring event. Not a production authorization.",
+    "evidence": [
+      {
+        "Title": "合成磁盘待处理扇区",
+        "Evidence": "合成样本：pending=8",
+        "Action": "核对授权后调查；不执行自检",
+        "Severity": "critical"
+      }
+    ]
+  },
+  {
+    "event_id": "eb1_d063afc50eb7c0537e543045c0b59493",
+    "schema": "homeops.eventbridge/v1",
+    "node": "example-nas",
+    "check": "service:gitea",
+    "phase": "recovery",
+    "failure_start": "2026-11-17T11:45:00Z",
+    "observed": "2026-11-17T11:55:00Z",
+    "source_sampled": "2026-11-17T12:00:00.123456Z",
+    "notice": "Read-only monitoring event. Not a production authorization.",
+    "delivered": "2026-11-17T11:56:00Z"
+  },
+  {
+    "event_id": "eb1_efce7da3a692b9e8109d76f572fd99f8",
+    "schema": "homeops.eventbridge/v1",
+    "node": "example-router",
+    "check": "hardware:smart",
+    "phase": "fault",
+    "failure_start": "2026-11-17T11:57:00.123456Z",
+    "observed": "2026-11-17T12:00:00.123456Z",
+    "source_sampled": "2026-11-17T12:00:00.123456Z",
+    "notice": "Read-only monitoring event. Not a production authorization."
+  }
+]

@@ -1,0 +1,39 @@
+{
+  "receiverMachine": "bridge",
+  "receiverAuthorized": false,
+  "stateDir": "/var/lib/t3-bridge",
+  "appId": "REPLACE_APP_ID",
+  "appSecretFile": "/etc/t3-bridge/app.secret",
+  "users": [
+    "REPLACE_OPEN_ID"
+  ],
+  "chats": [
+    "REPLACE_CHAT_ID"
+  ],
+  "directChats": [],
+  "mcp": {
+    "endpoint": "http://127.0.0.1:3773/mcp",
+    "tokenFile": "/etc/t3-bridge/t3-token.secret",
+    "environmentId": "REPLACE_ENVIRONMENT_ID"
+  },
+  "defaultRoute": "work",
+  "routes": {
+    "work": {
+      "hostName": "workstation",
+      "aliases": [
+        "工作机"
+      ],
+      "environmentId": "REPLACE_ENVIRONMENT_ID",
+      "projectId": "REPLACE_PROJECT_ID",
+      "driver": "codex",
+      "providerId": "REPLACE_PROVIDER_INSTANCE_ID",
+      "model": "REPLACE_MODEL_ID",
+      "options": {},
+      "runtimeMode": "approval-required",
+      "interactionMode": "default",
+      "users": [
+        "REPLACE_OPEN_ID"
+      ]
+    }
+  }
+}

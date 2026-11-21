@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{{if .Telemetry}}服务遥测{{else}}服务日志{{end}} · T3 Bridge</title>
+  <link rel="stylesheet" href="/workspace.css">
+  <style>
+    form { display: flex; align-items: center; flex-wrap: wrap; gap: 6px 9px; }
+  </style>
+</head>
+<body>
+<div class="shell">
+{{template "workspace-header" (workspaceNav "runtime" "")}}
+<main class="container tool-page">
+  <nav aria-label="服务日志导航">
+    <a href="/runtime">返回运行状态</a>
+    {{if .Telemetry}}
+      <a href="/runtime/logs?instance={{.Instance}}">查看完整日志</a>
+      <a href="/runtime/logs?instance={{.Instance}}&amp;format=telemetry{{if .Account}}&amp;account={{.Account}}{{end}}">刷新遥测</a>
+    {{else}}
+      <a href="/runtime/logs?instance={{.Instance}}">刷新日志</a>
+      <a href="/runtime/logs?instance={{.Instance}}&amp;format=telemetry">查看遥测</a>
+    {{end}}
+  </nav>
+  <h1>{{if .Telemetry}}服务遥测{{else}}服务日志{{end}} <code>{{.Instance}}</code></h1>
+  <p>每个输出流最多读取最近 {{.Lines}} 行。{{if .Telemetry}}显示指标、诊断、故障和运行事件。{{end}}</p>
+  {{if and .Telemetry (not .Unavailable)}}
+    <form method="get" action="/runtime/logs">
+      <input type="hidden" name="instance" value="{{.Instance}}">
+      <input type="hidden" name="format" value="telemetry">
+      <label for="telemetry-account">App</label>
+      <select id="telemetry-account" name="account">
+        <option value="all"{{if not .Selected.AppID}} selected{{end}}>全部 App</option>
+        {{range .Accounts}}
+          <option value="{{.Tenant}}:{{.AppID}}"{{if eq . $.Selected}} selected{{end}}>{{.Tenant}}:{{.AppID}}</option>
+        {{end}}
+      </select>
+      <button type="submit">应用筛选</button>
+    </form>
+  {{end}}
+  {{if .Unavailable}}
+    <p role="status">无法读取该实例的日志。请在运行状态页核对实例。</p>
+  {{else if .Logs}}
+    <pre aria-label="实例日志内容">{{.Logs}}</pre>
+  {{else if .Selected.AppID}}
+    <p role="status">最近读取的日志中没有该 App 的遥测记录。</p>
+  {{else}}
+    <p role="status">暂无记录。</p>
+  {{end}}
+</main>
+</div>
+</body>
+</html>

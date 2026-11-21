@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>会议控制 · T3 Bridge</title>
+  <link rel="stylesheet" href="/workspace.css">
+  <style>
+    input[type="text"] { max-width: 12ch; }
+    li + li { margin-top: 8px; }
+  </style>
+</head>
+<body>
+<div class="shell">
+{{template "workspace-header" (workspaceNav "runtime" "")}}
+<main class="container tool-page">
+  <nav aria-label="会议导航">
+    <a href="/runtime">返回运行状态</a>
+    {{if or .Selected .Notice}}<a href="{{.RefreshURL}}">刷新状态</a>{{end}}
+  </nav>
+  <h1>会议控制</h1>
+  {{if .Notice}}<p role="status">{{.Notice}}</p>{{end}}
+  {{if .Selected}}
+  <p>{{.Selected.Account.Tenant}} · <code>{{.Selected.Account.AppID}}</code> · PID {{.Selected.PID}}</p>
+  {{with .Review}}
+  <section>
+    <h2 id="meeting-review">复核会议操作 · <code>{{.Request.Number}}</code></h2>
+    <p>接收进程 <code>{{$.Selected.Process}}</code></p>
+    {{if eq .Request.Action "join"}}
+    <p id="meeting-impact">机器人入会后，参会者可在会中看到机器人。飞书受理后，请核对参会名单和等候室。</p>
+    {{else if eq .Request.Action "leave"}}
+    <p id="meeting-impact">向飞书提交该机器人的离会请求。</p>
+    {{else}}
+    <p id="meeting-impact">请先在飞书核对参会名单和等候室，确认两处都没有该机器人。必要时请主持人移除机器人后再核对。确认后只关闭 Bridge 的本地会议回执。</p>
+    {{end}}
+    <form method="post" action="/runtime/meetings" aria-labelledby="meeting-review" aria-describedby="meeting-impact">
+      {{template "meeting-target" $.Selected}}
+      <input type="hidden" name="action" value="{{.Request.Action}}">
+      <input type="hidden" name="number" value="{{.Request.Number}}">
+      {{if .Request.Revision}}<input type="hidden" name="revision" value="{{.Request.Revision}}">{{end}}
+      <input type="hidden" name="review" value="{{.Token}}">
+      <button type="submit" name="confirm" value="yes">{{if eq .Request.Action "join"}}确认请求入会{{else if eq .Request.Action "leave"}}确认请求离会{{else}}确认机器人不在会中{{end}}</button>
+    </form>
+  </section>
+  {{end}}
+  {{with .Meetings}}
+  {{if not .Enabled}}<p>该 App 未启用会议入会。</p>{{else if not .Available}}<p>该 App 的飞书会议接口暂不可用。</p>{{end}}
+  {{if and .Enabled .Available (not $.Post)}}
+  <section>
+    <h2 id="meeting-join">请求入会</h2>
+    <form method="post" action="/runtime/meetings" aria-labelledby="meeting-join">
+      {{template "meeting-target" $.Selected}}
+      <label for="meeting-number">9 位会议号</label>
+      <input id="meeting-number" name="number" inputmode="numeric" pattern="[0-9]{9}" maxlength="9" required>
+      <button type="submit" name="action" value="join">复核入会请求</button>
+    </form>
+  </section>
+  {{end}}
+  <section>
+    <h2>会议回执</h2>
+    {{if .Meetings}}
+    <p>请在飞书核对参会名单和等候室。</p>
+    {{with .Meetings}}<ul>
+      {{range .}}
+      <li><code>{{.Number}}</code> · {{phaseText .Phase}} · {{originText .Origin}}
+        {{if and (not $.Post) (or (eq .Phase "join_accepted") (eq .Phase "join_pending") (eq .Phase "leave_pending"))}}
+        <form method="post" action="/runtime/meetings">
+          {{template "meeting-target" $.Selected}}
+          <input type="hidden" name="number" value="{{.Number}}">
+          <input type="hidden" name="revision" value="{{.Revision}}">
+          {{if and (eq .Phase "join_accepted") $.Meetings.Available}}
+          <button type="submit" name="action" value="leave">复核离会请求</button>
+          {{end}}
+          <button type="submit" name="action" value="confirm-left">复核机器人已不在会中</button>
+        </form>
+        {{end}}
+      </li>
+      {{end}}
+    </ul>{{end}}
+    {{else}}<p>暂无会议回执。</p>{{end}}
+  </section>
+  {{end}}
+  {{else if and (not .Post) (not .Notice)}}
+    {{if .Targets}}
+    <section>
+      <h2>选择接收应用</h2>
+      <div class="targets">{{range .Targets}}
+        <a href="{{.URL}}">{{.Account.Tenant}} · <code>{{.Account.AppID}}</code> · PID {{.PID}}</a>
+      {{end}}</div>
+    </section>
+    {{else}}<p>暂无支持会议控制的接收进程。</p>{{end}}
+  {{end}}
+</main>
+</div>
+</body>
+</html>
+{{define "meeting-target"}}
+      <input type="hidden" name="process" value="{{.Process}}">
+      <input type="hidden" name="tenant" value="{{.Account.Tenant}}">
+      <input type="hidden" name="appId" value="{{.Account.AppID}}">
+{{end}}
