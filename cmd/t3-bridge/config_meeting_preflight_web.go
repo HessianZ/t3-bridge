@@ -28,13 +28,13 @@ type configMeetingPreflightPage struct {
 func configMeetingPreflightHandler(sources func() ([]webSource, error),
 	check, checkAvailability func(context.Context, webSource, string, string) (bridge.MeetingPermissionReport, error),
 ) http.HandlerFunc {
-	page := template.Must(newWorkspacePage("meeting preflight").Funcs(template.FuncMap{
+	page := newWorkspacePage("meeting preflight").Funcs(template.FuncMap{
 		"stateText":            meetingPermissionStateText,
 		"scopeText":            meetingPermissionScopeText,
 		"publicationStateText": meetingPublicationStateText,
 		"eventStateText":       meetingEventStateText,
 		"availabilityText":     meetingAvailabilityText,
-	}).Parse(configMeetingPreflightHTML))
+	}).Parse(configMeetingPreflightHTML)
 	return func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Cache-Control", "no-store")
 		post := r.Method == http.MethodPost
@@ -135,6 +135,6 @@ func configMeetingPreflightHandler(sources func() ([]webSource, error),
 		}
 		w.Header().Set("Content-Type", "text/html; charset=utf-8")
 		w.WriteHeader(status)
-		_ = page.Execute(w, view)
+		_ = page.Execute(w, r, view)
 	}
 }

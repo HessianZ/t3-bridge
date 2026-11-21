@@ -27,9 +27,9 @@ type configWorkspaceImportPage struct {
 }
 
 func configWorkspaceImportHandler(sources func() ([]webSource, error)) http.HandlerFunc {
-	page := template.Must(newWorkspacePage("workspace import").Funcs(template.FuncMap{
+	page := newWorkspacePage("workspace import").Funcs(template.FuncMap{
 		"encodeSourceKey": func(key string) string { return base64.RawURLEncoding.EncodeToString([]byte(key)) },
-	}).Parse(configWorkspaceImportHTML))
+	}).Parse(configWorkspaceImportHTML)
 	return func(w http.ResponseWriter, r *http.Request) {
 		if !runtimeRequestOriginAllowed(r) {
 			http.Error(w, "invalid origin", http.StatusForbidden)
@@ -128,7 +128,7 @@ func configWorkspaceImportHandler(sources func() ([]webSource, error)) http.Hand
 		}
 		w.Header().Set("Content-Type", "text/html; charset=utf-8")
 		w.WriteHeader(status)
-		_ = page.Execute(w, view)
+		_ = page.Execute(w, r, view)
 	}
 }
 

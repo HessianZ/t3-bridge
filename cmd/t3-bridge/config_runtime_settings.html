@@ -1,32 +1,33 @@
 <!doctype html>
-<html lang="zh-CN">
+<html lang="{{uiLanguage}}">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>在线运行设置 · T3 Bridge</title>
+  <title>{{tr "在线运行设置 · T3 Bridge"}}</title>
   <link rel="stylesheet" href="/workspace.css">
   <style>
     .hint { color: var(--muted); font-size: 12px; }
   </style>
+  <script defer src="/workspace-language.js"></script>
 </head>
 <body>
 <div class="shell">
 {{template "workspace-header" (workspaceNav "runtime" "")}}
 <main class="container tool-page">
-  <nav aria-label="运行设置导航"><a href="/runtime">返回运行状态</a><a href="/runtime/groups">在线群授权</a></nav>
-  <h1>在线运行设置</h1>
+  <nav aria-label="{{tr "运行设置导航"}}"><a href="/runtime">{{tr "返回运行状态"}}</a><a href="/runtime/groups">{{tr "在线群授权"}}</a></nav>
+  <h1>{{tr "在线运行设置"}}</h1>
   {{if .Notice}}<p role="status">{{.Notice}}</p>{{end}}
   {{if .Targets}}
   <section>
-    <h2>选择接收账号</h2>
+    <h2>{{tr "选择接收账号"}}</h2>
     <div class="targets">{{range .Targets}}
       <a href="{{.URL}}"{{if and $.Selected (eq .URL $.Selected.URL)}} aria-current="page"{{end}}>{{.Account.Tenant}} · <code>{{.Account.AppID}}</code> · PID {{.PID}}</a>
     {{end}}</div>
   </section>
-  {{else if not .Notice}}<p>暂无支持在线设置的接收进程。</p>{{end}}
+  {{else if not .Notice}}<p>{{tr "暂无支持在线设置的接收进程。"}}</p>{{end}}
   {{if .Fields}}
   <section>
-    <h2>当前生效值</h2>
+    <h2>{{tr "当前生效值"}}</h2>
     <p>{{.Selected.Account.Tenant}} · <code>{{.Selected.Account.AppID}}</code> · PID {{.Selected.PID}} · <code>{{.Selected.Process}}</code></p>
     <form method="post" action="/runtime/settings">
       <input type="hidden" name="process" value="{{.Selected.Process}}">
@@ -41,7 +42,7 @@
           {{if .Hint}}<span class="hint">{{.Hint}}</span>{{end}}
         </label>
       {{end}}</div>
-      <button type="submit">保存运行设置</button>
+      <button type="submit">{{tr "保存运行设置"}}</button>
     </form>
   </section>
   {{end}}

@@ -1,62 +1,63 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="{{uiLanguage}}">
 <head>
   <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>导入私有包 · T3 Bridge</title>
+  <title>{{tr "导入私有包 · T3 Bridge"}}</title>
   <link rel="stylesheet" href="/workspace.css">
   <style>
     label { margin-bottom: 8px; }
   </style>
+  <script defer src="/workspace-language.js"></script>
 </head>
 <body>
 <div class="shell">
 {{template "workspace-header" (workspaceNav "advanced" "")}}
 <main class="container tool-page">
-  <a href="/profiles">返回命名配置</a>
-  <h1>{{if .Review}}预览私有包导入{{else}}导入私有包{{end}}</h1>
+  <a href="/profiles">{{tr "返回命名配置"}}</a>
+  <h1>{{if .Review}}{{tr "预览私有包导入"}}{{else}}{{tr "导入私有包"}}{{end}}</h1>
   {{if .Error}}<p role="alert">{{.Error}}</p>{{end}}
   {{with .Review}}
-  <section aria-label="导入预览">
-    <p>来源 <code>{{.Plan.Source}}</code></p>
-    <p>包内配置 <strong>{{.Plan.Profile}}</strong></p>
-    <p>新配置 <strong>{{.Plan.Name}}</strong></p>
-    <p>配置文件 <code>{{.Plan.Destination}}</code></p>
-    <p>将为 {{len .Plan.Accounts}} 个 App 创建独立的 App Secret 文件，接收授权初始关闭。</p>
+  <section aria-label="{{tr "导入预览"}}">
+    <p>{{tr "来源"}} <code>{{.Plan.Source}}</code></p>
+    <p>{{tr "包内配置"}} <strong>{{.Plan.Profile}}</strong></p>
+    <p>{{tr "新配置"}} <strong>{{.Plan.Name}}</strong></p>
+    <p>{{tr "配置文件"}} <code>{{.Plan.Destination}}</code></p>
+    <p>{{tr "将为"}} {{len .Plan.Accounts}} {{tr "个 App 创建独立的 App Secret 文件，接收授权初始关闭。"}}</p>
     {{if .Plan.Patch}}
-    <p>迁移调整文件 <code>{{.Plan.Patch}}</code></p>
+    <p>{{tr "迁移调整文件"}} <code>{{.Plan.Patch}}</code></p>
     {{with .Plan.PatchedFields}}
-    <p>调整字段</p>
+    <p>{{tr "调整字段"}}</p>
     <ul>
       {{range .}}<li><code>{{.}}</code></li>{{end}}
     </ul>
     {{end}}
-    <p>请核对目标主机的引用路径、T3 项目及授权。</p>
+    <p>{{tr "请核对目标主机的引用路径、T3 项目及授权。"}}</p>
     {{else}}
-    <p>T3 令牌继续使用包内配置的文件引用。跨主机导入后需核对引用路径。</p>
+    <p>{{tr "T3 令牌继续使用包内配置的文件引用。跨主机导入后需核对引用路径。"}}</p>
     {{end}}
     <form method="post" action="/profiles/import" autocomplete="off">
       {{template "review-fields" .}}
-      <label><input type="checkbox" name="confirm" value="yes" required> 确认导入上方私有包并创建新配置</label>
-      <button name="action" value="confirm">确认导入</button>
+      <label><input type="checkbox" name="confirm" value="yes" required> {{tr "确认导入上方私有包并创建新配置"}}</label>
+      <button name="action" value="confirm">{{tr "确认导入"}}</button>
     </form>
     <form method="post" action="/profiles/import">
       {{template "review-fields" .}}
-      <button name="action" value="cancel">取消</button>
+      <button name="action" value="cancel">{{tr "取消"}}</button>
     </form>
   </section>
   {{else}}{{if .Created}}
-  <p role="status">已创建命名配置 <strong>{{.Created}}</strong>。</p>
-  <a href="/?source=profile-{{.Created}}">打开新配置</a>
+  <p role="status">{{tr "已创建命名配置"}} <strong>{{.Created}}</strong>。</p>
+  <a href="/?source=profile-{{.Created}}">{{tr "打开新配置"}}</a>
   {{else}}
-  <section aria-label="导入私有包">
+  <section aria-label="{{tr "导入私有包"}}">
     <form method="post" action="/profiles/import" autocomplete="off">
-      <label>新配置名称 <input type="text" name="name" value="{{.Name}}" maxlength="48" pattern="[a-z0-9][a-z0-9\-]{0,47}" required></label>
-      <label>本机私有 JSON 导出包的绝对路径 <input type="text" name="source" value="{{.Source}}" spellcheck="false" required></label>
-      <label>本机迁移调整文件的绝对路径（可选）
+      <label>{{tr "新配置名称"}} <input type="text" name="name" value="{{.Name}}" maxlength="48" pattern="[a-z0-9][a-z0-9\-]{0,47}" required></label>
+      <label>{{tr "本机私有 JSON 导出包的绝对路径"}} <input type="text" name="source" value="{{.Source}}" spellcheck="false" required></label>
+      <label>{{tr "本机迁移调整文件的绝对路径（可选）"}}
         <input type="text" name="patch" value="{{.Patch}}" spellcheck="false" aria-describedby="patch-format">
       </label>
-      <p id="patch-format">使用 <code>config patch</code> 的 JSON 数组格式显式调整 T3 目标、MCP 配置或本机文件引用。</p>
-      <button name="action" value="preview">预览导入</button>
+      <p id="patch-format">{{tr "使用"}} <code>config patch</code> {{tr "的 JSON 数组格式显式调整 T3 目标、MCP 配置或本机文件引用。"}}</p>
+      <button name="action" value="preview">{{tr "预览导入"}}</button>
     </form>
   </section>
   {{end}}{{end}}

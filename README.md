@@ -15,9 +15,9 @@ Inspired by [lark-channel-bridge](https://github.com/zarazhangrui/lark-coding-ag
 
 ## Screenshots
 
-[![Web workspace showing example routes](docs/screenshots/web-workspace.png)](docs/screenshots/web-workspace.png)
+<a href="docs/screenshots/macos-workspace.png"><img src="docs/screenshots/macos-workspace.png" alt="Compact macOS workspace showing a demo account" width="500"></a>
 
-[Web workspace](docs/screenshots/web-workspace.png) · [macOS desktop workspace](docs/screenshots/macos-workspace.png) · [Terminal workspace](docs/screenshots/terminal-workspace.png) · [Feishu `/help`](docs/screenshots/feishu-help.png)
+[Web workspace](docs/screenshots/web-workspace.png) · [Terminal workspace](docs/screenshots/terminal-workspace.png) · [Feishu `/help`](docs/screenshots/feishu-help.png)
 
 The configuration workspaces show a demo profile.
 
@@ -27,7 +27,21 @@ HomeOps is a separate operations system for self-hosted infrastructure. It runs 
 
 ## Quick start
 
+### Install with an AI agent
+
+Copy this prompt into your agent.
+
+```text
+Install T3 Bridge on this machine using https://github.com/HessianZ/t3-bridge#quick-start, pick a ZIP for my OS and architecture or build from source, verify the binary with --version, and guide me through Feishu or Lark binding and T3 MCP authorization.
+```
+
+### Install manually
+
+Download a ZIP for your OS and architecture from [Releases](https://github.com/HessianZ/t3-bridge/releases/latest). Extract the entire package, then run `bin/t3-bridge run` (`.\bin\t3-bridge.exe run` on Windows) from the extracted directory.
+
 You need a reachable T3 MCP service and a Feishu or Lark app with the required permissions. Use a dedicated app for your first end-to-end test. Builds from source require Go 1.25 or newer. [Build release packages](docs/RUNBOOK.md#build-release-packages)
+
+To build and start from a source checkout, run the following commands.
 
 ```sh
 go build -o bin/t3-bridge ./cmd/t3-bridge
@@ -35,6 +49,8 @@ bin/t3-bridge run
 ```
 
 The same binary provides the receiver (`run`), terminal workspace (`config tui`), browser workspace (`config web`), and the native workspace (`config gui`) on desktop builds.
+
+The workspace follows your system language on desktop and in the terminal, and your browser's language preference on the Web. Choose **System**, **English**, or **简体中文** in the workspace header, or press **F3** from the terminal workspace's main screen. The choice is saved locally.
 
 On the first interactive run, the terminal workspace opens if the selected configuration file is missing. Follow the prompts to bind the app, configure access, select a T3 route, and review and save the changes. When a managed receiver uses a different configuration file, pass the same `-config` path to the workspace. [Configuration guide](docs/CONFIGURATION.md)
 

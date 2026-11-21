@@ -253,38 +253,38 @@ func (m *configTUI) workspaceImportView() (title, body, shortcuts, actions strin
 	const writeNote = "写入前先停止目标接收端。源文件和配置原样保留。"
 	switch m.screen {
 	case tuiWorkspaceImportPath:
-		title = "旧 workspaces.json 绝对路径" + app
+		title = m.language.text("旧 workspaces.json 绝对路径") + app
 		body = ansi.Truncate(m.input.View(), m.width, "")
-		shortcuts = "F3 查看旧别名 · Enter / Tab 编辑 JSON · Esc 取消 · F2 清空"
-		actions = "留空时，预览按目标 App 和租户匹配旧单账号配置或唯一 V2 profile。"
+		shortcuts = m.language.text("F3 查看旧别名 · Enter / Tab 编辑 JSON · Esc 取消 · F2 清空")
+		actions = m.language.text("留空时，预览按目标 App 和租户匹配旧单账号配置或唯一 V2 profile。")
 	case tuiWorkspaceImportMapping:
-		title = "工作区映射 JSON" + app
+		title = m.language.text("工作区映射 JSON") + app
 		body = m.editor.View()
-		shortcuts = "F3 查看旧别名 · Ctrl+S 预览 · Esc 返回路径 · F2 清空"
-		actions = "T3 环境内唯一匹配旧目录时可省略 projectId。见 docs/CONFIGURATION.md"
+		shortcuts = m.language.text("F3 查看旧别名 · Ctrl+S 预览 · Esc 返回路径 · F2 清空")
+		actions = m.language.text("T3 环境内唯一匹配旧目录时可省略 projectId。见 docs/CONFIGURATION.md")
 	case tuiWorkspaceImportAliases:
-		title = "选择旧工作区别名" + app
+		title = m.language.text("选择旧工作区别名") + app
 		body = m.workspaceImportAliasesView()
-		shortcuts = "↑↓ 滚动 · Enter 选中 · Esc 返回"
-		actions = fmt.Sprintf("%d/%d · 无效 %d 个 · %s", f.alias+1, len(f.inspection.Aliases), f.inspection.Invalid, f.inspection.LegacyPath)
+		shortcuts = m.language.text("↑↓ 滚动 · Enter 选中 · Esc 返回")
+		actions = fmt.Sprintf(m.language.text("%d/%d · 无效 %d 个 · %s"), f.alias+1, len(f.inspection.Aliases), f.inspection.Invalid, f.inspection.LegacyPath)
 	case tuiWorkspaceImportEntry:
 		label := configTUIWorkspaceImportLabels[f.field]
 		alias := f.inspection.Aliases[f.alias]
 		if f.field == 4 && alias.TopicRequired {
-			label = "目标话题 ID（必填）"
+			label = m.language.text("目标话题 ID（必填）")
 		}
-		title = fmt.Sprintf("添加映射 · %d/%d · %s", f.field+1, len(configTUIWorkspaceImportLabels), label)
+		title = fmt.Sprintf(m.language.text("添加映射 · %d/%d · %s"), f.field+1, len(configTUIWorkspaceImportLabels), label)
 		body = ansi.Truncate(m.input.View(), m.width, "")
-		shortcuts = "Ctrl+S 加入草稿 · Esc 返回 · ↑↓ / Tab / Enter 换字段 · F2 清空"
-		actions = "别名 " + alias.Name + " · 可用路由 " + strings.Join(f.inspection.Routes, "、")
+		shortcuts = m.language.text("Ctrl+S 加入草稿 · Esc 返回 · ↑↓ / Tab / Enter 换字段 · F2 清空")
+		actions = m.language.text("别名 ") + alias.Name + m.language.text(" · 可用路由 ") + strings.Join(f.inspection.Routes, "、")
 	case tuiWorkspaceImportReview:
-		title = "工作区迁移预览" + app
+		title = m.language.text("工作区迁移预览") + app
 		body = m.review.View()
-		shortcuts = "s 写入目标状态 · ↑↓←→ 滚动 · Esc 返回映射"
+		shortcuts = m.language.text("s 写入目标状态 · ↑↓←→ 滚动 · Esc 返回映射")
 		actions = writeNote
 		if m.workspaceImport.review == "" {
-			title = "已写入目标状态" + app
-			shortcuts = "←→ 滚动 · Esc 返回配置"
+			title = m.language.text("已写入目标状态") + app
+			shortcuts = m.language.text("←→ 滚动 · Esc 返回配置")
 			actions = ""
 		}
 	}
@@ -303,16 +303,16 @@ func (m *configTUI) workspaceImportAliasesView() string {
 			marker = "› "
 		}
 		if aliases[i].TopicRequired {
-			marker += "[话题] "
+			marker += m.language.text("[话题] ")
 		}
 		lines = append(lines, marker+aliases[i].Name+" · "+aliases[i].Path)
 	}
 	selected := aliases[f.alias]
 	if m.bodyHeight() > 1 {
-		lines = append(lines, "源键 · "+strings.ReplaceAll(selected.SourceKey, "\x1f", " / "))
+		lines = append(lines, m.language.text("源键 · ")+strings.ReplaceAll(selected.SourceKey, "\x1f", " / "))
 	}
 	if m.bodyHeight() > 2 {
-		lines = append(lines, "目录 · "+selected.Path)
+		lines = append(lines, m.language.text("目录 · ")+selected.Path)
 	}
 	for i, line := range lines {
 		lines[i] = ansi.Truncate(configTUIPlain(strings.ReplaceAll(line, "\n", " ")), m.width, "…")

@@ -3,7 +3,6 @@ package main
 import (
 	"context"
 	_ "embed"
-	"html/template"
 	"net/http"
 	"net/url"
 	"slices"
@@ -59,7 +58,7 @@ func runtimeSettingsFields(settings bridge.RunSettingsView) []runtimeSettingFiel
 }
 
 func configRuntimeSettingsHandler(list func() ([]receiverProcess, error), apply func(context.Context, string, string, string, bridge.RunSettingsPatch) (bridge.RunSettingsView, error)) http.HandlerFunc {
-	page := template.Must(newWorkspacePage("runtime settings").Parse(configRuntimeSettingsHTML))
+	page := newWorkspacePage("runtime settings").Parse(configRuntimeSettingsHTML)
 	return func(w http.ResponseWriter, r *http.Request) {
 		if !runtimeRequestOriginAllowed(r) {
 			http.Error(w, "invalid origin", http.StatusForbidden)
@@ -140,7 +139,7 @@ func configRuntimeSettingsHandler(list func() ([]receiverProcess, error), apply 
 		}
 		w.Header().Set("Content-Type", "text/html; charset=utf-8")
 		w.WriteHeader(status)
-		_ = page.Execute(w, view)
+		_ = page.Execute(w, r, view)
 	}
 }
 

@@ -99,9 +99,9 @@ func toolIdentitySelectionText(identity workspaceToolIdentity) string {
 }
 
 func (m *configTUI) toolIdentityView() (title, body, shortcuts, actions string) {
-	actions = "使用已保存的配置执行飞书只读检查"
+	actions = m.language.text("使用已保存的配置执行飞书只读检查")
 	if m.screen == tuiToolIdentityLoading {
-		return "正在核验飞书工具身份…", toolIdentitySelectionText(m.toolIdentity.selection), "Esc 取消", actions
+		return m.language.text("正在核验飞书工具身份…"), toolIdentitySelectionText(m.toolIdentity.selection), m.language.text("Esc 取消"), actions
 	}
-	return "飞书工具身份核验结果", m.review.View(), "↑↓←→ 滚动 · Esc 返回路由", actions
+	return m.language.text("飞书工具身份核验结果"), m.review.View(), m.language.text("↑↓←→ 滚动 · Esc 返回路由"), actions
 }

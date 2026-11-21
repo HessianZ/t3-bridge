@@ -35,9 +35,9 @@ func configLegacySessionHandlerWithActions(sources func() ([]webSource, error),
 	check func(context.Context, webSource, legacySessionRequest) (bridge.LegacySessionImportResult, string, []string, error),
 	prepareRoute func(context.Context, webSource, legacySessionRequest) ([]byte, error),
 ) http.HandlerFunc {
-	page := template.Must(newWorkspacePage("legacy session import").Funcs(template.FuncMap{
+	page := newWorkspacePage("legacy session import").Funcs(template.FuncMap{
 		"updatedAt": func(ms int64) string { return time.UnixMilli(ms).UTC().Format(time.DateTime + " UTC") },
-	}).Parse(configLegacySessionHTML))
+	}).Parse(configLegacySessionHTML)
 	return func(w http.ResponseWriter, r *http.Request) {
 		if !runtimeRequestOriginAllowed(r) {
 			http.Error(w, "invalid origin", http.StatusForbidden)
@@ -175,6 +175,6 @@ func configLegacySessionHandlerWithActions(sources func() ([]webSource, error),
 		}
 		w.Header().Set("Content-Type", "text/html; charset=utf-8")
 		w.WriteHeader(status)
-		_ = page.Execute(w, view)
+		_ = page.Execute(w, r, view)
 	}
 }

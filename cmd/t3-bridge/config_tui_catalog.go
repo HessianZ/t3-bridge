@@ -242,57 +242,57 @@ func (options *configTUICatalogOptions) changeChoice(key string) {
 func (m *configTUI) catalogView() (title, body, shortcuts, actions string) {
 	switch m.screen {
 	case tuiCatalogQuery:
-		return "查询 T3 项目和模型", m.input.View(), "Enter 查询 · Esc 返回", "可按模型名称搜索。留空列出常用模型。"
+		return m.language.text("查询 T3 项目和模型"), m.input.View(), m.language.text("Enter 查询 · Esc 返回"), m.language.text("可按模型名称搜索。留空列出常用模型。")
 	case tuiCatalogLoading:
-		return "查询 T3 项目和模型", "正在读取 T3…", "Esc 取消", ""
+		return m.language.text("查询 T3 项目和模型"), m.language.text("正在读取 T3…"), m.language.text("Esc 取消"), ""
 	}
 	var labels []string
 	row, height := m.catalog.row, m.bodyHeight()
-	choices := "↑↓ 选择"
+	choices := m.language.text("↑↓ 选择")
 	switch options := m.catalog.options; {
 	case options != nil:
-		title = "编辑模型选项"
+		title = m.language.text("编辑模型选项")
 		row = options.row
 		for _, field := range options.fields {
 			value, exists := options.values[field.id]
-			label := "默认"
+			label := m.language.text("默认")
 			if exists {
 				encoded, _ := json.Marshal(value)
 				label = string(encoded)
 				if field.choiceIndex(options.values) == len(field.choices) {
-					label = "保留现值（目录未提供） " + label
+					label = m.language.text("保留现值（目录未提供） ") + label
 				}
 			}
 			labels = append(labels, field.id+" = "+label)
 		}
-		choices = "↑↓ 选择选项 · ←→ 切换值"
-		actions = "Enter 应用到草稿 · Esc 返回模型"
+		choices = m.language.text("↑↓ 选择选项 · ←→ 切换值")
+		actions = m.language.text("Enter 应用到草稿 · Esc 返回模型")
 	case m.catalog.choosingModel:
-		title = "选择模型"
+		title = m.language.text("选择模型")
 		for _, item := range m.catalog.models {
 			label := cmp.Or(item.model.Label, item.model.ID)
 			provider := cmp.Or(item.provider.Name, item.provider.ID)
 			labels = append(labels, label+" · "+provider+" · "+item.provider.Driver)
 		}
-		actions = "Enter 应用到草稿 · Esc 返回项目"
+		actions = m.language.text("Enter 应用到草稿 · Esc 返回项目")
 		if len(m.catalog.models[row].model.Options) > 0 {
-			actions = "Enter 编辑选项 · Esc 返回项目"
+			actions = m.language.text("Enter 编辑选项 · Esc 返回项目")
 		}
 	default:
-		title = "选择项目"
+		title = m.language.text("选择项目")
 		for _, project := range m.catalog.result.Projects {
 			labels = append(labels, cmp.Or(project.Title, project.ID)+" · "+project.Root)
 		}
-		actions = "Enter 选择模型 · Esc 返回路由"
+		actions = m.language.text("Enter 选择模型 · Esc 返回路由")
 	}
 	var access string
 	switch m.catalog.result.OperateAccess {
 	case "granted":
-		access = "本机 OAuth 已授予派发权限"
+		access = m.language.text("本机 OAuth 已授予派发权限")
 	case "missing":
 		access = catalogOperateAccessWarning
 	case "unknown":
-		access = "本机 OAuth 派发权限未知（旧凭据未记录权限）"
+		access = m.language.text("本机 OAuth 派发权限未知（旧凭据未记录权限）")
 	}
 	if access != "" {
 		height = max(1, height-1)

@@ -4,7 +4,6 @@ import (
 	"crypto/rand"
 	_ "embed"
 	"errors"
-	"html/template"
 	"net/http"
 	"net/url"
 	"path/filepath"
@@ -31,7 +30,7 @@ type profileBundleWebPage struct {
 }
 
 func profileBundleImportHandler(profiles profileRegistry) http.HandlerFunc {
-	page := template.Must(newWorkspacePage("profile bundle import").Parse(profileBundleImportHTML))
+	page := newWorkspacePage("profile bundle import").Parse(profileBundleImportHTML)
 	var mu sync.Mutex
 	var pending *profileBundleWebReview
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -102,7 +101,7 @@ func profileBundleImportHandler(profiles profileRegistry) http.HandlerFunc {
 		}
 		w.Header().Set("Content-Type", "text/html; charset=utf-8")
 		w.WriteHeader(status)
-		_ = page.Execute(w, view)
+		_ = page.Execute(w, r, view)
 	}
 }
 

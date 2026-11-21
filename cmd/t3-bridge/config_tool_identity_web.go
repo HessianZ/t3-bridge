@@ -4,7 +4,6 @@ import (
 	"context"
 	_ "embed"
 	"errors"
-	"html/template"
 	"net/http"
 	"net/url"
 	"strconv"
@@ -25,7 +24,7 @@ type configToolIdentityPage struct {
 func configToolIdentityHandler(sources func() ([]webSource, error),
 	check func(context.Context, webSource, string, string) (workspaceToolIdentity, error),
 ) http.HandlerFunc {
-	page := template.Must(newWorkspacePage("tool identity").Parse(configToolIdentityHTML))
+	page := newWorkspacePage("tool identity").Parse(configToolIdentityHTML)
 	return func(w http.ResponseWriter, r *http.Request) {
 		post := r.Method == http.MethodPost
 		if !post && r.Method != http.MethodGet {
@@ -117,6 +116,6 @@ func configToolIdentityHandler(sources func() ([]webSource, error),
 		}
 		w.Header().Set("Content-Type", "text/html; charset=utf-8")
 		w.WriteHeader(status)
-		_ = page.Execute(w, view)
+		_ = page.Execute(w, r, view)
 	}
 }

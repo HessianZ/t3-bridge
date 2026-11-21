@@ -2,7 +2,6 @@ package main
 
 import (
 	_ "embed"
-	"html/template"
 	"net/http"
 	"net/url"
 	"slices"
@@ -71,7 +70,7 @@ func parseServiceLogPageQuery(raw string) (serviceLogPageQuery, bool) {
 }
 
 func configRuntimeLogsHandler(readLogs func(string, bool) (string, error)) http.HandlerFunc {
-	page := template.Must(newWorkspacePage("service logs").Parse(configRuntimeLogsHTML))
+	page := newWorkspacePage("service logs").Parse(configRuntimeLogsHTML)
 	return func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Cross-Origin-Resource-Policy", "same-origin")
 		if !runtimeRequestOriginAllowed(r) {
@@ -109,6 +108,6 @@ func configRuntimeLogsHandler(readLogs func(string, bool) (string, error)) http.
 		}
 		w.Header().Set("Content-Type", "text/html; charset=utf-8")
 		w.WriteHeader(status)
-		_ = page.Execute(w, view)
+		_ = page.Execute(w, r, view)
 	}
 }

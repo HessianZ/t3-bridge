@@ -37,10 +37,10 @@ type runtimeMeetingReviews struct {
 }
 
 func configRuntimeMeetingsHandler(list func() ([]receiverProcess, error), operate liveMeetingOperation) http.HandlerFunc {
-	page := template.Must(newWorkspacePage("runtime meetings").Funcs(template.FuncMap{
+	page := newWorkspacePage("runtime meetings").Funcs(template.FuncMap{
 		"phaseText":  meetingPhaseText,
 		"originText": meetingOriginText,
-	}).Parse(configRuntimeMeetingsHTML))
+	}).Parse(configRuntimeMeetingsHTML)
 	var reviews runtimeMeetingReviews
 	return func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Cache-Control", "no-store")
@@ -146,7 +146,7 @@ func configRuntimeMeetingsHandler(list func() ([]receiverProcess, error), operat
 
 		w.Header().Set("Content-Type", "text/html; charset=utf-8")
 		w.WriteHeader(status)
-		_ = page.Execute(w, view)
+		_ = page.Execute(w, r, view)
 	}
 }
 

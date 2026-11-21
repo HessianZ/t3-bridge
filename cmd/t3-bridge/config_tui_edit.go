@@ -26,6 +26,13 @@ type configTUIField struct {
 	routeID string
 }
 
+func (field configTUIField) labelIn(lang workspaceLanguage) string {
+	if group, key, ok := strings.Cut(field.label, " · "); ok {
+		return lang.text(group) + " · " + key
+	}
+	return lang.text(field.label)
+}
+
 type configTUIEdit struct {
 	Path   []string `json:"path"`
 	Value  any      `json:"value,omitempty"`
@@ -101,11 +108,11 @@ func (m *configTUI) leaveRoute() {
 }
 
 func (m *configTUI) accountTitle() string {
-	label := "主账号"
+	label := m.language.text("主账号")
 	if m.account != 0 {
-		label = fmt.Sprintf("附加账号 %d/%d", m.account, len(m.accounts)-1)
+		label = fmt.Sprintf(m.language.text("附加账号 %d/%d"), m.account, len(m.accounts)-1)
 	} else if len(m.accounts) > 1 {
-		label = fmt.Sprintf("主账号（另有 %d 个附加账号）", len(m.accounts)-1)
+		label = fmt.Sprintf(m.language.text("主账号（另有 %d 个附加账号）"), len(m.accounts)-1)
 	}
 	if id := m.accounts[m.account]["appId"]; len(id) != 0 {
 		label += " · " + string(id)
@@ -123,9 +130,9 @@ func (m *configTUI) fieldList() string {
 			marker = "› "
 		}
 		field := m.rows[i]
-		line := marker + field.label
+		line := marker + field.labelIn(m.language)
 		if len(field.path) != 0 {
-			value := "（未设置）"
+			value := m.language.text("（未设置）")
 			if field.value != "" {
 				value = strings.ReplaceAll(field.value, "\n", " ")
 			}

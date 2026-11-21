@@ -97,12 +97,12 @@ func TestConfigDraftProjectRegistrationConfirmation(t *testing.T) {
 				}, func(string, bridge.Config, string) (string, error) { return managedDirectory, nil })
 			handler := http.HandlerFunc(h.serve)
 			start := httptest.NewRecorder()
-			h.start(start, source, source.Revision, draft, config, "cli_draft", "work")
+			h.start(start, httptest.NewRequest(http.MethodPost, "/", nil), source, source.Revision, draft, config, "cli_draft", "work")
 			selectionTicket := draftProjectInput(t, start, "ticket")
 			confirm := url.Values{"action": {"confirm"}, "ticket": {selectionTicket}, "confirm": {"register"}}
 			assertWebPage(t, serveDraftProject(handler, draftProjectURL, origin, confirm), http.StatusConflict)
 			start = httptest.NewRecorder()
-			h.start(start, source, source.Revision, draft, config, "cli_draft", "work")
+			h.start(start, httptest.NewRequest(http.MethodPost, "/", nil), source, source.Revision, draft, config, "cli_draft", "work")
 			preview := url.Values{"action": {"preview"}, "ticket": {draftProjectInput(t, start, "ticket")}, "mode": {mode}, "directory": {directory}}
 			if mode == "managed" {
 				preview.Set("directory", "")
@@ -163,7 +163,7 @@ func TestConfigDraftProjectRejectsStaleConfirmation(t *testing.T) {
 				}, func(string, bridge.Config, string) (string, error) { return managedDirectory, nil })
 			handler := http.HandlerFunc(h.serve)
 			start := httptest.NewRecorder()
-			h.start(start, source, source.Revision, draft, config, "cli_draft", "work")
+			h.start(start, httptest.NewRequest(http.MethodPost, "/", nil), source, source.Revision, draft, config, "cli_draft", "work")
 			preview := url.Values{"action": {"preview"}, "ticket": {draftProjectInput(t, start, "ticket")}, "mode": {"managed"}, "directory": {""}}
 			page := serveDraftProject(handler, draftProjectURL, origin, preview)
 			assertWebPage(t, page, http.StatusOK)

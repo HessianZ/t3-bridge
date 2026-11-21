@@ -120,13 +120,13 @@ func messageReceiptText(r bridge.MessageReceipt) string {
 }
 
 func (m *configTUI) messageReceiptView() (title, body, shortcuts string) {
-	title = "消息回执 · " + configTUIPlain(strings.ReplaceAll(m.messageReceipt.appID, "\n", " "))
+	title = m.language.text("消息回执 · ") + configTUIPlain(strings.ReplaceAll(m.messageReceipt.appID, "\n", " "))
 	switch m.screen {
 	case tuiMessageReceiptInput:
-		return title, "入站消息 ID（om_…）\n" + m.input.View(), "Enter 查询已保存配置 · Esc 返回"
+		return title, m.language.text("入站消息 ID（om_…）\n") + m.input.View(), m.language.text("Enter 查询已保存配置 · Esc 返回")
 	case tuiMessageReceiptLoading:
-		return title, "正在读取本地消息回执…", "Esc 返回"
+		return title, m.language.text("正在读取本地消息回执…"), m.language.text("Esc 返回")
 	default:
-		return title, m.review.View(), "↑↓←→ 滚动 · Esc 返回"
+		return title, m.review.View(), m.language.text("↑↓←→ 滚动 · Esc 返回")
 	}
 }

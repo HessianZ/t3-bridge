@@ -141,9 +141,9 @@ func (m *configTUI) applyFeishuGroups() {
 }
 
 func (m *configTUI) feishuGroupsView() (title, body, shortcuts, actions string) {
-	title = m.accountTitle() + " / 机器人所在群"
+	title = m.accountTitle() + m.language.text(" / 机器人所在群")
 	if m.screen == tuiGroupsLoading {
-		return title, "正在读取机器人所在群…", "Esc 取消", ""
+		return title, m.language.text("正在读取机器人所在群…"), m.language.text("Esc 取消"), ""
 	}
 	picker := &m.groups
 	groups := picker.filtered()
@@ -151,7 +151,7 @@ func (m *configTUI) feishuGroupsView() (title, body, shortcuts, actions string) 
 		title += " / " + configTUIPlain(picker.filter)
 	}
 	if len(groups) == 0 {
-		return title, "没有匹配的群。", "/ 重新搜索", "Enter 确认添加已选群 · Esc 取消"
+		return title, m.language.text("没有匹配的群。"), m.language.text("/ 重新搜索"), m.language.text("Enter 确认添加已选群 · Esc 取消")
 	}
 	first := max(0, picker.row-m.bodyHeight()+1)
 	var lines []string
@@ -162,7 +162,7 @@ func (m *configTUI) feishuGroupsView() (title, body, shortcuts, actions string) 
 			marker = "› "
 		}
 		if slices.Contains(picker.chats, group.ID) {
-			checkbox = "[已在草稿] "
+			checkbox = m.language.text("[已在草稿] ")
 		} else if picker.selected[group.ID] {
 			checkbox = "[x] "
 		}
@@ -172,6 +172,6 @@ func (m *configTUI) feishuGroupsView() (title, body, shortcuts, actions string) 
 		}
 		lines = append(lines, ansi.Truncate(configTUIPlain(marker+checkbox+label), m.width, "…"))
 	}
-	shortcuts = fmt.Sprintf("↑↓ 移动 · / 搜索 · 空格 勾选 · 已选 %d · %d/%d", len(picker.selected), picker.row+1, len(groups))
-	return title, strings.Join(lines, "\n"), shortcuts, "Enter 确认添加到草稿 · Esc 取消"
+	shortcuts = fmt.Sprintf(m.language.text("↑↓ 移动 · / 搜索 · 空格 勾选 · 已选 %d · %d/%d"), len(picker.selected), picker.row+1, len(groups))
+	return title, strings.Join(lines, "\n"), shortcuts, m.language.text("Enter 确认添加到草稿 · Esc 取消")
 }

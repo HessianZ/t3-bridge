@@ -3,6 +3,17 @@
 #import <AppKit/AppKit.h>
 #import <WebKit/WebKit.h>
 
+int workspace_uses_chinese(void) {
+    @autoreleasepool {
+        for (NSString *preferred in [NSLocale preferredLanguages]) {
+            NSString *language = [[preferred componentsSeparatedByString:@"-"] firstObject];
+            if ([language isEqualToString:@"zh"]) return 1;
+            if ([language isEqualToString:@"en"]) return 0;
+        }
+        return 0;
+    }
+}
+
 static void stop_application(void) {
     [NSApp stop:nil];
     NSEvent *wake = [NSEvent otherEventWithType:NSEventTypeApplicationDefined
@@ -172,15 +183,18 @@ void open_config_window(const char *address, int menu_bar) {
         [menu addItem:edit];
         app.mainMenu = menu;
 
-        NSSize minimumSize = NSMakeSize(620, 480);
+        NSSize minimumSize = NSMakeSize(500, 410);
         NSWindowStyleMask style = NSWindowStyleMaskTitled | NSWindowStyleMaskClosable |
-            NSWindowStyleMaskMiniaturizable | NSWindowStyleMaskResizable;
-        NSRect frame = NSMakeRect(0, 0, minimumSize.width, minimumSize.height);
-        NSRect content = [NSWindow contentRectForFrameRect:frame styleMask:style];
+            NSWindowStyleMaskMiniaturizable | NSWindowStyleMaskResizable | NSWindowStyleMaskFullSizeContentView;
+        NSRect content = NSMakeRect(0, 0, minimumSize.width, minimumSize.height);
         NSWindow *window = [[NSWindow alloc] initWithContentRect:content styleMask:style
             backing:NSBackingStoreBuffered defer:NO];
         window.releasedWhenClosed = NO;
-        window.title = @"T3 Bridge 配置工作台";
+        window.title = @"T3 Bridge";
+        window.titleVisibility = NSWindowTitleHidden;
+        window.titlebarAppearsTransparent = YES;
+        window.titlebarSeparatorStyle = NSTitlebarSeparatorStyleNone;
+        window.movableByWindowBackground = YES;
         window.minSize = minimumSize;
         window.delegate = delegate;
         delegate.window = window;
@@ -208,6 +222,9 @@ void open_config_window(const char *address, int menu_bar) {
 
         WKWebViewConfiguration *config = [[[WKWebViewConfiguration alloc] init] autorelease];
         config.websiteDataStore = [WKWebsiteDataStore nonPersistentDataStore];
+        [config.userContentController addUserScript:[[[WKUserScript alloc]
+            initWithSource:@"document.documentElement.classList.add('mac-window')"
+            injectionTime:WKUserScriptInjectionTimeAtDocumentEnd forMainFrameOnly:YES] autorelease]];
         WKWebView *view = [[WKWebView alloc] initWithFrame:window.contentView.bounds configuration:config];
         view.navigationDelegate = delegate;
         view.UIDelegate = delegate;

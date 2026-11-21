@@ -1,88 +1,89 @@
 <!doctype html>
-<html lang="zh-CN">
+<html lang="{{uiLanguage}}">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>在线群授权 · T3 Bridge</title>
+  <title>{{tr "在线群授权 · T3 Bridge"}}</title>
   <link rel="stylesheet" href="/workspace.css">
   <style>
     .batch-select { display: flex; align-items: center; margin-bottom: 6px; }
   </style>
+  <script defer src="/workspace-language.js"></script>
   <script defer src="/runtime/groups.js"></script>
 </head>
 <body>
 <div class="shell">
 {{template "workspace-header" (workspaceNav "runtime" "")}}
 <main class="container tool-page inline-forms">
-  <nav aria-label="在线管理导航"><a href="/">配置工作台</a><a href="/runtime">运行状态</a>{{if .Selected}}<a href="{{.Selected.URL .ChatID}}">重新读取权限</a>{{end}}{{if .ChatID}}<a href="{{if .Selected}}{{.Selected.URL ""}}{{else}}/runtime/groups{{end}}">查看完整在线群授权</a>{{end}}</nav>
-  <h1>在线群授权</h1>
+  <nav aria-label="{{tr "在线管理导航"}}"><a href="/">{{tr "配置工作台"}}</a><a href="/runtime">{{tr "运行状态"}}</a>{{if .Selected}}<a href="{{.Selected.URL .ChatID}}">{{tr "重新读取权限"}}</a>{{end}}{{if .ChatID}}<a href="{{if .Selected}}{{.Selected.URL ""}}{{else}}/runtime/groups{{end}}">{{tr "查看完整在线群授权"}}</a>{{end}}</nav>
+  <h1>{{tr "在线群授权"}}</h1>
   {{if .Notice}}<p role="status">{{.Notice}}</p>{{end}}
   <section>
-    <h2>接收账号</h2>
-    {{range .Targets}}<p><a href="{{.URL $.ChatID}}">{{.Tenant}} / <code>{{.AppID}}</code> · PID {{.PID}} · <code>{{.ProcessID}}</code></a></p>{{else}}<p>{{if $.ChatID}}暂无匹配的在线接收账号。{{else}}暂无支持在线群授权的接收账号。{{end}}</p>{{end}}
+    <h2>{{tr "接收账号"}}</h2>
+    {{range .Targets}}<p><a href="{{.URL $.ChatID}}">{{.Tenant}} / <code>{{.AppID}}</code> · PID {{.PID}} · <code>{{.ProcessID}}</code></a></p>{{else}}<p>{{if $.ChatID}}{{tr "暂无匹配的在线接收账号。"}}{{else}}{{tr "暂无支持在线群授权的接收账号。"}}{{end}}</p>{{end}}
   </section>
   {{if .BatchPreview}}
   <section>
-    <h2>批量授权预览</h2>
-    <p>将为 {{.Selected.Tenant}} / <code>{{.Selected.AppID}}</code>（PID {{.Selected.PID}} · <code>{{.Selected.ProcessID}}</code>）授权以下群聊。</p>
+    <h2>{{tr "批量授权预览"}}</h2>
+    <p>{{tr "将为"}} {{.Selected.Tenant}} / <code>{{.Selected.AppID}}</code>（PID {{.Selected.PID}} · <code>{{.Selected.ProcessID}}</code>{{tr "）授权以下群聊。"}}</p>
     <ul>{{range .BatchPreview}}<li>{{if .Name}}{{.Name}} · {{end}}<code>{{.ID}}</code></li>{{end}}</ul>
     <form method="post" action="/runtime/groups">
       {{template "group-target" .Selected}}
       <input type="hidden" name="batch" value="apply">
       {{range .BatchPreview}}<input type="hidden" name="groupId" value="{{.ID}}">{{end}}
-      <button type="submit">确认授权 {{len .BatchPreview}} 个群</button>
-      <a href="{{.Selected.URL ""}}">返回群列表</a>
+      <button type="submit">{{tr "确认授权"}} {{len .BatchPreview}} {{tr "个群"}}</button>
+      <a href="{{.Selected.URL ""}}">{{tr "返回群列表"}}</a>
     </form>
   </section>
   {{end}}
   {{if .Access}}
   <section>
     <h2>{{.Selected.Tenant}} / <code>{{.Selected.AppID}}</code></h2>
-    <p class="muted">群规则即时应用到此接收账号。用户和路由权限各自检查。</p>
-    <p>应用默认{{if .Access.DefaultRequiresMention}}需要{{else}}无需{{end}} @ 机器人</p>
-    <p>飞书无 @ 群消息权限 · {{.ScopeStatus}}</p>
+    <p class="muted">{{tr "群规则即时应用到此接收账号。用户和路由权限各自检查。"}}</p>
+    <p>{{tr "应用默认"}}{{if .Access.DefaultRequiresMention}}{{tr "需要"}}{{else}}{{tr "无需"}}{{end}} {{tr "@ 机器人"}}</p>
+    <p>{{tr "飞书无 @ 群消息权限 ·"}} {{.ScopeStatus}}</p>
     {{if .ScopeGuidance}}<p class="muted">{{.ScopeGuidance}}</p>{{end}}
-    <p>线上消息事件订阅 · {{groupMessageEventText .Access.MessageEvent}}（<code>im.message.receive_v1</code>）</p>
-    {{if eq .Access.MessageEvent "missing" "unpublished"}}<p class="muted">请到飞书开发者后台核对事件订阅与应用发布状态。</p>{{end}}
-    <p class="muted">实际投递需要用测试消息单独确认。</p>
+    <p>{{tr "线上消息事件订阅 ·"}} {{groupMessageEventText .Access.MessageEvent}}（<code>im.message.receive_v1</code>）</p>
+    {{if eq .Access.MessageEvent "missing" "unpublished"}}<p class="muted">{{tr "请到飞书开发者后台核对事件订阅与应用发布状态。"}}</p>{{end}}
+    <p class="muted">{{tr "实际投递需要用测试消息单独确认。"}}</p>
     {{if not .ChatID}}
     <form method="post" action="/runtime/groups">
       {{template "group-target" .Selected}}
-      <label>应用默认 @ 规则<select name="mention" required>
-        <option value="">请选择</option><option value="on">需要 @</option><option value="off">无需 @</option><option value="inherit">恢复默认</option>
+      <label>{{tr "应用默认 @ 规则"}}<select name="mention" required>
+        <option value="">{{tr "请选择"}}</option><option value="on">{{tr "需要 @"}}</option><option value="off">{{tr "无需 @"}}</option><option value="inherit">{{tr "恢复默认"}}</option>
       </select></label>
-      <button type="submit">应用默认规则</button>
+      <button type="submit">{{tr "应用默认规则"}}</button>
     </form>
     {{end}}
   </section>
-  <h2>群聊</h2>
-  {{if and (not .ChatID) (not .Access.JoinedAvailable)}}<p class="muted" role="status">暂无法读取机器人所在群，以下显示已知的配置与运行覆盖。</p>{{end}}
-  {{if and (not .ChatID) .Access.Groups}}<label>搜索群名或 ID<input id="runtime-group-filter" type="search"></label>{{end}}
+  <h2>{{tr "群聊"}}</h2>
+  {{if and (not .ChatID) (not .Access.JoinedAvailable)}}<p class="muted" role="status">{{tr "暂无法读取机器人所在群，以下显示已知的配置与运行覆盖。"}}</p>{{end}}
+  {{if and (not .ChatID) .Access.Groups}}<label>{{tr "搜索群名或 ID"}}<input id="runtime-group-filter" type="search"></label>{{end}}
   {{if .BatchLimit}}
   <section>
-    <p>勾选已入群且未授权的群聊，每次最多 {{.BatchLimit}} 个。</p>
+    <p>{{tr "勾选已入群且未授权的群聊，每次最多"}} {{.BatchLimit}} {{tr "个。"}}</p>
     <form id="runtime-group-batch" method="post" action="/runtime/groups">
       {{template "group-target" .Selected}}
       <input type="hidden" name="batch" value="preview">
-      <button type="submit">预览批量授权</button>
+      <button type="submit">{{tr "预览批量授权"}}</button>
     </form>
   </section>
   {{end}}
   {{range .Access.Groups}}
   <article data-runtime-group>
     <h3>{{if .Name}}{{.Name}} · {{end}}<code>{{.ID}}</code></h3>
-    <p>{{if .Allowed}}已授权{{else}}未授权{{end}} {{if eq .AccessOverride "allow" "deny"}}（运行覆盖）{{else}}（配置）{{end}} · {{if .RequiresMention}}需要{{else}}无需{{end}} @ {{if eq .MentionOverride "on" "off"}}（单群覆盖）{{else}}（跟随应用）{{end}}{{if $.Access.JoinedAvailable}} · {{if .Joined}}机器人已入群{{else}}机器人未入群{{end}}{{else if $.ChatID}} · 机器人入群状态未确认{{end}}</p>
-    {{if and $.BatchLimit .Joined (not .Allowed)}}<label class="batch-select"><input type="checkbox" form="runtime-group-batch" name="groupId" value="{{.ID}}" aria-label="选择群 {{.ID}} 进行批量授权">选择此群进行批量授权</label>{{end}}
+    <p>{{if .Allowed}}{{tr "已授权"}}{{else}}{{tr "未授权"}}{{end}} {{if eq .AccessOverride "allow" "deny"}}{{tr "（运行覆盖）"}}{{else}}{{tr "（配置）"}}{{end}} · {{if .RequiresMention}}{{tr "需要"}}{{else}}{{tr "无需"}}{{end}} @ {{if eq .MentionOverride "on" "off"}}{{tr "（单群覆盖）"}}{{else}}{{tr "（跟随应用）"}}{{end}}{{if $.Access.JoinedAvailable}} · {{if .Joined}}{{tr "机器人已入群"}}{{else}}{{tr "机器人未入群"}}{{end}}{{else if $.ChatID}} {{tr "· 机器人入群状态未确认"}}{{end}}</p>
+    {{if and $.BatchLimit .Joined (not .Allowed)}}<label class="batch-select"><input type="checkbox" form="runtime-group-batch" name="groupId" value="{{.ID}}" aria-label="{{trf "选择群 %s 进行批量授权" .ID}}">{{tr "选择此群进行批量授权"}}</label>{{end}}
     <form method="post" action="/runtime/groups">
       {{template "group-target" $.Selected}}
       <input type="hidden" name="chatId" value="{{.ID}}">
       {{if $.ChatID}}<input type="hidden" name="returnToGroup" value="1">{{end}}
-      <label>群授权<select name="access"><option value="">保持当前</option><option value="allow">授权</option><option value="deny">撤销</option><option value="inherit">恢复配置</option></select></label>
-      <label>@ 规则<select name="mention"><option value="">保持当前</option><option value="on">需要 @</option><option value="off">无需 @</option><option value="inherit">跟随应用</option></select></label>
-      <button type="submit">应用群设置</button>
+      <label>{{tr "群授权"}}<select name="access"><option value="">{{tr "保持当前"}}</option><option value="allow">{{tr "授权"}}</option><option value="deny">{{tr "撤销"}}</option><option value="inherit">{{tr "恢复配置"}}</option></select></label>
+      <label>{{tr "@ 规则"}}<select name="mention"><option value="">{{tr "保持当前"}}</option><option value="on">{{tr "需要 @"}}</option><option value="off">{{tr "无需 @"}}</option><option value="inherit">{{tr "跟随应用"}}</option></select></label>
+      <button type="submit">{{tr "应用群设置"}}</button>
     </form>
   </article>
-  {{else}}<p>暂无群聊。</p>{{end}}
+  {{else}}<p>{{tr "暂无群聊。"}}</p>{{end}}
   {{end}}
 </main>
 </div>

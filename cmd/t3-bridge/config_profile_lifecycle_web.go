@@ -4,7 +4,6 @@ import (
 	"crypto/rand"
 	_ "embed"
 	"errors"
-	"html/template"
 	"net/http"
 	"net/url"
 	"os"
@@ -35,7 +34,7 @@ type profileLifecyclePage struct {
 }
 
 func profileLifecycleHandler(profiles profileRegistry) http.HandlerFunc {
-	page := template.Must(newWorkspacePage("profile lifecycle").Parse(profileLifecycleHTML))
+	page := newWorkspacePage("profile lifecycle").Parse(profileLifecycleHTML)
 	var reviews profileLifecycleReviews
 	return func(w http.ResponseWriter, r *http.Request) {
 		if !runtimeRequestOriginAllowed(r) {
@@ -50,7 +49,7 @@ func profileLifecycleHandler(profiles profileRegistry) http.HandlerFunc {
 				return
 			}
 			w.Header().Set("Content-Type", "text/html; charset=utf-8")
-			_ = page.Execute(w, profileLifecyclePage{Name: name})
+			_ = page.Execute(w, r, profileLifecyclePage{Name: name})
 			return
 		}
 
@@ -111,7 +110,7 @@ func profileLifecycleHandler(profiles profileRegistry) http.HandlerFunc {
 		}
 		w.Header().Set("Content-Type", "text/html; charset=utf-8")
 		w.WriteHeader(status)
-		_ = page.Execute(w, view)
+		_ = page.Execute(w, r, view)
 	}
 }
 

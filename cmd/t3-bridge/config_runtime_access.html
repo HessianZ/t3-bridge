@@ -1,82 +1,83 @@
 <!doctype html>
-<html lang="zh-CN">
+<html lang="{{uiLanguage}}">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>在线用户与路由权限 · T3 Bridge</title>
+  <title>{{tr "在线用户与路由权限 · T3 Bridge"}}</title>
   <link rel="stylesheet" href="/workspace.css">
+  <script defer src="/workspace-language.js"></script>
 </head>
 <body>
 <div class="shell">
 {{template "workspace-header" (workspaceNav "runtime" "")}}
 <main class="container tool-page">
-  <nav aria-label="在线权限导航"><a href="/runtime">返回运行状态</a><a href="/runtime/groups">在线群授权</a><a href="/runtime/settings">在线运行设置</a></nav>
-  <h1>在线用户与路由权限</h1>
+  <nav aria-label="{{tr "在线权限导航"}}"><a href="/runtime">{{tr "返回运行状态"}}</a><a href="/runtime/groups">{{tr "在线群授权"}}</a><a href="/runtime/settings">{{tr "在线运行设置"}}</a></nav>
+  <h1>{{tr "在线用户与路由权限"}}</h1>
   {{if .Notice}}<p role="status">{{.Notice}}</p>{{end}}
   {{if .Targets}}
   <section>
-    <h2>选择接收账号</h2>
+    <h2>{{tr "选择接收账号"}}</h2>
     <div class="targets">{{range .Targets}}
       <a href="{{.URL}}"{{if and $.Selected (eq .URL $.Selected.URL)}} aria-current="page"{{end}}>{{.Account.Tenant}} · <code>{{.Account.AppID}}</code> · PID {{.PID}}</a>
     {{end}}</div>
   </section>
-  {{else if not .Notice}}<p>暂无支持在线用户与路由权限的接收进程。</p>{{end}}
+  {{else if not .Notice}}<p>{{tr "暂无支持在线用户与路由权限的接收进程。"}}</p>{{end}}
   {{if .Policy}}
   <section id="edit-access">
-    <h2>修改当前 App 的权限</h2>
+    <h2>{{tr "修改当前 App 的权限"}}</h2>
     <p>{{.Selected.Account.Tenant}} · <code>{{.Selected.Account.AppID}}</code> · PID {{.Selected.PID}} · <code>{{.Selected.Process}}</code></p>
-    {{if .Policy.OwnerID}}<p>应用所有者 <code>{{.Policy.OwnerID}}</code></p>{{else}}<p>应用所有者待解析。撤销用户或管理员权限需先核实所有者。</p>{{end}}
+    {{if .Policy.OwnerID}}<p>{{tr "应用所有者"}} <code>{{.Policy.OwnerID}}</code></p>{{else}}<p>{{tr "应用所有者待解析。撤销用户或管理员权限需先核实所有者。"}}</p>{{end}}
     <form method="post" action="/runtime/access">
       <input type="hidden" name="process" value="{{.Selected.Process}}">
       <input type="hidden" name="tenant" value="{{.Selected.Account.Tenant}}">
       <input type="hidden" name="appId" value="{{.Selected.Account.AppID}}">
       <div class="fields">
-        <label>权限类型
+        <label>{{tr "权限类型"}}
           <select name="kind">
-            <option value="user"{{if eq .Edit.Kind "user"}} selected{{end}}>用户</option>
-            <option value="admin"{{if eq .Edit.Kind "admin"}} selected{{end}}>管理员</option>
-            <option value="route"{{if eq .Edit.Kind "route"}} selected{{end}}>逐路由</option>
+            <option value="user"{{if eq .Edit.Kind "user"}} selected{{end}}>{{tr "用户"}}</option>
+            <option value="admin"{{if eq .Edit.Kind "admin"}} selected{{end}}>{{tr "管理员"}}</option>
+            <option value="route"{{if eq .Edit.Kind "route"}} selected{{end}}>{{tr "逐路由"}}</option>
           </select>
         </label>
-        <label>用户 Open ID<input name="userId" value="{{.Edit.UserID}}" placeholder="ou_…" maxlength="103" required></label>
-        <label>路由（仅逐路由权限需要）
-          <select name="routeId"><option value="">选择路由</option>
+        <label>{{tr "用户 Open ID"}}<input name="userId" value="{{.Edit.UserID}}" placeholder="ou_…" maxlength="103" required></label>
+        <label>{{tr "路由（仅逐路由权限需要）"}}
+          <select name="routeId"><option value="">{{tr "选择路由"}}</option>
             {{$route := .Edit.RouteID}}{{range .Policy.RouteIDs}}<option value="{{.}}"{{if eq . $route}} selected{{end}}>{{.}}</option>{{end}}
           </select>
         </label>
-        <label>操作
+        <label>{{tr "操作"}}
           <select name="mode" required>
-            <option value="" selected disabled>选择操作</option>
-            <option value="allow">允许</option>
-            <option value="deny">撤销</option>
-            <option value="inherit">恢复继承</option>
+            <option value="" selected disabled>{{tr "选择操作"}}</option>
+            <option value="allow">{{tr "允许"}}</option>
+            <option value="deny">{{tr "撤销"}}</option>
+            <option value="inherit">{{tr "恢复继承"}}</option>
           </select>
         </label>
       </div>
-      <p>撤销用户或路由授权会拦截待派发任务。</p>
-      <button type="submit">保存在线权限</button>
+      <p>{{tr "撤销用户或路由授权会拦截待派发任务。"}}</p>
+      <button type="submit">{{tr "保存在线权限"}}</button>
     </form>
   </section>
   <section id="access-rules">
-    <h2>当前权限</h2>
-    <p>此表显示各层的生效值。任务派发还会核对聊天权限、其他授权层与目标可用性。</p>
+    <h2>{{tr "当前权限"}}</h2>
+    <p>{{tr "此表显示各层的生效值。任务派发还会核对聊天权限、其他授权层与目标可用性。"}}</p>
     {{if .Policy.Entries}}
     <div class="table">
-      <table aria-label="当前 App 权限">
-        <thead><tr><th scope="col">权限</th><th scope="col">用户 Open ID</th><th scope="col">启动配置</th><th scope="col">运行覆盖</th><th scope="col">本层生效</th><th scope="col">操作</th></tr></thead>
+      <table aria-label="{{tr "当前 App 权限"}}">
+        <thead><tr><th scope="col">{{tr "权限"}}</th><th scope="col">{{tr "用户 Open ID"}}</th><th scope="col">{{tr "启动配置"}}</th><th scope="col">{{tr "运行覆盖"}}</th><th scope="col">{{tr "本层生效"}}</th><th scope="col">{{tr "操作"}}</th></tr></thead>
         <tbody>{{range .Policy.Entries}}
           <tr>
             <td>{{kindLabel .Kind}}{{if .RouteID}} · <code>{{.RouteID}}</code>{{end}}</td>
             <td><code>{{.UserID}}</code></td>
-            <td>{{if .Configured}}允许{{else}}未授权{{end}}</td>
+            <td>{{if .Configured}}{{tr "允许"}}{{else}}{{tr "未授权"}}{{end}}</td>
             <td>{{modeLabel .Override}}</td>
-            <td>{{if .Effective}}允许{{else}}未授权{{end}}</td>
-            <td><a href="{{editURL $.Selected .}}">编辑</a></td>
+            <td>{{if .Effective}}{{tr "允许"}}{{else}}{{tr "未授权"}}{{end}}</td>
+            <td><a href="{{editURL $.Selected .}}">{{tr "编辑"}}</a></td>
           </tr>
         {{end}}</tbody>
       </table>
     </div>
-    {{else}}<p>当前 App 没有可显示的授权记录。</p>{{end}}
+    {{else}}<p>{{tr "当前 App 没有可显示的授权记录。"}}</p>{{end}}
   </section>
   {{end}}
 </main>

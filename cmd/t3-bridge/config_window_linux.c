@@ -116,9 +116,9 @@ int open_linux_config_window(const char *address, const void *icon, size_t icon_
             gtk_window_set_icon(GTK_WINDOW(workspace_window), pixbuf);
         }
     }
-    gtk_window_set_title(GTK_WINDOW(workspace_window), "T3 Bridge 配置工作台");
-    gtk_window_set_default_size(GTK_WINDOW(workspace_window), 1040, 800);
-    gtk_widget_set_size_request(workspace_window, 620, 480);
+    gtk_window_set_title(GTK_WINDOW(workspace_window), "T3 Bridge");
+    gtk_window_set_default_size(GTK_WINDOW(workspace_window), 500, 410);
+    gtk_widget_set_size_request(workspace_window, 500, 410);
     g_signal_connect(workspace_window, "destroy", G_CALLBACK(window_destroyed), NULL);
 
     WebKitWebContext *context = webkit_web_context_new_ephemeral();

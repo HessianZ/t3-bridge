@@ -3,7 +3,6 @@ package main
 import (
 	"context"
 	_ "embed"
-	"html/template"
 	"net/http"
 	"net/url"
 	"slices"
@@ -28,7 +27,7 @@ func (t runtimeReconnectTarget) URL() string {
 }
 
 func configRuntimeReconnectHandler(list func() ([]receiverProcess, error), reconnect liveReconnectOperation) http.HandlerFunc {
-	page := template.Must(newWorkspacePage("runtime reconnect").Parse(configRuntimeReconnectHTML))
+	page := newWorkspacePage("runtime reconnect").Parse(configRuntimeReconnectHTML)
 	return func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Cache-Control", "no-store")
 		if !runtimeRequestOriginAllowed(r) {
@@ -110,7 +109,7 @@ func configRuntimeReconnectHandler(list func() ([]receiverProcess, error), recon
 
 		w.Header().Set("Content-Type", "text/html; charset=utf-8")
 		w.WriteHeader(status)
-		_ = page.Execute(w, view)
+		_ = page.Execute(w, r, view)
 	}
 }
 

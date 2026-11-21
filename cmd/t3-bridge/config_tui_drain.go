@@ -88,9 +88,9 @@ func drainReportText(report bridge.DrainReport) string {
 }
 
 func (m *configTUI) drainView() (title, body, shortcuts, actions string) {
-	actions = "停止接收端后运行 · 仅反映当前本地状态快照"
+	actions = m.language.text("停止接收端后运行 · 仅反映当前本地状态快照")
 	if m.screen == tuiDrainLoading {
-		return "离线排空检查", "正在检查已保存配置的全部 App…", "Esc 取消", actions
+		return m.language.text("离线排空检查"), m.language.text("正在检查已保存配置的全部 App…"), m.language.text("Esc 取消"), actions
 	}
-	return "离线排空检查结果", m.review.View(), "↑↓←→ 滚动 · Esc 返回", actions
+	return m.language.text("离线排空检查结果"), m.review.View(), m.language.text("↑↓←→ 滚动 · Esc 返回"), actions
 }

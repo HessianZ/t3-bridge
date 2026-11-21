@@ -19,5 +19,5 @@ func runDesktopWorkspace(args []string, open func(context.Context, string) error
 	}
 	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
 	defer stop()
-	return serveConfigWorkspace(ctx, path, provider, open)
+	return serveConfigWorkspace(ctx, path, provider, true, open)
 }

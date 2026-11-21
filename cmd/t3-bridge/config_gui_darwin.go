@@ -7,6 +7,7 @@ package main
 #include <stdlib.h>
 void open_config_window(const char *address, int menu_bar);
 void close_config_window(void);
+int workspace_uses_chinese(void);
 */
 import "C"
 
@@ -16,6 +17,13 @@ import (
 	"runtime"
 	"unsafe"
 )
+
+func platformWorkspaceLanguage() workspaceLanguage {
+	if C.workspace_uses_chinese() != 0 {
+		return workspaceZH
+	}
+	return workspaceEN
+}
 
 func init() {
 	if standaloneConfigApp == "1" || (len(os.Args) > 2 && os.Args[1] == "config" && os.Args[2] == "gui") {

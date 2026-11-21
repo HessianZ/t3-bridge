@@ -96,24 +96,24 @@ func (m *configTUI) receiveAuthorization(result configTUIAuthorizationResult) te
 }
 
 func (m *configTUI) authorizationView() (title, body, shortcuts string) {
-	title = m.accountTitle() + " / T3 授权"
+	title = m.accountTitle() + m.language.text(" / T3 授权")
 	if m.screen == tuiAuthorizeReview {
-		mode := "创建新的凭据文件"
+		mode := m.language.text("创建新的凭据文件")
 		if m.authorization.replace {
-			mode = "替换已有凭据文件"
+			mode = m.language.text("替换已有凭据文件")
 		}
 		body = ansi.Hardwrap(mode+"\n"+configTUIPlain(m.authorization.connection.TokenFile)+
-			"\n派发受监督的任务时，在 T3 选择 Supervised。"+
-			"\n如授权页要求 Sign-in code，请在同一 T3 环境取码。"+
+			m.language.text("\n派发受监督的任务时，在 T3 选择 Supervised。")+
+			m.language.text("\n如授权页要求 Sign-in code，请在同一 T3 环境取码。")+
 			"\nSettings → Sharing & access → Use T3 Code in another app (MCP)", m.width, true)
-		return title, body, "Enter 开始 · r 切换是否替换凭据 · Esc 返回"
+		return title, body, m.language.text("Enter 开始 · r 切换是否替换凭据 · Esc 返回")
 	}
 	if address := m.authorization.address; address != "" {
-		body = ansi.SetHyperlink(address) + "用本机浏览器打开 T3 授权页" + ansi.ResetHyperlink() +
-			"\n" + ansi.Hardwrap("等待最多 5 分钟。码过期或已用时，从同一 T3 环境重取。", m.width, true) +
+		body = ansi.SetHyperlink(address) + m.language.text("用本机浏览器打开 T3 授权页") + ansi.ResetHyperlink() +
+			"\n" + ansi.Hardwrap(m.language.text("等待最多 5 分钟。码过期或已用时，从同一 T3 环境重取。"), m.width, true) +
 			"\n" + ansi.Hardwrap(address, m.width, true)
 	} else {
-		body = "正在准备 T3 授权…"
+		body = m.language.text("正在准备 T3 授权…")
 	}
-	return title, body, "Esc 取消"
+	return title, body, m.language.text("Esc 取消")
 }

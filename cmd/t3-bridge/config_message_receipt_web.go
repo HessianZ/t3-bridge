@@ -23,12 +23,12 @@ type configMessageReceiptPage struct {
 }
 
 func configMessageReceiptHandler(sources func() ([]webSource, error)) http.HandlerFunc {
-	page := template.Must(newWorkspacePage("message receipt").Funcs(template.FuncMap{
+	page := newWorkspacePage("message receipt").Funcs(template.FuncMap{
 		"deliveryText": messageReceiptDeliveryText,
 		"deliveryConfirmed": func(state bridge.ReplyDeliveryState) bool {
 			return state == bridge.ReplyDeliveryConfirmed
 		},
-	}).Parse(configMessageReceiptHTML))
+	}).Parse(configMessageReceiptHTML)
 	return func(w http.ResponseWriter, r *http.Request) {
 		if !runtimeRequestOriginAllowed(r) {
 			http.Error(w, "invalid origin", http.StatusForbidden)
@@ -98,6 +98,6 @@ func configMessageReceiptHandler(sources func() ([]webSource, error)) http.Handl
 		}
 		w.Header().Set("Content-Type", "text/html; charset=utf-8")
 		w.WriteHeader(status)
-		_ = page.Execute(w, view)
+		_ = page.Execute(w, r, view)
 	}
 }

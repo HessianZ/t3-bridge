@@ -211,48 +211,48 @@ func (m *configTUI) liveMeetingAppText() string {
 
 func (m *configTUI) liveMeetingsView() (title, body, shortcuts, actions string) {
 	s := &m.liveMeetings
-	title = "在线会议"
+	title = m.language.text("在线会议")
 	app := m.liveMeetingAppText()
 	wrap := func(value string) string { return ansi.Hardwrap(value, m.width, true) }
 	line := func(value string) string { return ansi.Truncate(value, m.width, "…") }
 	switch m.screen {
 	case tuiLiveMeetingsLoading:
-		return title, wrap(app + "\n正在读取会议状态…"), "Esc 返回", ""
+		return title, wrap(app + m.language.text("\n正在读取会议状态…")), m.language.text("Esc 返回"), ""
 	case tuiLiveMeetingsApplying:
-		return title, wrap(app + "\n正在等待接收进程确认…"), "", ""
+		return title, wrap(app + m.language.text("\n正在等待接收进程确认…")), "", ""
 	case tuiLiveMeetingsJoin:
-		return "输入 9 位会议号", wrap(app) + "\n" + m.input.View(), "Enter 核对 · Esc 返回", ""
+		return m.language.text("输入 9 位会议号"), wrap(app) + "\n" + m.input.View(), m.language.text("Enter 核对 · Esc 返回"), ""
 	case tuiLiveMeetingsConfirm:
-		body = app + "\n会议号 · " + s.confirm.Number + "\n进程 · " + s.process
+		body = app + m.language.text("\n会议号 · ") + s.confirm.Number + m.language.text("\n进程 · ") + s.process
 		switch s.confirm.Action {
 		case "join":
-			title = "确认入会"
-			body += "\n机器人入会后，参会者可见。"
+			title = m.language.text("确认入会")
+			body += m.language.text("\n机器人入会后，参会者可见。")
 		case "leave":
-			title = "确认离会"
-			body += "\n确认后向飞书发送离会请求。"
+			title = m.language.text("确认离会")
+			body += m.language.text("\n确认后向飞书发送离会请求。")
 		case "confirm-left":
-			title = "确认机器人不在会中"
-			body += "\n请先确认机器人不在飞书参会名单和等候室。\n确认后仅关闭本机回执，不调用飞书接口。"
+			title = m.language.text("确认机器人不在会中")
+			body += m.language.text("\n请先确认机器人不在飞书参会名单和等候室。\n确认后仅关闭本机回执，不调用飞书接口。")
 		}
-		return title, wrap(body), "y 确认 · Esc 返回", ""
+		return title, wrap(body), m.language.text("y 确认 · Esc 返回"), ""
 	}
-	shortcuts = "p 查权限 · r 刷新 · Esc 返回"
+	shortcuts = m.language.text("p 查权限 · r 刷新 · Esc 返回")
 	lines := []string{line(app)}
 	if s.process == "" {
-		return title, strings.Join(append(lines, line("会议状态暂不可用。")), "\n"), shortcuts, ""
+		return title, strings.Join(append(lines, line(m.language.text("会议状态暂不可用。"))), "\n"), shortcuts, ""
 	}
 	switch {
 	case !s.view.Available:
-		lines = append(lines, line("飞书会议接口暂不可用。"))
+		lines = append(lines, line(m.language.text("飞书会议接口暂不可用。")))
 	case s.view.Enabled:
-		actions = "j 入会"
+		actions = m.language.text("j 入会")
 	default:
-		lines = append(lines, line("当前接收端未开启会议入会。"))
+		lines = append(lines, line(m.language.text("当前接收端未开启会议入会。")))
 	}
 	meetings := s.view.Meetings
 	if len(meetings) == 0 {
-		lines = append(lines, line("没有会议回执。"))
+		lines = append(lines, line(m.language.text("没有会议回执。")))
 	} else {
 		shortcuts += " · ↑↓"
 		for _, key := range []string{"l", "c"} {

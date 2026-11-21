@@ -42,13 +42,13 @@ draftImport.querySelector("input").addEventListener("change", async (event) => {
   const status = document.querySelector("#draft-import-status");
   event.target.value = "";
   if (file.size > 1024 * 1024) {
-    status.textContent = "配置文件超过 1 MiB。";
+    status.textContent = workspaceText("配置文件超过 1 MiB。");
     return;
   }
   try {
     form.elements.config.value = new TextDecoder("utf-8", { fatal: true, ignoreBOM: true }).decode(await file.arrayBuffer());
   } catch {
-    status.textContent = "无法读取 UTF-8 配置文件。";
+    status.textContent = workspaceText("无法读取 UTF-8 配置文件。");
     return;
   }
   markEdited();
@@ -69,9 +69,9 @@ function refreshReplacementTargets(select) {
     .filter((field) => /^cli_[A-Za-z0-9_-]{1,124}$/.test(field.value));
   const selected = fields.find((field) => field.value === select.value);
   const options = fields.map((field) => new Option(
-    `${field.closest("[data-account]") ? "附加账号" : "主账号"} · ${field.value}`, field.value,
+    `${field.closest("[data-account]") ? workspaceText("附加账号") : workspaceText("主账号")} · ${field.value}`, field.value,
   ));
-  select.replaceChildren(new Option("请选择账号", ""), ...options);
+  select.replaceChildren(new Option(workspaceText("请选择账号"), ""), ...options);
   select.value = selected?.value ?? "";
   select.disabled = !fields.length;
   return selected;
@@ -136,7 +136,7 @@ function configureBinding(bindStart) {
         image.src = data.image;
         link.href = data.url;
         image.hidden = link.hidden = false;
-        status.textContent = "请在飞书完成授权，二维码约 " + Math.ceil(data.expireIn / 60) + " 分钟内有效。";
+        status.textContent = workspaceText("请在飞书完成授权，二维码约 ") + Math.ceil(data.expireIn / 60) + workspaceText(" 分钟内有效。");
       }
       timer = setTimeout(() => poll(id, attempt).catch(() => failed(attempt)), 1000);
     } else {
@@ -144,8 +144,8 @@ function configureBinding(bindStart) {
       image.hidden = link.hidden = true;
       apply.hidden = false;
       status.textContent = replacement ?
-        `替换账号 ${replacement.id} → ${data.appId}。请确认保存凭据并审阅草稿差异。` :
-        `已收到应用 ${data.appId}，请确认保存凭据。`;
+        `${workspaceText("替换账号 ")}${replacement.id} → ${data.appId}${workspaceText("。请确认保存凭据并审阅草稿差异。")}` :
+        `${workspaceText("已收到应用 ")}${data.appId}${workspaceText("，请确认保存凭据。")}`;
     }
   }
 
@@ -153,7 +153,7 @@ function configureBinding(bindStart) {
     if (attempt !== generation) return;
     if (replacement) cancelBinding();
     else reset();
-    status.textContent = "扫码未完成或已过期，请重新生成二维码。";
+    status.textContent = workspaceText("扫码未完成或已过期，请重新生成二维码。");
   }
 
   replaceMode.checked = false;
@@ -167,11 +167,11 @@ function configureBinding(bindStart) {
     const selected = refreshTargets();
     if (replaceMode.checked) {
       if (changed(form.elements.config)) {
-        status.textContent = "完整 JSON 草稿已更改，请先校验再选择要替换的账号。";
+        status.textContent = workspaceText("完整 JSON 草稿已更改，请先校验再选择要替换的账号。");
         return;
       }
       if (!selected) {
-        status.textContent = "请选择要替换的账号。";
+        status.textContent = workspaceText("请选择要替换的账号。");
         replaceApp.focus();
         return;
       }
@@ -179,7 +179,7 @@ function configureBinding(bindStart) {
     }
     const attempt = ++generation;
     lockSelection(true);
-    status.textContent = "正在生成二维码…";
+    status.textContent = workspaceText("正在生成二维码…");
     try {
       const query = new URLSearchParams({ comments: comments.checked });
       if (replacement) query.set("replaceAppId", replacement.id);
@@ -197,7 +197,7 @@ function configureBinding(bindStart) {
 
   cancel.addEventListener("click", () => {
     cancelBinding();
-    status.textContent = "扫码已取消。";
+    status.textContent = workspaceText("扫码已取消。");
   });
   form.addEventListener("submit", (event) => {
     if (event.submitter !== apply || !replacement) return;
@@ -205,7 +205,7 @@ function configureBinding(bindStart) {
       replacement.field.value !== replacement.id) {
       event.preventDefault();
       cancelBinding();
-      status.textContent = "草稿中的原账号或完整 JSON 已更改，请重新选择账号并扫码。";
+      status.textContent = workspaceText("草稿中的原账号或完整 JSON 已更改，请重新选择账号并扫码。");
       return;
     }
     // A rejected bind POST re-renders the page with its binding ID for ordinary retries.
@@ -216,7 +216,7 @@ function configureBinding(bindStart) {
   if (bindingID.value) {
     if (sessionStorage.getItem(replacementKey) === bindingID.value) {
       cancelBinding();
-      status.textContent = "替换未完成，请核对草稿后重新扫码。";
+      status.textContent = workspaceText("替换未完成，请核对草稿后重新扫码。");
     } else {
       lockSelection(true);
       cancel.hidden = false;
@@ -230,7 +230,7 @@ function configureBinding(bindStart) {
 
 function markEdited() {
   const status = document.querySelector("#check-status");
-  status.textContent = "待校验";
+  status.textContent = workspaceText("待校验");
   status.className = "";
   for (const button of form.querySelectorAll('button[value="download"], button[value="save"]')) {
     button.disabled = true;
@@ -254,20 +254,20 @@ async function checkFeishuApp(button) {
   const account = button.closest("[data-feishu]");
   const status = account.querySelector("[data-feishu-status]");
   const body = feishuForm(account);
-  status.textContent = "正在检查应用 API…";
+  status.textContent = workspaceText("正在检查应用 API…");
   button.disabled = true;
   let message;
   try {
     const response = await fetch("/feishu/check", { method: "POST", body: new URLSearchParams(body) });
-    message = response.ok ? "应用 API 已联通。" : (await response.text()).trim();
+    message = response.ok ? workspaceText("应用 API 已联通。") : (await response.text()).trim();
   } catch {
-    message = "无法完成应用 API 检查。";
+    message = workspaceText("无法完成应用 API 检查。");
   } finally {
     button.disabled = false;
   }
-  status.textContent = body === feishuForm(account) ? message : "应用信息已更改，请重新检查。";
+  status.textContent = body === feishuForm(account) ? message : workspaceText("应用信息已更改，请重新检查。");
   const connectionStatus = document.querySelector("#connection-status");
-  connectionStatus.textContent = "见各账号检查结果";
+  connectionStatus.textContent = workspaceText("见各账号检查结果");
   connectionStatus.parentElement.hidden = false;
 }
 
@@ -287,11 +287,11 @@ async function listFeishuGroups(button) {
   resetFeishuGroups(access);
   const status = access.querySelector("[data-groups-status]");
   if (changed(form.elements.config)) {
-    status.textContent = "完整 JSON 草稿已更改，请先校验再查询群聊。";
+    status.textContent = workspaceText("完整 JSON 草稿已更改，请先校验再查询群聊。");
     return;
   }
   const body = feishuForm(account);
-  status.textContent = "正在查询机器人所在群…";
+  status.textContent = workspaceText("正在查询机器人所在群…");
   button.disabled = true;
   const request = { body };
   groupQueries.set(access, request);
@@ -313,9 +313,9 @@ async function listFeishuGroups(button) {
       options.append(label);
     }
     access.querySelector("[data-groups-picker]").hidden = groups.length === 0;
-    status.textContent = groups.length ? `找到 ${groups.length} 个群。` : "该机器人当前没有可列出的群。";
+    status.textContent = groups.length ? `${workspaceText("找到 ")}${groups.length}${workspaceText(" 个群。")}` : workspaceText("该机器人当前没有可列出的群。");
   } catch {
-    if (groupQueries.get(access) === request) status.textContent = "无法读取群列表。请核对应用信息、群聊权限和网络。";
+    if (groupQueries.get(access) === request) status.textContent = workspaceText("无法读取群列表。请核对应用信息、群聊权限和网络。");
   } finally {
     button.disabled = false;
   }
@@ -340,11 +340,11 @@ function addFeishuGroups(button) {
   const added = appendFeishuGroupDraft(access, ids);
   const status = access.querySelector("[data-groups-status]");
   if (!added) {
-    status.textContent = "请选择尚未加入草稿的群。";
+    status.textContent = workspaceText("请选择尚未加入草稿的群。");
     return;
   }
   resetFeishuGroups(access);
-  status.textContent = `已向群聊草稿加入 ${added} 个群。`;
+  status.textContent = `${workspaceText("已向群聊草稿加入 ")}${added}${workspaceText(" 个群。")}`;
 }
 
 const resetMyGroups = new WeakMap();
@@ -422,20 +422,20 @@ for (const panel of form.querySelectorAll("[data-my-groups]")) {
     page = result;
     pageQuery = currentQuery;
     const options = (page.groups || []).map((group) => {
-      const membership = group.botJoined ? "机器人已入群" : (page.botKnown ? "机器人未入群" : "入群状态未确认");
+      const membership = group.botJoined ? workspaceText("机器人已入群") : (page.botKnown ? workspaceText("机器人未入群") : workspaceText("入群状态未确认"));
       return new Option([group.name, group.id, membership].filter(Boolean).join(" · "), group.id);
     });
-    selection.replaceChildren(new Option("请选择群聊", ""), ...options);
+    selection.replaceChildren(new Option(workspaceText("请选择群聊"), ""), ...options);
     field("picker").hidden = false;
     button("next").hidden = !page.nextPageToken;
     updateSelection();
-    status.textContent = options.length ? `本页有 ${options.length} 个群。` : "本页没有群聊。";
+    status.textContent = options.length ? `${workspaceText("本页有 ")}${options.length}${workspaceText(" 个群。")}` : workspaceText("本页没有群聊。");
   }
 
   async function operate(action) {
     if (request) return;
     if (changed(form.elements.config)) {
-      status.textContent = "完整 JSON 草稿已更改，请先校验再查询群聊。";
+      status.textContent = workspaceText("完整 JSON 草稿已更改，请先校验再查询群聊。");
       return;
     }
     const body = feishuForm(account);
@@ -447,12 +447,12 @@ for (const panel of form.querySelectorAll("[data-my-groups]")) {
     const group = page.groups?.find(({ id }) => id === selection.value);
     if (action === "add" && group?.botJoined) {
       status.textContent = appendFeishuGroupDraft(access, [group.id]) ?
-        "已加入群聊草稿。请校验后保存。" : "该群已在草稿中。";
+        workspaceText("已加入群聊草稿。请校验后保存。") : workspaceText("该群已在草稿中。");
       return;
     }
     if (action === "invite" && group && !button("invite").hidden) {
       confirmedGroup = group.id;
-      field("target").textContent = `邀请应用 ${credentials.appId} 的机器人加入 ${group.name || group.id}（${group.id}）？`;
+      field("target").textContent = `${workspaceText("邀请应用 ")}${credentials.appId}${workspaceText(" 的机器人加入 ")}${group.name || group.id}（${group.id}）？`;
       field("confirmation").hidden = false;
       return;
     }
@@ -464,7 +464,7 @@ for (const panel of form.querySelectorAll("[data-my-groups]")) {
 
     const controller = request = new AbortController();
     controls.disabled = true;
-    status.textContent = "正在处理…";
+    status.textContent = workspaceText("正在处理…");
     async function call(action, parameters = {}) {
       const response = await fetch("/feishu/my-groups", {
         method: "POST",
@@ -486,18 +486,18 @@ for (const panel of form.querySelectorAll("[data-my-groups]")) {
         if (action === "finish") closeAuthorization();
         showAuthorization(result);
         if (result.listAuthorized) showPage(await call("list", { query: query.value.trim() }), query.value.trim());
-        else status.textContent = "请先授权当前应用的所有者查群。";
+        else status.textContent = workspaceText("请先授权当前应用的所有者查群。");
       } else if (action === "authorize-list" || action === "authorize-invite") {
         const result = await call("start", { purpose: action === "authorize-list" ? "list" : "invite" });
         ticket = result.ticket;
         link.href = result.url;
         image.src = result.image;
         field("authorization").hidden = false;
-        status.textContent = "请用飞书扫码，或在浏览器打开授权链接。";
+        status.textContent = workspaceText("请用飞书扫码，或在浏览器打开授权链接。");
       } else if (action === "cancel") {
         await call("cancel", { ticket });
         closeAuthorization();
-        status.textContent = "已取消授权。";
+        status.textContent = workspaceText("已取消授权。");
       } else if (action === "search" || action === "next") {
         const currentQuery = action === "next" ? pageQuery : query.value.trim();
         if (action === "next") query.value = pageQuery;
@@ -516,15 +516,15 @@ for (const panel of form.querySelectorAll("[data-my-groups]")) {
           updateSelection();
         }
         status.textContent = {
-          joined: "已确认机器人入群。现在可以加入群聊草稿。",
-          pending: "邀请已提交，等待群审批。",
-          rejected: "飞书拒绝了邀请。",
-          unknown: "邀请结果未确认，请先核对机器人入群状态。",
-          "confirmation-required": "lark-cli 要求额外确认，请在飞书中核对入群操作。",
-        }[result.state] || "邀请结果未确认，请先核对机器人入群状态。";
+          joined: workspaceText("已确认机器人入群。现在可以加入群聊草稿。"),
+          pending: workspaceText("邀请已提交，等待群审批。"),
+          rejected: workspaceText("飞书拒绝了邀请。"),
+          unknown: workspaceText("邀请结果未确认，请先核对机器人入群状态。"),
+          "confirmation-required": workspaceText("lark-cli 要求额外确认，请在飞书中核对入群操作。"),
+        }[result.state] || workspaceText("邀请结果未确认，请先核对机器人入群状态。");
       }
     } catch (error) {
-      if (request === controller) status.textContent = error.message?.trim() || "无法完成操作。";
+      if (request === controller) status.textContent = error.message?.trim() || workspaceText("无法完成操作。");
     } finally {
       if (request === controller) {
         request = undefined;
@@ -580,28 +580,28 @@ for (const panel of form.querySelectorAll("[data-t3-authorize]")) {
       if (result.url) {
         link.href = address.querySelector("input").value = result.url;
         link.hidden = address.hidden = false;
-        status.textContent = "请在本机浏览器批准授权。Bridge 最长等待 5 分钟。";
+        status.textContent = workspaceText("请在本机浏览器批准授权。Bridge 最长等待 5 分钟。");
       }
-      setTimeout(() => poll().catch(() => finish("无法读取 T3 授权状态。")), 750);
+      setTimeout(() => poll().catch(() => finish(workspaceText("无法读取 T3 授权状态。"))), 750);
       return;
     }
     switch (result.state) {
       case "saved":
-        finish("凭据已保存，可查询项目和模型。");
+        finish(workspaceText("凭据已保存，可查询项目和模型。"));
         break;
       case "expired":
-        finish("Bridge 等待 T3 授权已超时。请重新准备授权。");
+        finish(workspaceText("Bridge 等待 T3 授权已超时。请重新准备授权。"));
         break;
       case "canceled":
-        finish("T3 授权已取消。");
+        finish(workspaceText("T3 授权已取消。"));
         break;
       default:
-        finish(result.problem || "T3 授权未完成。");
+        finish(result.problem || workspaceText("T3 授权未完成。"));
     }
   }
 
   start.addEventListener("click", async () => {
-    status.textContent = "正在准备授权…";
+    status.textContent = workspaceText("正在准备授权…");
     for (const button of t3AuthorizationButtons) button.disabled = true;
     cancel.disabled = false;
     try {
@@ -621,7 +621,7 @@ for (const panel of form.querySelectorAll("[data-t3-authorize]")) {
       cancel.hidden = false;
       await poll();
     } catch {
-      finish("无法读取 T3 授权状态。");
+      finish(workspaceText("无法读取 T3 授权状态。"));
     }
   });
 
@@ -679,7 +679,7 @@ function targetOptionSelect({ id, values }, current) {
   label.textContent = id;
   const select = document.createElement("select");
   select.dataset.targetOption = id;
-  select.add(new Option("未设置（使用默认值）", ""));
+  select.add(new Option(workspaceText("未设置（使用默认值）"), ""));
   for (const value of values || []) {
     if (typeof value !== "string" && typeof value !== "boolean") continue;
     const json = JSON.stringify(value);
@@ -688,7 +688,7 @@ function targetOptionSelect({ id, values }, current) {
   if (Object.prototype.hasOwnProperty.call(current, id)) {
     select.value = JSON.stringify(current[id]);
     if (select.selectedIndex < 0) {
-      select.add(new Option("保留当前值（目录未提供）", "keep"));
+      select.add(new Option(workspaceText("保留当前值（目录未提供）"), "keep"));
       select.value = "keep";
     }
   }
@@ -708,7 +708,7 @@ function updateTargetSelection(chooser, modelChanged = true) {
   if (choices && !targetChoicesCurrent(chooser, choices)) {
     chooser.querySelector("[data-target-results]").hidden = true;
     apply.disabled = apply.hidden = controls.hidden = options.hidden = true;
-    chooser.querySelector("[data-target-status]").textContent = "查询条件或路由草稿已更改，请重新查询。";
+    chooser.querySelector("[data-target-status]").textContent = workspaceText("查询条件或路由草稿已更改，请重新查询。");
     return;
   }
   const catalog = choices?.catalog;
@@ -723,26 +723,26 @@ function updateTargetSelection(chooser, modelChanged = true) {
   controls.hidden = !fields.length;
   options.hidden = !selected && !catalog?.linkAccess && !catalog?.operateAccess;
   if (options.hidden) return;
-  const limits = [`T3 授权上限 ${catalog.runtimeMode}`];
+  const limits = [`${workspaceText("T3 授权上限 ")}${catalog.runtimeMode}`];
   switch (catalog.operateAccess) {
     case "granted":
-      limits.push("本机 OAuth 已授予派发权限");
+      limits.push(workspaceText("本机 OAuth 已授予派发权限"));
       break;
     case "missing":
-      limits.push("本机 OAuth 无法派发，请重新授权（至少监督权限）");
+      limits.push(workspaceText("本机 OAuth 无法派发，请重新授权（至少监督权限）"));
       break;
     case "unknown":
-      limits.push("本机 OAuth 派发权限未知（旧凭据未记录权限）");
+      limits.push(workspaceText("本机 OAuth 派发权限未知（旧凭据未记录权限）"));
       break;
   }
   if (catalog.linkAccess) {
-    const warning = catalog.linkAccess === "read-only" ? "（只读，无法派发任务）" : "";
-    limits.push(`关联权限 ${catalog.linkAccess}${warning}`);
+    const warning = catalog.linkAccess === "read-only" ? workspaceText("（只读，无法派发任务）") : "";
+    limits.push(`${workspaceText("关联权限 ")}${catalog.linkAccess}${warning}`);
   }
   if (selected?.provider.runtimeModes?.length) {
-    limits.push(`Provider 允许 ${selected.provider.runtimeModes.join(" / ")}`);
+    limits.push(`${workspaceText("Provider 允许 ")}${selected.provider.runtimeModes.join(" / ")}`);
   }
-  if (raw === null) limits.push("请修正路由的模型选项 JSON 后重新查询");
+  if (raw === null) limits.push(workspaceText("请修正路由的模型选项 JSON 后重新查询"));
   options.textContent = limits.join(" · ");
 }
 
@@ -754,7 +754,7 @@ async function listTargets(chooser, button) {
   const results = chooser.querySelector("[data-target-results]");
   const route = chooser.closest("[data-route]");
   if (changed(form.elements.config)) {
-    status.textContent = "完整 JSON 草稿已更改，请先校验再查询 T3。";
+    status.textContent = workspaceText("完整 JSON 草稿已更改，请先校验再查询 T3。");
     return;
   }
   const identity = { body: targetRequest(chooser), draft: targetDraft(route) };
@@ -763,7 +763,7 @@ async function listTargets(chooser, button) {
   results.hidden = apply.hidden = true;
   chooser.querySelector("[data-target-options]").hidden = true;
   chooser.querySelector("[data-target-option-fields]").hidden = true;
-  status.textContent = "正在读取 T3…";
+  status.textContent = workspaceText("正在读取 T3…");
   try {
     const response = await fetch("/t3/catalog", {
       method: "POST", headers: { "Content-Type": "application/json" }, body: identity.body,
@@ -772,16 +772,16 @@ async function listTargets(chooser, button) {
     const catalog = await response.json();
     if (!form.contains(chooser)) return;
     if (!targetChoicesCurrent(chooser, identity)) {
-      status.textContent = "查询条件或路由草稿已更改，请重新查询。";
+      status.textContent = workspaceText("查询条件或路由草稿已更改，请重新查询。");
       return;
     }
     const models = (catalog.providers || []).flatMap((provider) => (provider.models || []).map((item) => ({
       item, provider,
     })));
-    project.replaceChildren(new Option("选择项目", ""), ...catalog.projects.map((item) =>
+    project.replaceChildren(new Option(workspaceText("选择项目"), ""), ...catalog.projects.map((item) =>
       new Option(`${item.title || item.id} · ${item.workspaceRoot}`, item.id),
     ));
-    model.replaceChildren(new Option("选择模型", ""), ...models.map(({ item, provider }, index) =>
+    model.replaceChildren(new Option(workspaceText("选择模型"), ""), ...models.map(({ item, provider }, index) =>
       new Option(`${item.label || item.id} · ${provider.displayName || provider.providerInstanceId}`, String(index)),
     ));
     project.value = catalog.suggestedProjectId || "";
@@ -793,10 +793,10 @@ async function listTargets(chooser, button) {
     results.hidden = apply.hidden = project.disabled || model.disabled;
     updateTargetSelection(chooser);
     const omitted = (catalog.providers || []).some((provider) => provider.omittedModels);
-    status.textContent = `${catalog.label || catalog.environmentId} · ${catalog.projects.length} 个项目 · ${models.length} 个模型` +
-      (omitted ? "。其余模型可按名称查询。" : "");
+    status.textContent = `${catalog.label || catalog.environmentId} · ${catalog.projects.length}${workspaceText(" 个项目 · ")}${models.length}${workspaceText(" 个模型")}` +
+      (omitted ? workspaceText("。其余模型可按名称查询。") : "");
   } catch (error) {
-    status.textContent = error.message || "无法读取 T3 目标。";
+    status.textContent = error.message || workspaceText("无法读取 T3 目标。");
   } finally {
     button.disabled = false;
   }
@@ -828,7 +828,7 @@ function applyTarget(chooser) {
   const status = chooser.querySelector("[data-target-status]");
   const choices = targetChoices.get(chooser);
   if (!choices || !targetChoicesCurrent(chooser, choices)) {
-    status.textContent = "查询条件或路由草稿已更改，请重新查询。";
+    status.textContent = workspaceText("查询条件或路由草稿已更改，请重新查询。");
     return;
   }
   const projectID = chooser.querySelector("[data-target-project]").value;
@@ -836,7 +836,7 @@ function applyTarget(chooser) {
   const { catalog } = choices;
   const project = catalog.projects.find((item) => item.id === projectID);
   if (!project || model === "") {
-    status.textContent = "请选择项目和模型。";
+    status.textContent = workspaceText("请选择项目和模型。");
     return;
   }
   const selected = choices.models[Number(model)];
@@ -846,7 +846,7 @@ function applyTarget(chooser) {
   const options = field("options");
   const raw = sameTargetBinding(route, catalog, selected) ? fieldJSON(options) : "{}";
   if (raw === null) {
-    status.textContent = "请修正路由的模型选项 JSON 后重新查询。";
+    status.textContent = workspaceText("请修正路由的模型选项 JSON 后重新查询。");
     return;
   }
   const changes = new Map();
@@ -865,7 +865,7 @@ function applyTarget(chooser) {
   choices.body = targetRequest(chooser);
   choices.draft = targetDraft(route);
   updateTargetSelection(chooser);
-  status.textContent = "目标已填入草稿。请核对模型选项和执行权限。";
+  status.textContent = workspaceText("目标已填入草稿。请核对模型选项和执行权限。");
   refreshRouteSummary(route);
   markEdited();
 }
@@ -873,7 +873,7 @@ function applyTarget(chooser) {
 function refreshRouteSummary(route) {
   const project = route.querySelector('[data-key="projectName"]').value;
   const projectID = route.querySelector('[data-key="projectId"]').value;
-  route.querySelector("[data-route-summary-project]").textContent = project || (projectID ? "已绑定项目" : "未选择项目");
+  route.querySelector("[data-route-summary-project]").textContent = project || (projectID ? workspaceText("已绑定项目") : workspaceText("未选择项目"));
   route.querySelector("[data-route-summary-model]").textContent = route.querySelector('[data-key="model"]').value;
 }
 
@@ -890,13 +890,13 @@ async function applyToolBinding(button) {
   const field = panel.querySelector('[data-key="toolContext"]');
   const environment = route.querySelector('[data-key="environmentId"]');
   if (changed(form.elements.config)) {
-    status.textContent = "完整 JSON 草稿已更改，请先校验再应用工具配置。";
+    status.textContent = workspaceText("完整 JSON 草稿已更改，请先校验再应用工具配置。");
     return;
   }
   const raw = field.value;
   const current = raw.trim() ? fieldJSON(field) : "null";
   if (current === null) {
-    status.textContent = "请先修正高级工具配置中的 JSON 对象。";
+    status.textContent = workspaceText("请先修正高级工具配置中的 JSON 对象。");
     return;
   }
   const environmentId = environment.value;
@@ -907,7 +907,7 @@ async function applyToolBinding(button) {
   const noteEdit = () => { edited = true; };
   panel.addEventListener("input", noteEdit);
   button.disabled = true;
-  status.textContent = "正在生成工具配置…";
+  status.textContent = workspaceText("正在生成工具配置…");
   try {
     const response = await fetch("/tool-binding/draft", {
       method: "POST", mode: "same-origin", headers: { "Content-Type": "application/json" }, body,
@@ -917,14 +917,14 @@ async function applyToolBinding(button) {
     if (!form.contains(route)) return;
     if (edited || raw !== field.value || environmentId !== environment.value || changed(form.elements.config) ||
         fields.some((input) => input.value !== draft[input.dataset.toolBindingField])) {
-      status.textContent = "草稿已更改，请重新应用工具配置。";
+      status.textContent = workspaceText("草稿已更改，请重新应用工具配置。");
       return;
     }
     field.value = toolContext === null ? "" : JSON.stringify(toolContext, null, 2);
     field.dispatchEvent(new Event("input", { bubbles: true }));
-    status.textContent = toolContext === null ? "已从草稿移除工具配置。" : "已应用到草稿。";
+    status.textContent = toolContext === null ? workspaceText("已从草稿移除工具配置。") : workspaceText("已应用到草稿。");
   } catch (error) {
-    status.textContent = error.message || "无法生成工具配置。";
+    status.textContent = error.message || workspaceText("无法生成工具配置。");
   } finally {
     panel.removeEventListener("input", noteEdit);
     button.disabled = false;
@@ -939,7 +939,7 @@ function addRoute(editor) {
     (route) => route.dataset.route.toLowerCase() === id.toLowerCase(),
   );
   if (!id || /[ /\r\n]/.test(id) || exists) {
-    routeID.setCustomValidity("请输入尚未使用的路由 ID。");
+    routeID.setCustomValidity(workspaceText("请输入尚未使用的路由 ID。"));
     routeID.reportValidity();
     return;
   }
@@ -1049,7 +1049,7 @@ form.addEventListener("input", (event) => {
       item.hidden = !item.textContent.toLowerCase().includes(filter);
       if (!item.hidden) visible++;
     }
-    access.querySelector("[data-groups-status]").textContent = visible ? `找到 ${visible} 个群。` : "没有匹配的群。";
+    access.querySelector("[data-groups-status]").textContent = visible ? `${workspaceText("找到 ")}${visible}${workspaceText(" 个群。")}` : workspaceText("没有匹配的群。");
   }
   if (event.target.hasAttribute("data-list-override")) {
     event.target.closest("[data-section]").querySelector("[data-direct-chats]").hidden = !event.target.checked;
@@ -1070,7 +1070,7 @@ form.addEventListener("input", (event) => {
   }
   if (account && key === "receiverAuthorized") {
     const status = account.closest("details").querySelector("[data-account-summary-receiver]");
-    status.textContent = event.target.checked ? "接收已授权" : "接收待授权";
+    status.textContent = event.target.checked ? workspaceText("接收已授权") : workspaceText("接收待授权");
     status.classList.toggle("ok", event.target.checked);
   }
   const route = event.target.closest("[data-route]");
@@ -1083,7 +1083,7 @@ form.addEventListener("input", (event) => {
     const endpoint = panel.querySelector('[data-key="endpoint"]').value;
     const runtimeFile = panel.querySelector('[data-key="runtimeFile"]').value;
     panel.querySelector("[data-mcp-summary]").textContent =
-      endpoint || (runtimeFile ? "通过本机运行文件连接" : "待配置");
+      endpoint || (runtimeFile ? workspaceText("通过本机运行文件连接") : workspaceText("待配置"));
   }
   if (event.target.name === "config" || event.target.hasAttribute("data-key")) {
     markEdited();
@@ -1131,7 +1131,7 @@ form.addEventListener("submit", (event) => {
     if ((replaceWithSecret && !hasSecret) || (hasSecret && (hasFile || !replaceWithSecret))) {
       event.preventDefault();
       document.querySelector("#replacement-secret-status").textContent =
-        "请只填写所选操作需要的密钥或文件路径。";
+        workspaceText("请只填写所选操作需要的密钥或文件路径。");
       return;
     }
   }
@@ -1150,13 +1150,13 @@ form.addEventListener("submit", (event) => {
   if (registerDraftProject && changed(form.elements.config)) {
     event.preventDefault();
     event.submitter.parentElement.querySelector("[data-draft-project-status]").textContent =
-      "完整 JSON 草稿已更改，请先校验再选择要登记项目的路由。";
+      workspaceText("完整 JSON 草稿已更改，请先校验再选择要登记项目的路由。");
     return;
   }
   if (useLocalT3 && changed(form.elements.config)) {
     event.preventDefault();
     event.submitter.closest("[data-section]").querySelector("[data-local-t3-status]").textContent =
-      "完整 JSON 草稿已更改，请先校验再选择要配置的账号。";
+      workspaceText("完整 JSON 草稿已更改，请先校验再选择要配置的账号。");
     return;
   }
   const edits = removedRoutes.map((path) =>
@@ -1183,7 +1183,7 @@ form.addEventListener("submit", (event) => {
       }
       const value = fieldJSON(field);
       if (value === null) {
-        field.setCustomValidity("请输入 JSON 对象。");
+        field.setCustomValidity(workspaceText("请输入 JSON 对象。"));
         field.reportValidity();
         event.preventDefault();
         return;

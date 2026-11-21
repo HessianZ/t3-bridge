@@ -4,7 +4,6 @@ import (
 	"crypto/rand"
 	_ "embed"
 	"errors"
-	"html/template"
 	"net/http"
 	"net/url"
 	"os"
@@ -41,7 +40,7 @@ type credentialWebReviews struct {
 }
 
 func configCredentialsHandler(sources func() ([]webSource, error)) http.HandlerFunc {
-	page := template.Must(newWorkspacePage("credentials").Parse(configCredentialsHTML))
+	page := newWorkspacePage("credentials").Parse(configCredentialsHTML)
 	var reviews credentialWebReviews
 	return func(w http.ResponseWriter, r *http.Request) {
 		if !runtimeRequestOriginAllowed(r) {
@@ -140,7 +139,7 @@ func configCredentialsHandler(sources func() ([]webSource, error)) http.HandlerF
 		}
 		w.Header().Set("Content-Type", "text/html; charset=utf-8")
 		w.WriteHeader(status)
-		_ = page.Execute(w, view)
+		_ = page.Execute(w, r, view)
 	}
 }
 

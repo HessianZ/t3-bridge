@@ -4,7 +4,6 @@ import (
 	"context"
 	_ "embed"
 	"errors"
-	"html/template"
 	"io"
 	"net/http"
 	"os"
@@ -52,7 +51,7 @@ func configServiceInstallHandler(sources func() ([]webSource, error), install fu
 	preflight func(context.Context, string, string, bool) (bridge.ReceiverPreflight, error),
 	preflightApp func(context.Context, string, string, string, bool) (bridge.ReceiverPreflight, error),
 ) http.HandlerFunc {
-	page := template.Must(newWorkspacePage("service install").Parse(configServiceInstallHTML))
+	page := newWorkspacePage("service install").Parse(configServiceInstallHTML)
 	return func(w http.ResponseWriter, r *http.Request) {
 		if !runtimeRequestOriginAllowed(r) {
 			http.Error(w, "invalid origin", http.StatusForbidden)
@@ -173,6 +172,6 @@ func configServiceInstallHandler(sources func() ([]webSource, error), install fu
 		w.Header().Set("Referrer-Policy", "same-origin")
 		w.Header().Set("Content-Type", "text/html; charset=utf-8")
 		w.WriteHeader(status)
-		_ = page.Execute(w, view)
+		_ = page.Execute(w, r, view)
 	}
 }

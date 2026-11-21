@@ -5,7 +5,6 @@ import (
 	"crypto/rand"
 	_ "embed"
 	"errors"
-	"html/template"
 	"net/http"
 	"path/filepath"
 	"slices"
@@ -20,7 +19,7 @@ import (
 var configDraftProjectRegisterHTML string
 
 type configDraftProjectRegister struct {
-	page      *template.Template
+	page      *workspacePage
 	sources   func() ([]webSource, error)
 	register  func(context.Context, string, string, []byte, string, string, string, string) ([]byte, error)
 	workspace func(string, bridge.Config, string) (string, error)
@@ -48,7 +47,7 @@ func newConfigDraftProjectRegister(sources func() ([]webSource, error),
 	register func(context.Context, string, string, []byte, string, string, string, string) ([]byte, error),
 	workspace func(string, bridge.Config, string) (string, error),
 ) *configDraftProjectRegister {
-	return &configDraftProjectRegister{page: template.Must(newWorkspacePage("draft project register").Parse(configDraftProjectRegisterHTML)),
+	return &configDraftProjectRegister{page: newWorkspacePage("draft project register").Parse(configDraftProjectRegisterHTML),
 		sources: sources, register: register, workspace: workspace}
 }
 
@@ -61,7 +60,7 @@ func validDraftProjectStart(r *http.Request, sourceID string) bool {
 		len(form["projectRouteId"]) == 1 && form.Get("projectRouteId") != ""
 }
 
-func (h *configDraftProjectRegister) start(w http.ResponseWriter, source webSource, revision string, draft []byte, config bridge.Config, appID, routeID string) (int, string) {
+func (h *configDraftProjectRegister) start(w http.ResponseWriter, r *http.Request, source webSource, revision string, draft []byte, config bridge.Config, appID, routeID string) (int, string) {
 	if !filepath.IsAbs(source.Path) || revision == "" || revision != source.Revision || !projectRegistrationSourceMatches(source.Path, revision) {
 		return http.StatusConflict, "请重新打开所选本机 JSON 配置并核对来源版本。"
 	}
@@ -76,7 +75,7 @@ func (h *configDraftProjectRegister) start(w http.ResponseWriter, source webSour
 		if directory, err := h.workspace(source.Path, account, routeID); err == nil {
 			view.ManagedDirectory = directory
 		}
-		h.render(w, http.StatusOK, h.issue(view))
+		h.render(w, r, http.StatusOK, h.issue(view))
 		return http.StatusOK, ""
 	}
 	return http.StatusBadRequest, "草稿中没有所选应用和路由。请核对后重新打开项目登记。"
@@ -122,7 +121,7 @@ func (h *configDraftProjectRegister) serve(w http.ResponseWriter, r *http.Reques
 	view.Ticket = ""
 	if !h.sourceCurrent(view.Source) {
 		view.Error = "配置来源或版本已变化。请重新打开所选配置后核对草稿。"
-		h.render(w, http.StatusConflict, *view)
+		h.render(w, r, http.StatusConflict, *view)
 		return
 	}
 	if action == "preview" {
@@ -130,7 +129,7 @@ func (h *configDraftProjectRegister) serve(w http.ResponseWriter, r *http.Reques
 		if err := h.preview(view, mode == "managed", directory, setupTokenFile); err != nil {
 			status, view.Error = http.StatusUnprocessableEntity, err.Error()
 		}
-		h.render(w, status, h.issue(*view))
+		h.render(w, r, status, h.issue(*view))
 		return
 	}
 	directory = view.Directory
@@ -138,7 +137,7 @@ func (h *configDraftProjectRegister) serve(w http.ResponseWriter, r *http.Reques
 		actual, err := h.workspace(view.Source.Path, view.account, view.Route.RouteID)
 		if err != nil || actual != directory {
 			view.Error = "专用工作区路径已变化或不可用。请重新预览。"
-			h.render(w, http.StatusConflict, *view)
+			h.render(w, r, http.StatusConflict, *view)
 			return
 		}
 		directory = ""
@@ -150,11 +149,11 @@ func (h *configDraftProjectRegister) serve(w http.ResponseWriter, r *http.Reques
 		if view.setupTokenFile != "" {
 			view.Error = strings.ReplaceAll(view.Error, view.setupTokenFile, "［路径已隐藏］")
 		}
-		h.render(w, http.StatusUnprocessableEntity, *view)
+		h.render(w, r, http.StatusUnprocessableEntity, *view)
 		return
 	}
 	view.Candidate = string(candidate)
-	h.render(w, http.StatusOK, *view)
+	h.render(w, r, http.StatusOK, *view)
 }
 
 func (h *configDraftProjectRegister) sourceCurrent(source webSource) bool {
@@ -209,10 +208,10 @@ func (h *configDraftProjectRegister) take(ticket string) *draftProjectRegistrati
 	return view
 }
 
-func (h *configDraftProjectRegister) render(w http.ResponseWriter, status int, view draftProjectRegistration) {
+func (h *configDraftProjectRegister) render(w http.ResponseWriter, r *http.Request, status int, view draftProjectRegistration) {
 	w.Header().Set("Cache-Control", "no-store")
 	w.Header().Set("Referrer-Policy", "same-origin")
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
 	w.WriteHeader(status)
-	_ = h.page.Execute(w, view)
+	_ = h.page.Execute(w, r, view)
 }

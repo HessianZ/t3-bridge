@@ -1,87 +1,88 @@
 <!doctype html>
-<html lang="zh-CN">
+<html lang="{{uiLanguage}}">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>运行状态 · T3 Bridge</title>
+  <title>{{tr "运行状态 · T3 Bridge"}}</title>
   <link rel="stylesheet" href="/workspace.css">
+  <script defer src="/workspace-language.js"></script>
 </head>
 <body>
 <div class="shell">
 {{template "workspace-header" (workspaceNav "runtime" "")}}
 <main class="container tool-page">
   <div class="page-heading">
-    <h1>运行状态</h1>
-    <p class="muted">工作台版本 <code>{{.WorkspaceVersion}}</code></p>
+    <h1>{{tr "运行状态"}}</h1>
+    <p class="muted">{{tr "工作台版本"}} <code>{{.WorkspaceVersion}}</code></p>
   </div>
-  <nav aria-label="运行操作"><a href="/runtime">刷新</a><a href="/runtime/install">安装后台服务</a><a href="/runtime/groups">在线群授权</a><a href="/runtime/access">在线用户与路由权限</a><a href="/runtime/settings">在线运行设置</a></nav>
+  <nav aria-label="{{tr "运行操作"}}"><a href="/runtime">{{tr "刷新"}}</a><a href="/runtime/install">{{tr "安装后台服务"}}</a><a href="/runtime/groups">{{tr "在线群授权"}}</a><a href="/runtime/access">{{tr "在线用户与路由权限"}}</a><a href="/runtime/settings">{{tr "在线运行设置"}}</a></nav>
   <section>
-    <h2>受管实例</h2>
+    <h2>{{tr "受管实例"}}</h2>
     {{if .ActionResult}}<p role="status">{{if .ActionInstance}}<code>{{.ActionInstance}}</code> · {{end}}{{.ActionResult}}</p>{{end}}
     {{if .UnregisterInstance}}
     <form method="post" action="/runtime/action" aria-labelledby="runtime-unregister-title" aria-describedby="runtime-unregister-impact">
-      <h3 id="runtime-unregister-title">确认注销实例 <code>{{.UnregisterInstance}}</code></h3>
-      <p id="runtime-unregister-impact">注销会停止整个实例中所有 App 的接收并移除服务定义。配置、凭据、状态和日志会保留。T3 中已在途的 run 可能继续执行。</p>
+      <h3 id="runtime-unregister-title">{{tr "确认注销实例"}} <code>{{.UnregisterInstance}}</code></h3>
+      <p id="runtime-unregister-impact">{{tr "注销会停止整个实例中所有 App 的接收并移除服务定义。配置、凭据、状态和日志会保留。T3 中已在途的 run 可能继续执行。"}}</p>
       <input type="hidden" name="instance" value="{{.UnregisterInstance}}">
       <input type="hidden" name="action" value="unregister">
-      <button type="submit" name="confirm" value="unregister">确认注销整个实例</button>
-      <a href="/runtime">取消</a>
+      <button type="submit" name="confirm" value="unregister">{{tr "确认注销整个实例"}}</button>
+      <a href="/runtime">{{tr "取消"}}</a>
     </form>
     {{end}}
-    {{if .ServiceUnavailable}}<p role="status">服务清单暂不可用。</p>{{end}}
+    {{if .ServiceUnavailable}}<p role="status">{{tr "服务清单暂不可用。"}}</p>{{end}}
     {{if .Services}}
-    <p id="runtime-instance-impact">停止或重启会影响整个实例，包括共享此实例的所有 App。停止会关闭登录自启，启动或重启会开启登录自启。</p>
-    <div class="table-scroll"><table aria-label="受管实例">
-      <thead><tr><th scope="col">实例</th><th scope="col">状态</th><th scope="col">PID</th><th scope="col">操作</th></tr></thead>
+    <p id="runtime-instance-impact">{{tr "停止或重启会影响整个实例，包括共享此实例的所有 App。停止会关闭登录自启，启动或重启会开启登录自启。"}}</p>
+    <div class="table-scroll"><table aria-label="{{tr "受管实例"}}">
+      <thead><tr><th scope="col">{{tr "实例"}}</th><th scope="col">{{tr "状态"}}</th><th scope="col">PID</th><th scope="col">{{tr "操作"}}</th></tr></thead>
       <tbody>{{range .Services}}<tr><td><code>{{.Name}}</code></td><td>{{.Status}}</td><td>{{if gt .PID 0}}{{.PID}}{{else}}—{{end}}</td><td>
         {{if .Manageable}}<form method="post" action="/runtime/action" class="actions" aria-describedby="runtime-instance-impact">
           <input type="hidden" name="instance" value="{{.Name}}">
-          <button type="submit" name="action" value="start">启动</button>
-          <button type="submit" name="action" value="stop">停止整个实例</button>
-          <button type="submit" name="action" value="restart">重启整个实例</button>
-          <button type="submit" name="action" value="review-unregister">注销整个实例…</button>
+          <button type="submit" name="action" value="start">{{tr "启动"}}</button>
+          <button type="submit" name="action" value="stop">{{tr "停止整个实例"}}</button>
+          <button type="submit" name="action" value="restart">{{tr "重启整个实例"}}</button>
+          <button type="submit" name="action" value="review-unregister">{{tr "注销整个实例…"}}</button>
         </form>
-        <a href="/runtime/logs?instance={{.Name}}">查看日志</a>{{else}}—{{end}}
+        <a href="/runtime/logs?instance={{.Name}}">{{tr "查看日志"}}</a>{{else}}—{{end}}
       </td></tr>{{end}}</tbody>
     </table></div>
-    {{else if not .ServiceUnavailable}}<p>暂无受管实例。</p>{{end}}
+    {{else if not .ServiceUnavailable}}<p>{{tr "暂无受管实例。"}}</p>{{end}}
   </section>
   <section>
-    <h2>当前用户的接收进程</h2>
-    {{if .ReceiverUnavailable}}<p role="status">接收进程清单暂不可用。</p>
+    <h2>{{tr "当前用户的接收进程"}}</h2>
+    {{if .ReceiverUnavailable}}<p role="status">{{tr "接收进程清单暂不可用。"}}</p>
     {{else if .Receivers}}
     {{range .Receivers}}
         <details class="process-row">
           <summary class="row-heading">
-            <span class="row-label"><b>PID <code>{{.PID}}</code></b><small>{{if .Version}}<code>{{.Version}}</code>{{else}}版本未知{{end}}</small></span>
-            <span class="row-meta">{{.AppCount}} 个 App{{if gt .AppCount 1}}（多 App 共享）{{end}}</span>
+            <span class="row-label"><b>PID <code>{{.PID}}</code></b><small>{{if .Version}}<code>{{.Version}}</code>{{else}}{{tr "版本未知"}}{{end}}</small></span>
+            <span class="row-meta">{{.AppCount}} {{tr "个 App"}}{{if gt .AppCount 1}}{{tr "（多 App 共享）"}}{{end}}</span>
           </summary>
-          <p class="muted">进程 ID <code>{{.ID}}</code></p>
+          <p class="muted">{{tr "进程 ID"}} <code>{{.ID}}</code></p>
           {{range .Accounts}}<div class="account-diagnostic">
-            <strong>{{.Tenant}} · <code>{{.AppID}}</code></strong>{{if .SettingsURL}} · <a href="{{.SettingsURL}}">在线设置</a>{{end}}{{if .AccessURL}} · <a href="{{.AccessURL}}">在线权限</a>{{end}}{{if .ReconnectURL}} · <a href="{{.ReconnectURL}}">重连此 App…</a>{{end}}{{if .MeetingsURL}} · <a href="{{.MeetingsURL}}">会议控制</a>{{end}}
+            <strong>{{.Tenant}} · <code>{{.AppID}}</code></strong>{{if .SettingsURL}} · <a href="{{.SettingsURL}}">{{tr "在线设置"}}</a>{{end}}{{if .AccessURL}} · <a href="{{.AccessURL}}">{{tr "在线权限"}}</a>{{end}}{{if .ReconnectURL}} · <a href="{{.ReconnectURL}}">{{tr "重连此 App…"}}</a>{{end}}{{if .MeetingsURL}} · <a href="{{.MeetingsURL}}">{{tr "会议控制"}}</a>{{end}}
             {{if .Diagnostics}}
-            <p>采样于 <time datetime="{{.ObservedDateTime}}">{{.ObservedAt}}</time></p>
+            <p>{{tr "采样于"}} <time datetime="{{.ObservedDateTime}}">{{.ObservedAt}}</time></p>
             {{with .Diagnostics}}
-            {{if .ReconnectWaiting}}<p>此 App 已暂停新派发，等待在途 T3 运行收口后重连。</p>{{end}}
-            <p>飞书 WebSocket {{if .FeishuReady}}已就绪{{else}}未就绪{{end}}。T3 环境{{if .MCPVerified}}最近建连时核验通过{{else}}尚未核验{{end}}。</p>
-            <p>入站 {{.Inbox}} · 在途 {{.InFlight}} · 待核对 {{.Reconcile}} · 送达缺口 {{.DeliveryPending}}</p>
-            {{with .Capacity}}<p>并发额度 {{.Occupied}}{{if .Limit}} / {{.Limit}}{{else}}（不限）{{end}} · 等待额度 {{.Waiting}}</p>{{end}}
+            {{if .ReconnectWaiting}}<p>{{tr "此 App 已暂停新派发，等待在途 T3 运行收口后重连。"}}</p>{{end}}
+            <p>{{tr "飞书 WebSocket"}} {{if .FeishuReady}}{{tr "已就绪"}}{{else}}{{tr "未就绪"}}{{end}}{{tr "。T3 环境"}}{{if .MCPVerified}}{{tr "最近建连时核验通过"}}{{else}}{{tr "尚未核验"}}{{end}}。</p>
+            <p>{{tr "入站"}} {{.Inbox}} {{tr "· 在途"}} {{.InFlight}} {{tr "· 待核对"}} {{.Reconcile}} {{tr "· 送达缺口"}} {{.DeliveryPending}}</p>
+            {{with .Capacity}}<p>{{tr "并发额度"}} {{.Occupied}}{{if .Limit}} / {{.Limit}}{{else}}{{tr "（不限）"}}{{end}} {{tr "· 等待额度"}} {{.Waiting}}</p>{{end}}
             {{end}}
             {{if .History}}
             <details>
-              <summary>最近观察到的变化</summary>
-              <p>时间为本机采样时间。约每 5 秒采样一次，短暂变化可能未记录。</p>
+              <summary>{{tr "最近观察到的变化"}}</summary>
+              <p>{{tr "时间为本机采样时间。约每 5 秒采样一次，短暂变化可能未记录。"}}</p>
               <ul>{{range .History}}<li><time datetime="{{.ObservedDateTime}}">{{.ObservedAt}}</time> · {{.Label}}</li>{{end}}</ul>
             </details>
-            {{else}}<p>暂无最近观察到的变化。</p>{{end}}
+            {{else}}<p>{{tr "暂无最近观察到的变化。"}}</p>{{end}}
             {{else if .Worker}}
-            {{with .Worker}}<p>{{if .Exhausted}}自动重试已耗尽{{else}}下次自动重试 <time datetime="{{.RetryDateTime}}">{{.RetryAt}}</time>{{end}} · 已失败 {{.Attempts}} 次{{if .Failure}} · 故障类别 {{.Failure}}{{end}}</p>{{end}}
-            {{if and .Worker.Exhausted .ReconnectURL}}<p>可使用上方的「重连此 App…」恢复接收。</p>{{end}}
-            {{else}}<p>当前连接与任务状态未知。</p>{{end}}
+            {{with .Worker}}<p>{{if .Exhausted}}{{tr "自动重试已耗尽"}}{{else}}{{tr "下次自动重试"}} <time datetime="{{.RetryDateTime}}">{{.RetryAt}}</time>{{end}} {{tr "· 已失败"}} {{.Attempts}} {{tr "次"}}{{if .Failure}} {{tr "· 故障类别"}} {{.Failure}}{{end}}</p>{{end}}
+            {{if and .Worker.Exhausted .ReconnectURL}}<p>{{tr "可使用上方的「重连此 App…」恢复接收。"}}</p>{{end}}
+            {{else}}<p>{{tr "当前连接与任务状态未知。"}}</p>{{end}}
           </div>{{end}}
         </details>
     {{end}}
-    {{else}}<p>暂无已登记的接收进程。</p>{{end}}
+    {{else}}<p>{{tr "暂无已登记的接收进程。"}}</p>{{end}}
   </section>
 </main>
 </div>

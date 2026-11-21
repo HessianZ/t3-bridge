@@ -1,38 +1,39 @@
 <!doctype html>
-<html lang="zh-CN">
+<html lang="{{uiLanguage}}">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>迁移旧命名工作区 · T3 Bridge</title>
+  <title>{{tr "迁移旧命名工作区 · T3 Bridge"}}</title>
   <link rel="stylesheet" href="/workspace.css">
+  <script defer src="/workspace-language.js"></script>
 </head>
 <body>
 <div class="shell">
 {{template "workspace-header" (workspaceNav "advanced" .Source.ID)}}
 <main class="container tool-page">
-  <nav aria-label="工作区迁移导航"><a href="/{{if .Source.ID}}?source={{.Source.ID}}{{end}}">配置工作台</a><a href="/runtime">运行状态</a></nav>
-  <h1>迁移旧命名工作区</h1>
+  <nav aria-label="{{tr "工作区迁移导航"}}"><a href="/{{if .Source.ID}}?source={{.Source.ID}}{{end}}">{{tr "配置工作台"}}</a><a href="/runtime">{{tr "运行状态"}}</a></nav>
+  <h1>{{tr "迁移旧命名工作区"}}</h1>
   {{if .Error}}<p class="error" role="alert">{{.Error}}</p>{{end}}
   {{if .Notice}}<p role="status">{{.Notice}}</p>{{end}}
   {{if .Sources}}
   <form class="actions" method="get" action="/workspace-import">
-    <label>已保存的目标配置<select name="source">
+    <label>{{tr "已保存的目标配置"}}<select name="source">
       {{range .Sources}}<option value="{{.ID}}"{{if eq .ID $.Source.ID}} selected{{end}}>{{.Label}}</option>{{end}}
     </select></label>
-    <button type="submit">打开目标配置</button>
+    <button type="submit">{{tr "打开目标配置"}}</button>
   </form>
   {{if .Source.ID}}
   <form method="post" action="/workspace-import">
     <input type="hidden" name="source" value="{{.Source.ID}}">
     <input type="hidden" name="review" value="{{.Review}}">
-    <section aria-label="迁移输入">
-      <p>目标配置 <code>{{.Source.Path}}</code></p>
+    <section aria-label="{{tr "迁移输入"}}">
+      <p>{{tr "目标配置"}} <code>{{.Source.Path}}</code></p>
       <div class="fields">
-        <label>目标应用 ID<input name="appId" value="{{.Request.AppID}}" placeholder="cli_example" required spellcheck="false"></label>
-        <label>旧 workspaces.json 的本机绝对路径<input name="legacyPath" value="{{.Request.LegacyPath}}" spellcheck="false" aria-describedby="legacy-path-help"></label>
-        <p id="legacy-path-help">留空时按目标 App 和租户查找匹配的旧单账号配置或唯一 V2 profile。</p>
-        <div><button type="submit" name="action" value="inspect" formnovalidate>查看旧别名</button></div>
-        <label>映射 JSON<textarea name="mapping" rows="10" required spellcheck="false" aria-describedby="mapping-help" placeholder='[
+        <label>{{tr "目标应用 ID"}}<input name="appId" value="{{.Request.AppID}}" placeholder="cli_example" required spellcheck="false"></label>
+        <label>{{tr "旧 workspaces.json 的本机绝对路径"}}<input name="legacyPath" value="{{.Request.LegacyPath}}" spellcheck="false" aria-describedby="legacy-path-help"></label>
+        <p id="legacy-path-help">{{tr "留空时按目标 App 和租户查找匹配的旧单账号配置或唯一 V2 profile。"}}</p>
+        <div><button type="submit" name="action" value="inspect" formnovalidate>{{tr "查看旧别名"}}</button></div>
+        <label>{{tr "映射 JSON"}}<textarea name="mapping" rows="10" required spellcheck="false" aria-describedby="mapping-help" placeholder='[
   {
     "sourceKey": "dev\u001fowner\u001foc_example\u001fInbox",
     "userId": "ou_example",
@@ -43,62 +44,62 @@
 ]'>
 {{.Request.MappingJSON}}</textarea></label>
       </div>
-      <p id="mapping-help">粘贴或编辑 JSON 数组。<code>sourceKey</code> 使用旧文件 <code>named</code> 中的完整键，作用域分隔符写作 <code>\u001f</code>。聊天类型 <code>chatType</code> 使用 <code>p2p</code> 或 <code>group</code>，话题需填写 <code>topicId</code>。目标路由的 T3 环境中，若只有一个项目的 <code>projectPath</code> 与旧工作目录匹配，可省略 <code>projectId</code>。请在预览中核对所选项目。</p>
+      <p id="mapping-help">{{tr "粘贴或编辑 JSON 数组。"}}<code>sourceKey</code> {{tr "使用旧文件"}} <code>named</code> {{tr "中的完整键，作用域分隔符写作"}} <code>\u001f</code>{{tr "。聊天类型"}} <code>chatType</code> {{tr "使用"}} <code>p2p</code> {{tr "或"}} <code>group</code>{{tr "，话题需填写"}} <code>topicId</code>{{tr "。目标路由的 T3 环境中，若只有一个项目的"}} <code>projectPath</code> {{tr "与旧工作目录匹配，可省略"}} <code>projectId</code>{{tr "。请在预览中核对所选项目。"}}</p>
     </section>
     {{with .Inspection}}
-    <section aria-label="旧别名">
-      <h2>旧别名</h2>
-      <p>目标应用 <code>{{.AppID}}</code> · 无效的旧别名 {{.Invalid}} 个</p>
-      <p>旧工作区来源 <code>{{.LegacyPath}}</code></p>
+    <section aria-label="{{tr "旧别名"}}">
+      <h2>{{tr "旧别名"}}</h2>
+      <p>{{tr "目标应用"}} <code>{{.AppID}}</code> {{tr "· 无效的旧别名"}} {{.Invalid}} {{tr "个"}}</p>
+      <p>{{tr "旧工作区来源"}} <code>{{.LegacyPath}}</code></p>
       {{if .Aliases}}
       <div class="fields">
-        <label>旧别名<select name="sourceKey">
-          <option value="">请选择</option>
-          {{range .Aliases}}<option value="{{encodeSourceKey .SourceKey}}"{{if eq .SourceKey $.Entry.SourceKey}} selected{{end}}>{{.Name}} · {{.Path}}{{if ne .SourceKey .Name}} · {{printf "%q" .SourceKey}}{{end}}{{if .TopicRequired}}（需填话题 ID）{{end}}</option>{{end}}
+        <label>{{tr "旧别名"}}<select name="sourceKey">
+          <option value="">{{tr "请选择"}}</option>
+          {{range .Aliases}}<option value="{{encodeSourceKey .SourceKey}}"{{if eq .SourceKey $.Entry.SourceKey}} selected{{end}}>{{.Name}} · {{.Path}}{{if ne .SourceKey .Name}} · {{printf "%q" .SourceKey}}{{end}}{{if .TopicRequired}}{{tr "（需填话题 ID）"}}{{end}}</option>{{end}}
         </select></label>
-        <label>目标用户 ID<input name="userId" value="{{$.Entry.UserID}}" placeholder="ou_example" spellcheck="false"></label>
-        <label>目标聊天 ID<input name="chatId" value="{{$.Entry.ChatID}}" placeholder="oc_example" spellcheck="false"></label>
-        <label>目标聊天类型<select name="chatType">
-          <option value="">请选择</option>
-          <option value="p2p"{{if eq $.Entry.ChatType "p2p"}} selected{{end}}>私聊（p2p）</option>
-          <option value="group"{{if eq $.Entry.ChatType "group"}} selected{{end}}>群聊（group）</option>
+        <label>{{tr "目标用户 ID"}}<input name="userId" value="{{$.Entry.UserID}}" placeholder="ou_example" spellcheck="false"></label>
+        <label>{{tr "目标聊天 ID"}}<input name="chatId" value="{{$.Entry.ChatID}}" placeholder="oc_example" spellcheck="false"></label>
+        <label>{{tr "目标聊天类型"}}<select name="chatType">
+          <option value="">{{tr "请选择"}}</option>
+          <option value="p2p"{{if eq $.Entry.ChatType "p2p"}} selected{{end}}>{{tr "私聊（p2p）"}}</option>
+          <option value="group"{{if eq $.Entry.ChatType "group"}} selected{{end}}>{{tr "群聊（group）"}}</option>
         </select></label>
-        <label>目标话题 ID（话题别名必填）<input name="topicId" value="{{$.Entry.TopicID}}" spellcheck="false"></label>
-        <label>目标路由<select name="routeId">
-          <option value="">请选择</option>
+        <label>{{tr "目标话题 ID（话题别名必填）"}}<input name="topicId" value="{{$.Entry.TopicID}}" spellcheck="false"></label>
+        <label>{{tr "目标路由"}}<select name="routeId">
+          <option value="">{{tr "请选择"}}</option>
           {{range .Routes}}<option value="{{.}}"{{if eq . $.Entry.RouteID}} selected{{end}}>{{.}}</option>{{end}}
         </select></label>
-        <label>目标项目 ID（可选）<input name="projectId" value="{{$.Entry.ProjectID}}" spellcheck="false"></label>
+        <label>{{tr "目标项目 ID（可选）"}}<input name="projectId" value="{{$.Entry.ProjectID}}" spellcheck="false"></label>
       </div>
-      {{if .Routes}}<button type="submit" name="action" value="add" formnovalidate>追加映射到草稿</button>{{else}}<p>目标应用没有可选路由。</p>{{end}}
-      {{else}}<p>当前来源没有可迁移的别名。</p>{{end}}
+      {{if .Routes}}<button type="submit" name="action" value="add" formnovalidate>{{tr "追加映射到草稿"}}</button>{{else}}<p>{{tr "目标应用没有可选路由。"}}</p>{{end}}
+      {{else}}<p>{{tr "当前来源没有可迁移的别名。"}}</p>{{end}}
     </section>
     {{end}}
-    <button type="submit" name="action" value="preview">预览迁移</button>
+    <button type="submit" name="action" value="preview">{{tr "预览迁移"}}</button>
     {{with .Result}}
-    <section aria-label="迁移结果">
-      {{if .Applied}}<h2 role="status">已写入目标状态</h2>{{else}}<h2>迁移预览</h2>{{end}}
-      <p>目标应用 <code>{{.AppID}}</code> · 未映射的旧别名 {{.Unmapped}} 个</p>
-      <p>旧工作区来源 <code>{{.LegacyPath}}</code></p>
+    <section aria-label="{{tr "迁移结果"}}">
+      {{if .Applied}}<h2 role="status">{{tr "已写入目标状态"}}</h2>{{else}}<h2>{{tr "迁移预览"}}</h2>{{end}}
+      <p>{{tr "目标应用"}} <code>{{.AppID}}</code> {{tr "· 未映射的旧别名"}} {{.Unmapped}} {{tr "个"}}</p>
+      <p>{{tr "旧工作区来源"}} <code>{{.LegacyPath}}</code></p>
       <div class="table-scroll">
         <table>
-          <thead><tr><th scope="col">别名</th><th scope="col">路径</th><th scope="col">目标路由</th><th scope="col">项目</th><th scope="col">用户</th><th scope="col">聊天</th><th scope="col">话题</th><th scope="col">动作</th></tr></thead>
+          <thead><tr><th scope="col">{{tr "别名"}}</th><th scope="col">{{tr "路径"}}</th><th scope="col">{{tr "目标路由"}}</th><th scope="col">{{tr "项目"}}</th><th scope="col">{{tr "用户"}}</th><th scope="col">{{tr "聊天"}}</th><th scope="col">{{tr "话题"}}</th><th scope="col">{{tr "动作"}}</th></tr></thead>
           <tbody>{{range .Aliases}}<tr>
             <td>{{.Name}}</td><td><code>{{.Path}}</code></td><td><code>{{.RouteID}}</code></td><td><code>{{.ProjectID}}</code></td>
-            <td><code>{{.UserID}}</code></td><td><code>{{.ChatID}}</code>（{{.ChatType}}）</td><td>{{if .TopicID}}<code>{{.TopicID}}</code>{{else}}无{{end}}</td>
-            <td>{{if eq .Action "add"}}新增{{else if eq .Action "unchanged"}}保留已有别名{{else}}{{.Action}}{{end}}</td>
+            <td><code>{{.UserID}}</code></td><td><code>{{.ChatID}}</code>（{{.ChatType}}）</td><td>{{if .TopicID}}<code>{{.TopicID}}</code>{{else}}{{tr "无"}}{{end}}</td>
+            <td>{{if eq .Action "add"}}{{tr "新增"}}{{else if eq .Action "unchanged"}}{{tr "保留已有别名"}}{{else}}{{.Action}}{{end}}</td>
           </tr>{{end}}</tbody>
         </table>
       </div>
       {{if $.Review}}
-      <p>写入前请暂停目标实例的接收端。旧工作区文件仅供读取。修改表单后请重新预览。</p>
-      <button type="submit" name="action" value="apply">确认写入</button>
+      <p>{{tr "写入前请暂停目标实例的接收端。旧工作区文件仅供读取。修改表单后请重新预览。"}}</p>
+      <button type="submit" name="action" value="apply">{{tr "确认写入"}}</button>
       {{end}}
     </section>
     {{end}}
   </form>
-  {{else}}<p>所选配置不可用，请重新选择。</p>{{end}}
-  {{else}}<p>请先在配置工作台保存本机 JSON 配置。</p>{{end}}
+  {{else}}<p>{{tr "所选配置不可用，请重新选择。"}}</p>{{end}}
+  {{else}}<p>{{tr "请先在配置工作台保存本机 JSON 配置。"}}</p>{{end}}
 </main>
 </div>
 </body>

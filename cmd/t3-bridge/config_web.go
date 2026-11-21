@@ -95,8 +95,8 @@ func runConfigWeb(args []string) error {
 	}
 	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
 	defer stop()
-	return serveConfigWorkspace(ctx, path, provider, func(workspaceCtx context.Context, address string) error {
-		fmt.Printf("配置工作台 %s\n", address)
+	return serveConfigWorkspace(ctx, path, provider, false, func(workspaceCtx context.Context, address string) error {
+		fmt.Printf("T3 Bridge · %s\n", address)
 		<-workspaceCtx.Done()
 		return nil
 	})
@@ -125,7 +125,7 @@ func configWindowOptions(mode string, args []string) (path, provider string, err
 	return path, provider, err
 }
 
-func serveConfigWorkspace(ctx context.Context, path, provider string, open func(context.Context, string) error) error {
+func serveConfigWorkspace(ctx context.Context, path, provider string, desktop bool, open func(context.Context, string) error) error {
 	sources, err := configWebSources(path)
 	if err != nil {
 		return err
@@ -144,7 +144,7 @@ func serveConfigWorkspace(ctx context.Context, path, provider string, open func(
 		return plan.copy(ctx, binary, candidate)
 	}}
 	workspace := configWorkspaceHandlerWithLegacy(host, sources, profiles, configRuntimeHandler(profiles, readHostServiceInventory), legacy, binding)
-	address, handler := configToolSession(host, workspace)
+	address, handler := configToolSession(host, profiles.withWorkspaceLanguage(workspace, desktop))
 	server := &http.Server{
 		Handler:           handler,
 		ReadHeaderTimeout: 5 * time.Second,
@@ -255,8 +255,9 @@ func configWorkspaceHandlerWithRuntime(host string, startupSources []webSource, 
 }
 
 func configWorkspaceHandlerWithLegacy(host string, startupSources []webSource, profiles profileRegistry, runtimePage http.HandlerFunc, legacy *legacyCredentialWeb, bindings ...*qrRegistration) http.Handler {
-	page := template.Must(newWorkspacePage("config web").Funcs(template.FuncMap{
+	page := newWorkspacePage("config web").Funcs(template.FuncMap{
 		"lines":                 func(values []string) string { return strings.Join(values, "\n") },
+		"fileName":              filepath.Base,
 		"validReplacementAppID": validReplacementAppID,
 		"newRoute": func() routeFields {
 			return routeFields{
@@ -264,7 +265,7 @@ func configWorkspaceHandlerWithLegacy(host string, startupSources []webSource, p
 				OptionsJSON: "{}",
 			}
 		},
-	}).Parse(configWebHTML))
+	}).Parse(configWebHTML)
 	mux := http.NewServeMux()
 	binding := &qrRegistration{ctx: context.Background(), register: registration.RegisterApp}
 	if len(bindings) != 0 {
@@ -386,6 +387,17 @@ func configWorkspaceHandlerWithLegacy(host string, startupSources []webSource, p
 		w.Header().Set("Content-Type", "text/javascript; charset=utf-8")
 		_, _ = io.WriteString(w, configToolSessionJS)
 	})
+	mux.HandleFunc("GET /workspace-language.js", func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "text/javascript; charset=utf-8")
+		catalog := "{}"
+		if requestWorkspaceLanguage(r) == workspaceEN {
+			catalog = string(workspaceEnglishJSON)
+		}
+		_, _ = io.WriteString(w, "const workspaceMessages = "+catalog+";\n")
+		_, _ = io.WriteString(w, workspaceLanguageJS)
+	})
+	mux.HandleFunc("GET /workspace-language", profiles.workspaceLanguageHandler)
+	mux.HandleFunc("POST /workspace-language", profiles.workspaceLanguageHandler)
 	mux.HandleFunc("/{$}", func(w http.ResponseWriter, r *http.Request) {
 		query := r.URL.Query()
 		if query.Has("replacementSecret") {
@@ -615,7 +627,7 @@ func configWorkspaceHandlerWithLegacy(host string, startupSources []webSource, p
 				status = http.StatusUnprocessableEntity
 			}
 		case action == "register-draft-project":
-			status, view.Error = draftProject.start(w, source, view.Revision, candidate, parsed,
+			status, view.Error = draftProject.start(w, r, source, view.Revision, candidate, parsed,
 				r.PostForm.Get("projectAppId"), r.PostForm.Get("projectRouteId"))
 			if status == http.StatusOK {
 				return
@@ -650,7 +662,7 @@ func configWorkspaceHandlerWithLegacy(host string, startupSources []webSource, p
 		w.Header().Set("Referrer-Policy", "same-origin")
 		w.Header().Set("Content-Type", "text/html; charset=utf-8")
 		w.WriteHeader(status)
-		_ = page.Execute(w, view)
+		_ = page.Execute(w, r, view)
 	})
 
 	// Binding to loopback limits network access. The Host check also rejects

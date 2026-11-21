@@ -252,36 +252,36 @@ func (m *configTUI) receiveServiceResult(msg configTUIServiceResult) {
 }
 
 func (m *configTUI) serviceView() (title, body, shortcuts string) {
-	title = "安装用户级后台服务"
+	title = m.language.text("安装用户级后台服务")
 	if m.screen == tuiServiceName {
-		return title + " · 实例名", m.input.View(), "Enter 预览安装 · Esc 返回"
+		return title + m.language.text(" · 实例名"), m.input.View(), m.language.text("Enter 预览安装 · Esc 返回")
 	}
-	body = ansi.Truncate("实例名 · "+m.service.instance, m.width, "…")
+	body = ansi.Truncate(m.language.text("实例名 · ")+m.service.instance, m.width, "…")
 	switch m.screen {
 	case tuiServiceConfirm:
-		return title, body, "p 检查启动条件 · P 预检全部账号 · y 确认安装 · Esc 修改实例名"
+		return title, body, m.language.text("p 检查启动条件 · P 预检全部账号 · y 确认安装 · Esc 修改实例名")
 	case tuiServicePreflightLoading:
 		if appID := m.service.preflightAppID; appID != "" {
-			body = ansi.Truncate(configTUIPlain("检查已保存配置的所选 App · "+appID), m.width, "…")
+			body = ansi.Truncate(configTUIPlain(m.language.text("检查已保存配置的所选 App · ")+appID), m.width, "…")
 		} else if m.service.preflightReturn == tuiBrowse {
-			body = ansi.Truncate("检查已保存配置的全部账号（含未启用接收）", m.width, "…")
+			body = ansi.Truncate(m.language.text("检查已保存配置的全部账号（含未启用接收）"), m.width, "…")
 		}
-		return "正在执行只读 API 启动预检…", body, ""
+		return m.language.text("正在执行只读 API 启动预检…"), body, ""
 	case tuiServicePreflightResult:
-		shortcuts = "↑↓←→ 滚动 · Esc 返回"
+		shortcuts = m.language.text("↑↓←→ 滚动 · Esc 返回")
 		if m.service.preflightReturn == tuiServiceConfirm {
-			shortcuts += "安装确认"
+			shortcuts += m.language.text("安装确认")
 		}
-		title = "只读 API 启动预检结果"
+		title = m.language.text("只读 API 启动预检结果")
 		if m.service.preflightAppID != "" {
-			title += " · 所选 App"
+			title += m.language.text(" · 所选 App")
 		}
 		return title, m.review.View(), shortcuts
 	case tuiServiceInstalling:
-		return "正在安装用户级后台服务…", body, ""
+		return m.language.text("正在安装用户级后台服务…"), body, ""
 	case tuiServiceStarting:
-		return "正在启动用户级后台服务…", body, ""
+		return m.language.text("正在启动用户级后台服务…"), body, ""
 	default:
-		return "用户级后台服务", body, "s 启动服务 · Esc 返回"
+		return m.language.text("用户级后台服务"), body, m.language.text("s 启动服务 · Esc 返回")
 	}
 }

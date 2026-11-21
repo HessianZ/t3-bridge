@@ -57,9 +57,9 @@ func (r *runtimeGroupBatchReview) take(target runtimeGroupTarget, ids []string) 
 }
 
 func configRuntimeGroupsHandler(list func() ([]receiverProcess, error), operate func(context.Context, string, string, string, bridge.GroupAccessRequest) (bridge.GroupAccessView, error)) http.HandlerFunc {
-	page := template.Must(newWorkspacePage("runtime groups").Funcs(template.FuncMap{
+	page := newWorkspacePage("runtime groups").Funcs(template.FuncMap{
 		"groupMessageEventText": groupMessageEventText,
-	}).Parse(configRuntimeGroupsHTML))
+	}).Parse(configRuntimeGroupsHTML)
 	var review runtimeGroupBatchReview
 	return func(w http.ResponseWriter, r *http.Request) {
 		if !runtimeRequestOriginAllowed(r) {
@@ -208,7 +208,7 @@ func configRuntimeGroupsHandler(list func() ([]receiverProcess, error), operate 
 		}
 		w.Header().Set("Content-Type", "text/html; charset=utf-8")
 		w.WriteHeader(status)
-		_ = page.Execute(w, view)
+		_ = page.Execute(w, r, view)
 	}
 }
 

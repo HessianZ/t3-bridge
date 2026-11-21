@@ -95,11 +95,11 @@ func (m *configTUI) receiveMeetingPermissions(msg configTUIMeetingPermissionsRes
 
 func (m *configTUI) meetingPermissionsView() (title, body, shortcuts, actions string) {
 	if m.screen == tuiMeetingPermissionsLoading {
-		title = "正在检查会议权限…"
+		title = m.language.text("正在检查会议权限…")
 		if m.liveMeetings.checkingAvailability {
-			title = "正在查询活动会议接口…"
+			title = m.language.text("正在查询活动会议接口…")
 		}
-		return title, ansi.Hardwrap(m.liveMeetingAppText(), m.width, true), "Esc 取消", ""
+		return title, ansi.Hardwrap(m.liveMeetingAppText(), m.width, true), m.language.text("Esc 取消"), ""
 	}
-	return "会议权限检查", m.review.View(), "v 查接口 · ↑↓←→ 滚动 · Esc 返回", "查所选 App 所有者的活动会议，仅显示状态"
+	return m.language.text("会议权限检查"), m.review.View(), m.language.text("v 查接口 · ↑↓←→ 滚动 · Esc 返回"), m.language.text("查所选 App 所有者的活动会议，仅显示状态")
 }

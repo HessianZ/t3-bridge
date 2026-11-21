@@ -230,50 +230,50 @@ func (m *configTUI) liveAccessKey(key string) (tea.Cmd, bool) {
 func (m *configTUI) liveAccessView() (title, body, shortcuts, actions string) {
 	s := &m.liveAccess
 	app := s.account.Tenant + "/" + s.account.AppID
-	title = "在线用户权限 · " + app
+	title = m.language.text("在线用户权限 · ") + app
 	line := func(value string) string {
 		return ansi.Truncate(configTUIPlain(strings.ReplaceAll(value, "\n", " ")), m.width, "…")
 	}
 	switch m.screen {
 	case tuiLiveAccessLoading:
 		if s.applying {
-			return title, "正在等待接收进程确认更新…", "", ""
+			return title, m.language.text("正在等待接收进程确认更新…"), "", ""
 		}
-		return title, "正在读取在线用户权限…", "Esc 取消", ""
+		return title, m.language.text("正在读取在线用户权限…"), m.language.text("Esc 取消"), ""
 	case tuiLiveAccessScope:
-		lines := []string{"选择权限类型"}
+		lines := []string{m.language.text("选择权限类型")}
 		height := max(1, m.bodyHeight()-len(lines))
 		first := max(0, s.scope-height+1)
 		for i := first; i < min(len(s.view.RouteIDs)+2, first+height); i++ {
 			lines = append(lines, line(liveSettingMarker(i == s.scope)+liveAccessScopeLabel(s.scopeEntry(i))))
 		}
-		return title, strings.Join(lines, "\n"), "↑↓ 选择 · Enter 输入 Open ID · Esc 返回", ""
+		return title, strings.Join(lines, "\n"), m.language.text("↑↓ 选择 · Enter 输入 Open ID · Esc 返回"), ""
 	case tuiLiveAccessUser:
-		return title, line(liveAccessScopeLabel(s.scopeEntry(s.scope))) + "\n" + m.input.View(), "输入应用 Open ID · Enter 继续 · Esc 返回", ""
+		return title, line(liveAccessScopeLabel(s.scopeEntry(s.scope))) + "\n" + m.input.View(), m.language.text("输入应用 Open ID · Enter 继续 · Esc 返回"), ""
 	case tuiLiveAccessEdit:
 		lines := []string{line(liveAccessScopeLabel(s.target)), line("Open ID · " + s.target.UserID), line(liveAccessEntryState(s.target))}
 		for i, mode := range liveAccessModes {
 			lines = append(lines, line(liveSettingMarker(i == s.mode)+liveAccessModeLabel(mode)))
 		}
-		return title, strings.Join(lines, "\n"), "↑↓ 选覆盖规则 · Enter 预览修改 · Esc 返回", ""
+		return title, strings.Join(lines, "\n"), m.language.text("↑↓ 选覆盖规则 · Enter 预览修改 · Esc 返回"), ""
 	case tuiLiveAccessConfirm:
 		lines := []string{
-			"App · " + app, "进程 · " + s.process,
-			"权限 · " + liveAccessScopeLabel(s.target), "Open ID · " + s.target.UserID,
-			"覆盖 · " + liveAccessModeLabel(s.target.Override) + " → " + liveAccessModeLabel(liveAccessModes[s.mode]),
+			"App · " + app, m.language.text("进程 · ") + s.process,
+			m.language.text("权限 · ") + liveAccessScopeLabel(s.target), "Open ID · " + s.target.UserID,
+			m.language.text("覆盖 · ") + liveAccessModeLabel(s.target.Override) + " → " + liveAccessModeLabel(liveAccessModes[s.mode]),
 		}
 		for i, value := range lines {
 			lines[i] = ansi.Hardwrap(configTUIPlain(strings.ReplaceAll(value, "\n", " ")), m.width, true)
 		}
-		return "确认在线权限修改", strings.Join(lines, "\n"), "y 确认即时应用 · Esc 返回", "操作写入此 App 的运行状态"
+		return m.language.text("确认在线权限修改"), strings.Join(lines, "\n"), m.language.text("y 确认即时应用 · Esc 返回"), m.language.text("操作写入此 App 的运行状态")
 	}
 	owner := s.view.OwnerID
 	if owner == "" {
-		owner = "未识别"
+		owner = m.language.text("未识别")
 	}
-	lines := []string{line("进程 · " + s.process), line("应用所有者 · " + owner)}
+	lines := []string{line(m.language.text("进程 · ") + s.process), line(m.language.text("应用所有者 · ") + owner)}
 	if len(s.view.Entries) == 0 {
-		lines = append(lines, "没有可显示的权限规则。")
+		lines = append(lines, m.language.text("没有可显示的权限规则。"))
 	}
 	height := max(1, (m.bodyHeight()-len(lines))/2)
 	first := max(0, s.row-height+1)
@@ -282,7 +282,7 @@ func (m *configTUI) liveAccessView() (title, body, shortcuts, actions string) {
 		label := liveAccessScopeLabel(entry) + " · " + entry.UserID
 		lines = append(lines, line(liveSettingMarker(i == s.row)+label), line("  "+liveAccessEntryState(entry)))
 	}
-	return title, strings.Join(lines, "\n"), "↑↓ 移动 · Enter 编辑 · a 添加规则 · r 刷新 · Esc 返回草稿", "生效值仅表示该层权限"
+	return title, strings.Join(lines, "\n"), m.language.text("↑↓ 移动 · Enter 编辑 · a 添加规则 · r 刷新 · Esc 返回草稿"), m.language.text("生效值仅表示该层权限")
 }
 
 func liveAccessScopeLabel(entry bridge.LocalAccessPolicyEntry) string {

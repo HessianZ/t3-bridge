@@ -135,35 +135,35 @@ func (m *configTUI) receiveFeishuBinding(result configTUIBindingResult) tea.Cmd 
 }
 
 func (m *configTUI) feishuBindingView() (title, body, shortcuts string) {
-	title = "绑定飞书或 Lark"
+	title = m.language.text("绑定飞书或 Lark")
 	oldAppID := m.binding.replaceAppID
 	if oldAppID != "" {
-		title = "替换飞书或 Lark 应用"
+		title = m.language.text("替换飞书或 Lark 应用")
 	}
 	if m.screen == tuiBindReview {
-		body = "云文档评论权限：关闭"
+		body = m.language.text("云文档评论权限：关闭")
 		if m.binding.comments {
-			body = "云文档评论权限：开启"
+			body = m.language.text("云文档评论权限：开启")
 		}
 		if oldAppID != "" {
-			body = "替换应用 " + oldAppID + "\n" +
-				"仅带入所选账号的默认 T3 路由和连接。\n" +
-				"使用独立状态目录，仅授权扫码用户，禁用接收。\n" + body
-			return title, body, "Enter 准备扫码 · r 切换评论权限 · x 切回普通绑定 · Esc 返回"
+			body = m.language.text("替换应用 ") + oldAppID + "\n" +
+				m.language.text("仅带入所选账号的默认 T3 路由和连接。\n") +
+				m.language.text("使用独立状态目录，仅授权扫码用户，禁用接收。\n") + body
+			return title, body, m.language.text("Enter 准备扫码 · r 切换评论权限 · x 切回普通绑定 · Esc 返回")
 		}
-		return title, body, "Enter 准备扫码 · r 切换评论权限 · x 替换所选应用 · Esc 返回"
+		return title, body, m.language.text("Enter 准备扫码 · r 切换评论权限 · x 替换所选应用 · Esc 返回")
 	}
 	view := m.binding.view
 	if view.State == "scanned" {
 		if oldAppID != "" {
-			return title, oldAppID + " → " + view.AppID, "Enter 保存私有凭据并审阅草稿 · Esc 取消"
+			return title, oldAppID + " → " + view.AppID, m.language.text("Enter 保存私有凭据并审阅草稿 · Esc 取消")
 		}
-		return title, "已授权应用 " + view.AppID, "Enter 保存私有凭据并更新草稿 · Esc 取消"
+		return title, m.language.text("已授权应用 ") + view.AppID, m.language.text("Enter 保存私有凭据并更新草稿 · Esc 取消")
 	}
 	if view.URL == "" {
-		return title, "正在获取二维码…", "Esc 取消"
+		return title, m.language.text("正在获取二维码…"), m.language.text("Esc 取消")
 	}
-	return title, m.terminalAuthorizationBody(view.URL, m.binding.code), "Esc 取消"
+	return title, m.terminalAuthorizationBody(view.URL, m.binding.code), m.language.text("Esc 取消")
 }
 
 func (m *configTUI) terminalAuthorizationBody(address, code string) string {

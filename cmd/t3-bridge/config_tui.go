@@ -66,6 +66,11 @@ func runConfigTUI(args []string) error {
 		m.legacyProvider = legacyProvider
 		m.profiles.registry, _ = localProfiles()
 		m.profiles.fallback = fallback
+		m.languageChoice = m.profiles.registry.workspaceLanguage()
+		m.language = m.languageChoice
+		if m.language == workspaceAuto {
+			m.language = systemWorkspaceLanguage()
+		}
 		defer func() {
 			if m.legacyImport.cancel != nil {
 				m.legacyImport.cancel()
@@ -217,8 +222,9 @@ const (
 )
 
 type configTUI struct {
-	source webSource
-	draft  string
+	source                   webSource
+	draft                    string
+	language, languageChoice workspaceLanguage
 
 	screen          configTUIScreen
 	account, row    int
@@ -461,6 +467,24 @@ func (m *configTUI) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 }
 
 func (m *configTUI) handleKey(key string) (tea.Cmd, bool) {
+	if m.screen == tuiBrowse && key == "f3" {
+		next := workspaceEN
+		switch m.languageChoice {
+		case workspaceEN:
+			next = workspaceZH
+		case workspaceZH:
+			next = workspaceAuto
+		}
+		if m.profiles.registry.root == "" || m.profiles.registry.saveWorkspaceLanguage(next) != nil {
+			m.status = "无法保存语言设置。"
+			return nil, true
+		}
+		m.languageChoice, m.language = next, next
+		if next == workspaceAuto {
+			m.language = systemWorkspaceLanguage()
+		}
+		return nil, true
+	}
 	if m.screen == tuiProjectRegisterPending {
 		if key == "ctrl+c" || key == "esc" {
 			m.status = "请求已提交，项目可能已登记。请等待结果。"
@@ -831,10 +855,10 @@ func (m *configTUI) firstRunGuidance() []string {
 		return nil
 	}
 	lines := []string{
-		"首次配置 · F7 扫码或填 ID/密钥文件",
-		"T 本机 T3 · F6 授权 · 进路由",
-		"F5 选目标 · K 登记项目 · p 预览 · s 保存",
-		"保存后 A 预检 · E 审阅启用后 s 保存",
+		m.language.text("首次配置 · F7 扫码或填 ID/密钥文件"),
+		m.language.text("T 本机 T3 · F6 授权 · 进路由"),
+		m.language.text("F5 选目标 · K 登记项目 · p 预览 · s 保存"),
+		m.language.text("保存后 A 预检 · E 审阅启用后 s 保存"),
 	}
 	return lines[:min(len(lines), max(0, m.height-5))]
 }
@@ -851,98 +875,98 @@ func (m *configTUI) View() string {
 	case tuiBrowse:
 		title = m.accountTitle()
 		body = m.fieldList()
-		shortcuts = "F4 命名配置 · ↑↓ 选择 · Enter 编辑 · Tab / Shift+Tab 切换账号 · J 完整 JSON"
-		actions = "v 查询消息回执 · F6 T3 授权 · F7 飞书绑定 · a 新增账号 · r 新增路由 · d 移除路由"
+		shortcuts = m.language.text("F4 命名配置 · ↑↓ 选择 · Enter 编辑 · Tab / Shift+Tab 切换账号 · J 完整 JSON")
+		actions = m.language.text("v 查询消息回执 · F6 T3 授权 · F7 飞书绑定 · a 新增账号 · r 新增路由 · d 移除路由")
 		if m.route != "" {
-			title += " / 路由 " + m.route
-			actions = "B 编辑工具绑定 · V 核验工具身份 · F5 查询 T3 · Esc 返回 · " + actions
+			title += m.language.text(" / 路由 ") + m.route
+			actions = m.language.text("B 编辑工具绑定 · V 核验工具身份 · F5 查询 T3 · Esc 返回 · ") + actions
 		} else if m.account != 0 {
-			actions += " · D 移除账号"
+			actions += m.language.text(" · D 移除账号")
 		}
-		migrations = "L 导入旧配置 · W 迁移工作区 · S 转接旧会话"
+		migrations = m.language.text("L 导入旧配置 · W 迁移工作区 · S 转接旧会话")
 		if m.route == "" {
-			migrations = "H 在线会议 · " + migrations + " · T 使用本机 T3"
+			migrations = m.language.text("H 在线会议 · ") + migrations + m.language.text(" · T 使用本机 T3")
 		} else {
-			migrations += " · K 登记 T3 项目"
+			migrations += m.language.text(" · K 登记 T3 项目")
 		}
-		more = "G 排空检查 · I 安装服务 · M 管理实例 · p 预览"
+		more = m.language.text("G 排空检查 · I 安装服务 · M 管理实例 · p 预览")
 		if m.route == "" {
-			receiverActions = "Ctrl+D 接收状态 · Ctrl+R 重连接收端"
+			receiverActions = m.language.text("Ctrl+D 接收状态 · Ctrl+R 重连接收端")
 		}
 		if m.hasSavedReceiverReadinessSource() {
-			readinessActions = "Ctrl+P 全部 App 就绪"
+			readinessActions = m.language.text("Ctrl+P 全部 App 就绪")
 			if m.route == "" {
-				readinessActions += " · Y 每日遥测"
+				readinessActions += m.language.text(" · Y 每日遥测")
 			}
 		}
 		if m.savedServiceConfigIssue() == "" {
-			readinessActions += " · P 预检全部账号"
+			readinessActions += m.language.text(" · P 预检全部账号")
 			if m.route == "" {
-				receiverActions += " · A 预检所选 App · E 准备启用接收"
+				receiverActions += m.language.text(" · A 预检所选 App · E 准备启用接收")
 			}
 		}
 		if m.source.Path != "" && m.source.Revision != "missing" {
-			more += " · b 备份"
+			more += m.language.text(" · b 备份")
 			if m.route == "" && m.account == 0 {
-				actions += " · C 凭据"
+				actions += m.language.text(" · C 凭据")
 			}
 		}
-		more += " · q 退出"
-		onlineActions = "F8 选择飞书群 · F9 在线群权限 · F10 我的群 · F11 在线运行设置 · F12 在线用户权限"
+		more += m.language.text(" · q 退出")
+		onlineActions = m.language.text("F8 选择飞书群 · F9 在线群权限 · F10 我的群 · F11 在线运行设置 · F12 在线用户权限")
 	case tuiEdit:
-		title = m.editField.label
-		shortcuts = "Ctrl+S 应用到草稿 · F2 清空 · Esc 返回"
+		title = m.editField.labelIn(m.language)
+		shortcuts = m.language.text("Ctrl+S 应用到草稿 · F2 清空 · Esc 返回")
 		switch {
 		case m.editField.text:
 			body = m.input.View()
-			shortcuts = "Enter / Ctrl+S 应用到草稿 · F2 清空 · Esc 返回"
-			actions = "直接输入文本。清空内容可删除字段。"
+			shortcuts = m.language.text("Enter / Ctrl+S 应用到草稿 · F2 清空 · Esc 返回")
+			actions = m.language.text("直接输入文本。清空内容可删除字段。")
 		case len(m.editField.path) != 0:
 			body = m.editor.View()
-			actions = "填写 JSON 值。清空内容可删除字段。"
+			actions = m.language.text("填写 JSON 值。清空内容可删除字段。")
 			if m.editField.path[len(m.editField.path)-1] == "toolContext" {
-				actions = "身份可选 bot、user 或 user-default。双身份使用同一 App 和 CLI profile。"
+				actions = m.language.text("身份可选 bot、user 或 user-default。双身份使用同一 App 和 CLI profile。")
 			}
 		default:
 			body = m.editor.View()
 		}
 	case tuiReview:
-		title = "候选配置差异"
+		title = m.language.text("候选配置差异")
 		body = m.review.View()
-		shortcuts = "↑↓←→ 滚动 · Esc 返回 · q 退出"
+		shortcuts = m.language.text("↑↓←→ 滚动 · Esc 返回 · q 退出")
 		if m.reviewed != nil {
-			actions = "e 导出到新文件"
+			actions = m.language.text("e 导出到新文件")
 			if m.source.Path != "" {
-				actions = "s 保存 · " + actions
+				actions = m.language.text("s 保存 · ") + actions
 			}
 		}
 		if m.legacyImport.candidate != "" {
-			more = "c 复制 App Secret · L 返回导入表单"
+			more = m.language.text("c 复制 App Secret · L 返回导入表单")
 		}
 	case tuiExport:
-		title = "导出候选配置"
+		title = m.language.text("导出候选配置")
 		body = m.input.View()
-		shortcuts = "Enter 导出 · Esc 返回"
-		actions = "输入新 .json 文件的路径"
+		shortcuts = m.language.text("Enter 导出 · Esc 返回")
+		actions = m.language.text("输入新 .json 文件的路径")
 	case tuiAddRoute:
-		title = m.accountTitle() + " / 新增路由"
+		title = m.accountTitle() + m.language.text(" / 新增路由")
 		body = m.input.View()
-		shortcuts = "Enter 添加到草稿 · Esc 返回"
-		actions = "输入路由 ID。添加后填写目标和路由用户。"
+		shortcuts = m.language.text("Enter 添加到草稿 · Esc 返回")
+		actions = m.language.text("输入路由 ID。添加后填写目标和路由用户。")
 	case tuiAddAccount:
-		title = "新增附加账号"
+		title = m.language.text("新增附加账号")
 		body = m.accountFormView()
-		shortcuts = "↑↓ / Tab 选字段 · ←→ 选租户和主路由"
-		actions = "Enter 下一项 · Ctrl+S 添加到草稿 · Esc 返回"
+		shortcuts = m.language.text("↑↓ / Tab 选字段 · ←→ 选租户和主路由")
+		actions = m.language.text("Enter 下一项 · Ctrl+S 添加到草稿 · Esc 返回")
 	case tuiImportLegacy:
 		title, body, shortcuts, actions = m.legacyImportView()
 	case tuiLegacyCopyConfirm:
-		title = "确认复制 App Secret"
+		title = m.language.text("确认复制 App Secret")
 		body = m.legacyImport.confirmation.View()
-		shortcuts = "y 确认 · Esc 取消 · ↑↓ 滚动"
+		shortcuts = m.language.text("y 确认 · Esc 取消 · ↑↓ 滚动")
 	case tuiLegacyCopyPending:
-		title = "复制 App Secret"
-		body = "正在读取旧桥凭据并写入私有文件…"
+		title = m.language.text("复制 App Secret")
+		body = m.language.text("正在读取旧桥凭据并写入私有文件…")
 	case tuiWorkspaceImportPath, tuiWorkspaceImportMapping, tuiWorkspaceImportAliases, tuiWorkspaceImportEntry, tuiWorkspaceImportReview:
 		title, body, shortcuts, actions = m.workspaceImportView()
 	case tuiLegacySessionForm, tuiLegacySessionInspecting, tuiLegacySessionPick, tuiLegacySessionLoading, tuiLegacySessionReview, tuiLegacySessionApplying:
@@ -962,23 +986,23 @@ func (m *configTUI) View() string {
 		if m.screen == tuiBindReview {
 			lines := strings.Split(body, "\n")
 			body = strings.Join(lines[:min(len(lines), m.bodyHeight())], "\n")
-			actions = "m 手动替换所选应用"
+			actions = m.language.text("m 手动替换所选应用")
 		}
 	case tuiBindManual:
-		title = "手动换绑 · " + m.binding.manual.fields.ReplaceAppID
+		title = m.language.text("手动换绑 · ") + m.binding.manual.fields.ReplaceAppID
 		body = m.manualBindingView()
-		shortcuts = "F2 直接输入 App Secret · ↑↓ / Tab 选字段 · ←→ 选租户"
-		actions = "Enter 下一项 · Ctrl+S 审阅草稿 · Esc 返回"
+		shortcuts = m.language.text("F2 直接输入 App Secret · ↑↓ / Tab 选字段 · ←→ 选租户")
+		actions = m.language.text("Enter 下一项 · Ctrl+S 审阅草稿 · Esc 返回")
 		if m.binding.manual.enterSecret {
-			shortcuts = "F2 使用已有文件 · ↑↓ / Tab 选字段 · ←→ 选租户"
-			actions = "Ctrl+S 写入新的私有 App Secret 文件并审阅差异 · Esc 返回"
+			shortcuts = m.language.text("F2 使用已有文件 · ↑↓ / Tab 选字段 · ←→ 选租户")
+			actions = m.language.text("Ctrl+S 写入新的私有 App Secret 文件并审阅差异 · Esc 返回")
 		}
 	case tuiGroupsLoading, tuiGroupsPick:
 		title, body, shortcuts, actions = m.feishuGroupsView()
 	case tuiGroupsFilter:
-		title = m.accountTitle() + " / 搜索机器人所在群"
+		title = m.accountTitle() + m.language.text(" / 搜索机器人所在群")
 		body = m.input.View()
-		shortcuts = "输入群名或 ID · Enter 搜索 · 清空后 Enter 显示全部 · Esc 返回"
+		shortcuts = m.language.text("输入群名或 ID · Enter 搜索 · 清空后 Enter 显示全部 · Esc 返回")
 	case tuiLiveGroupsLoading, tuiLiveGroupsPick, tuiLiveGroupsFilter, tuiLiveGroupsConfirm:
 		title, body, shortcuts, actions = m.liveGroupsView()
 	case tuiLiveSettingsLoading, tuiLiveSettingsPick, tuiLiveSettingsEdit, tuiLiveSettingsConfirm:
@@ -992,10 +1016,10 @@ func (m *configTUI) View() string {
 	case tuiLiveReconnectLoading, tuiLiveReconnectConfirm, tuiLiveReconnectApplying:
 		title, body, shortcuts = m.liveReconnectView()
 	case tuiReceiverStatusLoading, tuiReceiverStatusResult:
-		title, body, shortcuts = "接收状态", m.review.View(), "r 刷新 · Esc 返回 · ↑↓←→ 滚动"
+		title, body, shortcuts = m.language.text("接收状态"), m.review.View(), m.language.text("r 刷新 · Esc 返回 · ↑↓←→ 滚动")
 	case tuiReceiverReadinessLoading, tuiReceiverReadinessResult:
-		title, body, shortcuts = "接收就绪 · 全部 App", m.review.View(), "r 刷新 · Esc 返回 · ↑↓←→ 滚动"
-		actions = "只读 · 已保存配置"
+		title, body, shortcuts = m.language.text("接收就绪 · 全部 App"), m.review.View(), m.language.text("r 刷新 · Esc 返回 · ↑↓←→ 滚动")
+		actions = m.language.text("只读 · 已保存配置")
 	case tuiTelemetryArchiveDate, tuiTelemetryArchiveLoading, tuiTelemetryArchiveResult:
 		title, body, shortcuts, actions, more = m.telemetryArchiveView()
 	case tuiUserGroupsLoading, tuiUserGroupsPick, tuiUserGroupsSearch, tuiUserGroupsAuthorize, tuiUserGroupsConfirm:
@@ -1017,29 +1041,39 @@ func (m *configTUI) View() string {
 	case tuiProjectRegisterInput, tuiProjectRegisterConfirm, tuiProjectRegisterPending:
 		title, body, shortcuts, actions = m.projectRegisterView()
 	case tuiReceiverEnableLoading:
-		title = "正在预检所选应用…"
+		title = m.language.text("正在预检所选应用…")
 		body = ansi.Truncate(configTUIPlain(m.accountTitle()), m.width, "…")
 	}
-	header := "T3 Bridge 配置"
+	header := m.language.text("T3 Bridge 配置")
 	if m.draft != string(m.source.JSON) {
-		header += " · 草稿已修改"
+		header += m.language.text(" · 草稿已修改")
 	}
-	source := m.source.Label
+	source := m.language.sourceLabel(m.source.Label)
 	if m.source.Path != "" {
 		source = m.source.Path
 		if m.source.Revision == "missing" {
-			source += "（新文件）"
+			source += m.language.text("（新文件）")
 		}
 	}
 	line := func(value string) string {
 		return ansi.Truncate(configTUIPlain(strings.ReplaceAll(value, "\n", " ")), m.width, "…")
+	}
+	if m.screen == tuiBrowse {
+		choice := m.language.text("跟随系统")
+		switch m.languageChoice {
+		case workspaceEN:
+			choice = "English"
+		case workspaceZH:
+			choice = "简体中文"
+		}
+		header += " · " + m.language.text("F3 语言") + " (" + choice + ")"
 	}
 	lines := []string{line(header), line(source), line(title)}
 	guidance := m.firstRunGuidance()
 	for _, hint := range guidance {
 		lines = append(lines, line(hint))
 	}
-	lines = append(lines, body, line(m.status), line(shortcuts), line(actions))
+	lines = append(lines, body, line(m.language.text(m.status)), line(shortcuts), line(actions))
 	if onlineActions != "" {
 		lines = append(lines, line(onlineActions))
 	}

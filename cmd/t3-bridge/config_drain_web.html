@@ -1,52 +1,53 @@
 <!doctype html>
-<html lang="zh-CN">
+<html lang="{{uiLanguage}}">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>接收端排空检查 · T3 Bridge</title>
+  <title>{{tr "接收端排空检查 · T3 Bridge"}}</title>
   <link rel="stylesheet" href="/workspace.css">
   <style>
     td ul { margin: 0; }
     td form { align-items: baseline; }
   </style>
+  <script defer src="/workspace-language.js"></script>
 </head>
 <body>
 <div class="shell">
 {{template "workspace-header" (workspaceNav "runtime" .Source.ID)}}
 <main class="container tool-page inline-forms">
-  <nav aria-label="排空检查导航"><a href="/{{if .Source.ID}}?source={{.Source.ID}}{{end}}">配置工作台</a><a href="/runtime">运行状态</a></nav>
-  <h1>接收端排空检查</h1>
-  <p>请先停止使用所选配置的接收端，再检查全部 App 的本机已保存状态。结果仅反映本次检查时的状态快照。</p>
+  <nav aria-label="{{tr "排空检查导航"}}"><a href="/{{if .Source.ID}}?source={{.Source.ID}}{{end}}">{{tr "配置工作台"}}</a><a href="/runtime">{{tr "运行状态"}}</a></nav>
+  <h1>{{tr "接收端排空检查"}}</h1>
+  <p>{{tr "请先停止使用所选配置的接收端，再检查全部 App 的本机已保存状态。结果仅反映本次检查时的状态快照。"}}</p>
   {{if .Error}}<p role="alert">{{.Error}}</p>{{end}}
   {{if .Sources}}
   <form method="get" action="/drain-check">
-    <label>已保存配置<select name="source">
+    <label>{{tr "已保存配置"}}<select name="source">
       {{range .Sources}}<option value="{{.ID}}"{{if eq .ID $.Source.ID}} selected{{end}}>{{.Label}}</option>{{end}}
     </select></label>
-    <button type="submit">打开配置</button>
+    <button type="submit">{{tr "打开配置"}}</button>
   </form>
   {{if .Source.ID}}
-  <section aria-label="所选配置">
+  <section aria-label="{{tr "所选配置"}}">
     <dl>
-      <dt>配置</dt><dd>{{.Source.Label}}</dd>
-      <dt>配置文件</dt><dd><code>{{.Source.Path}}</code></dd>
+      <dt>{{tr "配置"}}</dt><dd>{{sourceLabel .Source.Label}}</dd>
+      <dt>{{tr "配置文件"}}</dt><dd><code>{{.Source.Path}}</code></dd>
     </dl>
     {{if .Source.Revision}}
     <form method="post" action="/drain-check">
       <input type="hidden" name="source" value="{{.Source.ID}}">
       <input type="hidden" name="revision" value="{{.Source.Revision}}">
-      <button type="submit">检查全部 App</button>
+      <button type="submit">{{tr "检查全部 App"}}</button>
     </form>
     {{end}}
   </section>
   {{end}}
-  {{else}}<p>请先在配置工作台保存本机私有 JSON 配置。</p>{{end}}
+  {{else}}<p>{{tr "请先在配置工作台保存本机私有 JSON 配置。"}}</p>{{end}}
   {{with .Report}}
   <section aria-labelledby="drain-result">
-    <h2 id="drain-result">检查结果</h2>
-    <p role="status">{{if .Drained}}全部 App 已排空{{else}}未能确认全部 App 已排空{{end}}</p>
+    <h2 id="drain-result">{{tr "检查结果"}}</h2>
+    <p role="status">{{if .Drained}}{{tr "全部 App 已排空"}}{{else}}{{tr "未能确认全部 App 已排空"}}{{end}}</p>
     <table>
-      <thead><tr><th scope="col">App ID</th><th scope="col">状态</th><th scope="col">未结事项及数量</th></tr></thead>
+      <thead><tr><th scope="col">App ID</th><th scope="col">{{tr "状态"}}</th><th scope="col">{{tr "未结事项及数量"}}</th></tr></thead>
       <tbody>
       {{range $account := .Accounts}}
         <tr>
@@ -55,7 +56,7 @@
           <td>
             {{with .Blockers}}<ul>{{range .}}<li>{{drainBlocker .Code}}（{{.Count}}）</li>{{end}}</ul>{{else}}—{{end}}
             {{with .DeliverySamples}}
-            <p>投递待核对样本（总数以待核对计数为准）</p>
+            <p>{{tr "投递待核对样本（总数以待核对计数为准）"}}</p>
             <ul>
               {{range .}}
               <li>
@@ -64,7 +65,7 @@
                   <input type="hidden" name="appId" value="{{$account.AppID}}">
                   <input type="hidden" name="messageId" value="{{.MessageID}}">
                   <span>{{drainDeliverySample .Kind}} · <code>{{.MessageID}}</code></span>
-                  <button type="submit">查回执</button>
+                  <button type="submit">{{tr "查回执"}}</button>
                 </form>
               </li>
               {{end}}

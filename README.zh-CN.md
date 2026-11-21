@@ -16,9 +16,9 @@ T3 Bridge 把飞书消息接入 [T3 Code](https://github.com/pingdotgg/t3code) �
 
 ## 界面截图
 
-[![Web 工作台展示示例路由](docs/screenshots/web-workspace.png)](docs/screenshots/web-workspace.png)
+<a href="docs/screenshots/macos-workspace.png"><img src="docs/screenshots/macos-workspace.png" alt="紧凑的 macOS 工作台展示演示账号" width="500"></a>
 
-[Web 工作台](docs/screenshots/web-workspace.png) · [macOS 桌面工作台](docs/screenshots/macos-workspace.png) · [终端工作台](docs/screenshots/terminal-workspace.png) · [飞书 `/help`](docs/screenshots/feishu-help.png)
+[Web 工作台](docs/screenshots/web-workspace.png) · [终端工作台](docs/screenshots/terminal-workspace.png) · [飞书 `/help`](docs/screenshots/feishu-help.png)
 
 配置工作台截图使用演示配置。
 
@@ -28,7 +28,21 @@ HomeOps 是面向自托管基础设施的独立运维系统，负责健康检查
 
 ## 快速开始
 
+### 用 AI Agent 安装
+
+复制这句提示词给你的 Agent。
+
+```text
+请按 https://github.com/HessianZ/t3-bridge/blob/main/README.zh-CN.md#快速开始 在本机安装 T3 Bridge，选择匹配系统和架构的 ZIP 或从源码构建，用 --version 核对安装结果，并引导我完成飞书或 Lark 绑定及 T3 MCP 授权。
+```
+
+### 手动安装
+
+从 [Releases](https://github.com/HessianZ/t3-bridge/releases/latest) 下载与系统和架构匹配的 ZIP。完整解压后，在解压目录执行 `bin/t3-bridge run`，Windows 下执行 `.\bin\t3-bridge.exe run`。
+
 需要可访问的 T3 MCP 服务，以及一个具备所需权限的飞书应用。T3 可用本机回环或 HTTPS 直连。先用独立应用验证收发。从源码构建需要 Go 1.25 或以上。 [构建发布包](docs/RUNBOOK.zh-CN.md#构建发布包)
+
+在源码目录下执行以下命令即可构建并启动。
 
 ```sh
 go build -o bin/t3-bridge ./cmd/t3-bridge
@@ -36,6 +50,8 @@ bin/t3-bridge run
 ```
 
 一个桌面 ZIP 即可使用全部入口。同一个 `bin/t3-bridge` 提供 `run` 后台接收、`config gui` 桌面窗口、`config web` 网页和 `config tui` 终端工作台。无桌面环境可以选 core ZIP，其中也包含 Web 和 TUI。
+
+桌面和终端工作台默认跟随系统语言，Web 工作台跟随浏览器的语言偏好。可在工作台顶部选择「跟随系统」「English」或「简体中文」，也可在终端工作台主屏按 **F3** 切换。选择保存在本机。
 
 首次在交互终端运行时，若没有配置文件，会打开终端工作台。按提示绑定飞书应用、配置 ACL 和 T3 路由，再核对差异后保存。受管实例使用安装时指定的配置路径。若它与默认配置不同，打开工作台时通过 `-config` 选同一份 JSON。 [配置说明](docs/CONFIGURATION.zh-CN.md)
 

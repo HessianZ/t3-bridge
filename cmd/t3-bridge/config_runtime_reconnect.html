@@ -1,34 +1,35 @@
 <!doctype html>
-<html lang="zh-CN">
+<html lang="{{uiLanguage}}">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>重连接收应用 · T3 Bridge</title>
+  <title>{{tr "重连接收应用 · T3 Bridge"}}</title>
   <link rel="stylesheet" href="/workspace.css">
+  <script defer src="/workspace-language.js"></script>
 </head>
 <body>
 <div class="shell">
 {{template "workspace-header" (workspaceNav "runtime" "")}}
 <main class="container tool-page">
-  <nav aria-label="重连导航"><a href="/runtime">返回运行状态</a></nav>
-  <h1>重连接收应用</h1>
+  <nav aria-label="{{tr "重连导航"}}"><a href="/runtime">{{tr "返回运行状态"}}</a></nav>
+  <h1>{{tr "重连接收应用"}}</h1>
   {{if .Notice}}<p role="status">{{.Notice}}</p>{{end}}
   {{if .Selected}}
   <section>
-    <h2 id="reconnect-target">{{if .Post}}重连目标{{else}}确认重连此 App{{end}}</h2>
-    <p>{{.Selected.Account.Tenant}} · <code>{{.Selected.Account.AppID}}</code> · PID {{.Selected.PID}} · 进程 <code>{{.Selected.Process}}</code></p>
+    <h2 id="reconnect-target">{{if .Post}}{{tr "重连目标"}}{{else}}{{tr "确认重连此 App"}}{{end}}</h2>
+    <p>{{.Selected.Account.Tenant}} · <code>{{.Selected.Account.AppID}}</code> · PID {{.Selected.PID}} {{tr "· 进程"}} <code>{{.Selected.Process}}</code></p>
     {{if not .Post}}
-    <p id="reconnect-impact">重连只替换此 App 的 T3 MCP 和飞书 WebSocket 连接。任务回执会保留，已提交的 T3 运行会继续。{{if .Selected.ReconnectWait}}等待重连期间，此 App 暂停新派发。取消等待可恢复派发。{{end}}</p>
-    <p id="reconnect-recovery">同一进程中有其他 App 运行时，立即重连可为已耗尽自动重试的 App 申请恢复（需新版接收端）。</p>
+    <p id="reconnect-impact">{{tr "重连只替换此 App 的 T3 MCP 和飞书 WebSocket 连接。任务回执会保留，已提交的 T3 运行会继续。"}}{{if .Selected.ReconnectWait}}{{tr "等待重连期间，此 App 暂停新派发。取消等待可恢复派发。"}}{{end}}</p>
+    <p id="reconnect-recovery">{{tr "同一进程中有其他 App 运行时，立即重连可为已耗尽自动重试的 App 申请恢复（需新版接收端）。"}}</p>
     <form method="post" action="/runtime/reconnect" aria-labelledby="reconnect-target" aria-describedby="reconnect-impact reconnect-recovery">
       <input type="hidden" name="process" value="{{.Selected.Process}}">
       <input type="hidden" name="tenant" value="{{.Selected.Account.Tenant}}">
       <input type="hidden" name="appId" value="{{.Selected.Account.AppID}}">
       <input type="hidden" name="confirm" value="reconnect">
-      <button type="submit" name="action" value="now">立即重连此 App</button>
+      <button type="submit" name="action" value="now">{{tr "立即重连此 App"}}</button>
       {{if .Selected.ReconnectWait}}
-      <button type="submit" name="action" value="wait">等在途 T3 运行收口后重连</button>
-      <button type="submit" name="action" value="cancel">取消等待重连</button>
+      <button type="submit" name="action" value="wait">{{tr "等在途 T3 运行收口后重连"}}</button>
+      <button type="submit" name="action" value="cancel">{{tr "取消等待重连"}}</button>
       {{end}}
     </form>
     {{end}}
@@ -36,12 +37,12 @@
   {{else if not .Post}}
     {{if .Targets}}
     <section>
-      <h2>选择接收应用</h2>
+      <h2>{{tr "选择接收应用"}}</h2>
       <div class="targets">{{range .Targets}}
-        <a href="{{.URL}}">{{.Account.Tenant}} · <code>{{.Account.AppID}}</code> · PID {{.PID}} · 进程 <code>{{.Process}}</code></a>
+        <a href="{{.URL}}">{{.Account.Tenant}} · <code>{{.Account.AppID}}</code> · PID {{.PID}} {{tr "· 进程"}} <code>{{.Process}}</code></a>
       {{end}}</div>
     </section>
-    {{else if not .Notice}}<p>暂无支持重连的接收进程。</p>{{end}}
+    {{else if not .Notice}}<p>{{tr "暂无支持重连的接收进程。"}}</p>{{end}}
   {{end}}
 </main>
 </div>

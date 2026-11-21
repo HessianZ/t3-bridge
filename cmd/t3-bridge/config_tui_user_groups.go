@@ -305,7 +305,7 @@ func (m *configTUI) userGroupsPickKey(key string) (tea.Cmd, bool) {
 func (m *configTUI) userGroupsView() (title, body, shortcuts, actions string) {
 	g := &m.userGroups
 	app := g.account.Tenant + "/" + g.account.AppID
-	title = "我的群 · " + app
+	title = m.language.text("我的群 · ") + app
 	line := func(value string) string {
 		return ansi.Truncate(configTUIPlain(strings.ReplaceAll(value, "\n", " ")), m.width, "…")
 	}
@@ -313,36 +313,36 @@ func (m *configTUI) userGroupsView() (title, body, shortcuts, actions string) {
 	case tuiUserGroupsLoading:
 		switch g.action {
 		case "invite":
-			return title, "正在等待飞书确认邀请结果…", "", ""
+			return title, m.language.text("正在等待飞书确认邀请结果…"), "", ""
 		case "status", "list":
-			return title, "正在读取授权或群列表…", "Esc 返回", ""
+			return title, m.language.text("正在读取授权或群列表…"), m.language.text("Esc 返回"), ""
 		default:
-			return title, "正在处理群聊授权…", "", ""
+			return title, m.language.text("正在处理群聊授权…"), "", ""
 		}
 	case tuiUserGroupsSearch:
-		return title, m.input.View(), "输入搜索词 · Enter 搜索 · Esc 返回", ""
+		return title, m.input.View(), m.language.text("输入搜索词 · Enter 搜索 · Esc 返回"), ""
 	case tuiUserGroupsAuthorize:
-		purpose := "读取群列表"
+		purpose := m.language.text("读取群列表")
 		if g.purpose == "invite" {
-			purpose = "邀请机器人入群"
+			purpose = m.language.text("邀请机器人入群")
 		}
-		title += " / " + purpose + "授权"
+		title += " / " + purpose + m.language.text("授权")
 		return title, m.terminalAuthorizationBody(g.challenge.URL, g.qr),
-			"应用所有者完成授权后按 Enter 核实 · Esc 取消", "有效至 " + g.challenge.ExpiresAt.Local().Format("15:04:05")
+			m.language.text("应用所有者完成授权后按 Enter 核实 · Esc 取消"), m.language.text("有效至 ") + g.challenge.ExpiresAt.Local().Format("15:04:05")
 	case tuiUserGroupsConfirm:
 		group := g.page.Groups[g.row]
-		body = line("App · "+app) + "\n" + line("群 · "+group.Name) + "\n" + line("群 ID · "+group.ID)
-		return "确认邀请机器人", body, "y 确认发送邀请 · Esc 返回", ""
+		body = line("App · "+app) + "\n" + line(m.language.text("群 · ")+group.Name) + "\n" + line(m.language.text("群 ID · ")+group.ID)
+		return m.language.text("确认邀请机器人"), body, m.language.text("y 确认发送邀请 · Esc 返回"), ""
 	}
 	if !g.status.ListAuthorized {
-		return title, "需要应用所有者授权读取群列表。", "l 列表授权 · i 邀请授权 · r 刷新 · Esc 返回", ""
+		return title, m.language.text("需要应用所有者授权读取群列表。"), m.language.text("l 列表授权 · i 邀请授权 · r 刷新 · Esc 返回"), ""
 	}
 	var lines []string
 	if g.query != "" {
-		lines = append(lines, line("搜索 · "+g.query))
+		lines = append(lines, line(m.language.text("搜索 · ")+g.query))
 	}
 	if len(g.page.Groups) == 0 {
-		lines = append(lines, "当前页没有可显示的群。")
+		lines = append(lines, m.language.text("当前页没有可显示的群。"))
 	}
 	height := max(1, m.bodyHeight()-len(lines))
 	first := max(0, g.row-height+1)
@@ -352,14 +352,14 @@ func (m *configTUI) userGroupsView() (title, body, shortcuts, actions string) {
 		if i == g.row {
 			marker = "› "
 		}
-		membership := "入群状态未知"
+		membership := m.language.text("入群状态未知")
 		if group.BotJoined {
-			membership = "机器人已入群"
+			membership = m.language.text("机器人已入群")
 		} else if g.page.BotKnown {
-			membership = "机器人未入群"
+			membership = m.language.text("机器人未入群")
 		}
 		if slices.Contains(g.chats, group.ID) {
-			membership += " · 已在草稿"
+			membership += m.language.text(" · 已在草稿")
 		}
 		name := group.ID
 		if group.Name != "" {
@@ -367,9 +367,9 @@ func (m *configTUI) userGroupsView() (title, body, shortcuts, actions string) {
 		}
 		lines = append(lines, line(marker+membership+" · "+name))
 	}
-	shortcuts = fmt.Sprintf("第 %d 页 · ↑↓ 选群 · / 搜索 · [ 上页 · ] 下页 · r 刷新", len(g.pages))
+	shortcuts = fmt.Sprintf(m.language.text("第 %d 页 · ↑↓ 选群 · / 搜索 · [ 上页 · ] 下页 · r 刷新"), len(g.pages))
 	if len(g.page.Groups) > 0 && g.page.Groups[g.row].BotJoined {
-		shortcuts = "a 在线群授权 · " + shortcuts
+		shortcuts = m.language.text("a 在线群授权 · ") + shortcuts
 	}
-	return title, strings.Join(lines, "\n"), shortcuts, "Enter 加入草稿 · v 邀请 · l 列表授权 · i 邀请授权 · Esc 返回"
+	return title, strings.Join(lines, "\n"), shortcuts, m.language.text("Enter 加入草稿 · v 邀请 · l 列表授权 · i 邀请授权 · Esc 返回")
 }

@@ -1,48 +1,49 @@
 <!doctype html>
-<html lang="zh-CN">
+<html lang="{{uiLanguage}}">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>遥测归档 · T3 Bridge</title>
+  <title>{{tr "遥测归档 · T3 Bridge"}}</title>
   <link rel="stylesheet" href="/workspace.css">
+  <script defer src="/workspace-language.js"></script>
 </head>
 <body>
 <div class="shell">
 {{template "workspace-header" (workspaceNav "runtime" .SourceID)}}
 <main class="container tool-page inline-forms">
-  <nav aria-label="工作台导航">
-    <a href="/{{if .SourceID}}?source={{.SourceID}}{{end}}">配置工作台</a>
+  <nav aria-label="{{tr "工作台导航"}}">
+    <a href="/{{if .SourceID}}?source={{.SourceID}}{{end}}">{{tr "配置工作台"}}</a>
   </nav>
-  <h1>遥测归档</h1>
-  <p>日期按 UTC。最多显示最近 {{.Limit}} 条记录。</p>
+  <h1>{{tr "遥测归档"}}</h1>
+  <p>{{tr "日期按 UTC。最多显示最近"}} {{.Limit}} {{tr "条记录。"}}</p>
   {{if .Error}}<p role="alert">{{.Error}}</p>{{end}}
   {{if .Sources}}
   <form method="get" action="/telemetry-archive">
-    <label>已保存配置<select name="source">
+    <label>{{tr "已保存配置"}}<select name="source">
       {{range .Sources}}<option value="{{.ID}}"{{if eq .ID $.SourceID}} selected{{end}}>{{.Label}}</option>{{end}}
     </select></label>
     <input type="hidden" name="date" value="{{.Date}}">
-    <button type="submit">打开配置</button>
+    <button type="submit">{{tr "打开配置"}}</button>
   </form>
-  {{else}}<p>请先在配置工作台保存配置。</p>{{end}}
+  {{else}}<p>{{tr "请先在配置工作台保存配置。"}}</p>{{end}}
   {{if .Accounts}}
   <form method="get" action="/telemetry-archive">
     <input type="hidden" name="source" value="{{.SourceID}}">
     <label>App<select name="appId">
       {{range .Accounts}}<option value="{{.AppID}}"{{if eq .AppID $.Account.AppID}} selected{{end}}>{{.Tenant}} · {{.AppID}}</option>{{end}}
     </select></label>
-    <label>UTC 日期<input type="date" name="date" value="{{.Date}}" required></label>
-    <button type="submit">查看归档</button>
+    <label>{{tr "UTC 日期"}}<input type="date" name="date" value="{{.Date}}" required></label>
+    <button type="submit">{{tr "查看归档"}}</button>
   </form>
   {{end}}
   {{if and .Account.AppID (not .Error)}}
   <section aria-labelledby="archive-result">
     <h2 id="archive-result">{{.Account.Tenant}} · {{.Account.AppID}} · {{.Date}} UTC</h2>
-    <nav aria-label="UTC 日期导航">
-      {{if .PreviousDate}}<a href="/telemetry-archive?source={{.SourceID}}&amp;appId={{.Account.AppID}}&amp;date={{.PreviousDate}}">前一天</a>{{end}}
-      {{if .NextDate}}<a href="/telemetry-archive?source={{.SourceID}}&amp;appId={{.Account.AppID}}&amp;date={{.NextDate}}">后一天</a>{{end}}
+    <nav aria-label="{{tr "UTC 日期导航"}}">
+      {{if .PreviousDate}}<a href="/telemetry-archive?source={{.SourceID}}&amp;appId={{.Account.AppID}}&amp;date={{.PreviousDate}}">{{tr "前一天"}}</a>{{end}}
+      {{if .NextDate}}<a href="/telemetry-archive?source={{.SourceID}}&amp;appId={{.Account.AppID}}&amp;date={{.NextDate}}">{{tr "后一天"}}</a>{{end}}
     </nav>
-    {{if .Records}}<pre>{{.Records}}</pre>{{else}}<p>所选 App 在该 UTC 日期没有归档记录。</p>{{end}}
+    {{if .Records}}<pre>{{.Records}}</pre>{{else}}<p>{{tr "所选 App 在该 UTC 日期没有归档记录。"}}</p>{{end}}
   </section>
   {{end}}
 </main>

@@ -177,7 +177,7 @@ func (m *configTUI) manualBindingView() string {
 	for i, label := range configTUIManualBindingLabels {
 		secretRow := f.enterSecret && i == manualBindingCredentialRow
 		if secretRow {
-			label = "新应用 App Secret"
+			label = m.language.text("新应用 App Secret")
 		}
 		line := "  " + label
 		if i == f.row {
@@ -189,7 +189,7 @@ func (m *configTUI) manualBindingView() string {
 			}
 		} else if secretRow {
 			if f.secretInput.Value() != "" {
-				line += "  已输入"
+				line += m.language.text("  已输入")
 			}
 		} else if i < len(fields) {
 			line += "  " + configTUIPlain(*fields[i])

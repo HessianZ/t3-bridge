@@ -144,11 +144,11 @@ func (m *configTUI) toolBindingView() (title, body, shortcuts, actions string) {
 	mode := f.draft.Mode
 	switch {
 	case mode == "off":
-		mode = "off（移除 toolContext）"
+		mode = m.language.text("off（移除 toolContext）")
 	case mode == "" && f.current != nil:
-		mode = "原始 JSON · 请选择模式"
+		mode = m.language.text("原始 JSON · 请选择模式")
 	case mode == "":
-		mode = "请选择模式"
+		mode = m.language.text("请选择模式")
 	}
 	fields := f.fields()
 	lines := make([]string, 0, len(fields)+1)
@@ -174,7 +174,7 @@ func (m *configTUI) toolBindingView() (title, body, shortcuts, actions string) {
 		active++
 	}
 	first := max(0, active-height+1)
-	title = m.accountTitle() + " / " + m.route + " / 飞书工具绑定"
+	title = m.accountTitle() + " / " + m.route + m.language.text(" / 飞书工具绑定")
 	body = strings.Join(lines[first:min(len(lines), first+height)], "\n")
-	return title, body, "↑↓ / Tab / Shift+Tab / Enter 选字段 · ←→ 选模式", "F2 清空字段 · Ctrl+S 应用到草稿 · Esc 取消"
+	return title, body, m.language.text("↑↓ / Tab / Shift+Tab / Enter 选字段 · ←→ 选模式"), m.language.text("F2 清空字段 · Ctrl+S 应用到草稿 · Esc 取消")
 }

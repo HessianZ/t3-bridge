@@ -22,11 +22,11 @@ type configDrainPage struct {
 }
 
 func configDrainHandler(sources func() ([]webSource, error), check func(path, revision string) (bridge.DrainReport, error)) http.HandlerFunc {
-	page := template.Must(newWorkspacePage("receiver drain").Funcs(template.FuncMap{
+	page := newWorkspacePage("receiver drain").Funcs(template.FuncMap{
 		"drainStatus":         drainStatusText,
 		"drainBlocker":        drainBlockerText,
 		"drainDeliverySample": drainDeliverySampleText,
-	}).Parse(configDrainHTML))
+	}).Parse(configDrainHTML)
 	return func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Cache-Control", "no-store")
 		post := r.Method == http.MethodPost
@@ -108,6 +108,6 @@ func configDrainHandler(sources func() ([]webSource, error), check func(path, re
 		}
 		w.Header().Set("Content-Type", "text/html; charset=utf-8")
 		w.WriteHeader(status)
-		_ = page.Execute(w, view)
+		_ = page.Execute(w, r, view)
 	}
 }

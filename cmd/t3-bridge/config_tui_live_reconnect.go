@@ -138,26 +138,26 @@ func (m *configTUI) liveReconnectView() (title, body, shortcuts string) {
 	target := receiverStatusApp(s.account.Tenant, s.account.AppID)
 	var detail string
 	if s.process.ID != "" {
-		action := "立即重连"
-		detail = "重建此 App 的飞书 WebSocket 和 T3 MCP 连接。"
+		action := m.language.text("立即重连")
+		detail = m.language.text("重建此 App 的飞书 WebSocket 和 T3 MCP 连接。")
 		switch s.action {
 		case bridge.ReconnectAfterRuns:
-			action, detail = "等待 T3 收口后重连", "暂停此 App 的新派发。"
+			action, detail = m.language.text("等待 T3 收口后重连"), m.language.text("暂停此 App 的新派发。")
 		case bridge.ReconnectCancelWait:
-			action, detail = "取消等待", "恢复此 App 的新派发。"
+			action, detail = m.language.text("取消等待"), m.language.text("恢复此 App 的新派发。")
 		}
-		target = "动作 · " + action + "\n" + target + "\n进程 · " + s.process.ID
+		target = m.language.text("动作 · ") + action + "\n" + target + m.language.text("\n进程 · ") + s.process.ID
 	}
 	switch m.screen {
 	case tuiLiveReconnectLoading:
-		title, detail, shortcuts = "查找接收进程", "正在查找所选 App 的接收进程…", "Esc 取消"
+		title, detail, shortcuts = m.language.text("查找接收进程"), m.language.text("正在查找所选 App 的接收进程…"), m.language.text("Esc 取消")
 	case tuiLiveReconnectConfirm:
-		title, shortcuts = "确认重连接收端", "y 确认 · Esc 取消"
+		title, shortcuts = m.language.text("确认重连接收端"), m.language.text("y 确认 · Esc 取消")
 		if s.process.ReconnectWait {
-			shortcuts = "↑↓ 选动作 · " + shortcuts
+			shortcuts = m.language.text("↑↓ 选动作 · ") + shortcuts
 		}
 	case tuiLiveReconnectApplying:
-		title, detail = "重连接收端", "正在等待接收进程确认…"
+		title, detail = m.language.text("重连接收端"), m.language.text("正在等待接收进程确认…")
 	}
 	return title, ansi.Hardwrap(target+"\n"+detail, m.width, true), shortcuts
 }

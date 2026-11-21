@@ -174,13 +174,13 @@ func (w *windowsConfigWindow) create() error {
 	if atom == 0 {
 		return fmt.Errorf("register configuration window: %w", err)
 	}
-	title, _ := windows.UTF16PtrFromString("T3 Bridge 配置工作台")
+	title, _ := windows.UTF16PtrFromString("T3 Bridge")
 	const (
 		overlappedWindow = 0x00cf0000
 		useDefault       = 0x80000000
 	)
 	hwnd, _, err := configCreateWindow.Call(0, uintptr(unsafe.Pointer(name)), uintptr(unsafe.Pointer(title)),
-		overlappedWindow, useDefault, useDefault, 1120, 820, 0, 0, uintptr(instance), 0)
+		overlappedWindow, useDefault, useDefault, 500, 410, 0, 0, uintptr(instance), 0)
 	if hwnd == 0 {
 		configUnregisterClass.Call(uintptr(unsafe.Pointer(name)), uintptr(instance))
 		return fmt.Errorf("create configuration window: %w", err)

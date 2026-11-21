@@ -23,12 +23,12 @@ type configReceiverReadinessPage struct {
 }
 
 func configReceiverReadinessHandler(sources func() ([]webSource, error), read func(path, revision string) (receiverReadinessReport, error)) http.HandlerFunc {
-	page := template.Must(newWorkspacePage("receiver readiness").Funcs(template.FuncMap{
+	page := newWorkspacePage("receiver readiness").Funcs(template.FuncMap{
 		"readinessStatus": receiverReadinessStatusText,
 		"receiverFailure": receiverFailureText,
 		"localTime":       func(t time.Time) string { return t.Local().Format(time.DateTime) },
 		"dateTime":        func(t time.Time) string { return t.Format(time.RFC3339) },
-	}).Parse(configReceiverReadinessHTML))
+	}).Parse(configReceiverReadinessHTML)
 	return func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Cache-Control", "no-store")
 		if r.Method != http.MethodGet {
@@ -86,6 +86,6 @@ func configReceiverReadinessHandler(sources func() ([]webSource, error), read fu
 		}
 		w.Header().Set("Content-Type", "text/html; charset=utf-8")
 		w.WriteHeader(status)
-		_ = page.Execute(w, view)
+		_ = page.Execute(w, r, view)
 	}
 }

@@ -4,7 +4,6 @@ import (
 	"context"
 	_ "embed"
 	"errors"
-	"html/template"
 	"net/http"
 	"net/url"
 	"path/filepath"
@@ -32,7 +31,7 @@ type configReceiverEnablePage struct {
 func configReceiverEnableHandler(sources func() ([]webSource, error),
 	prepare func(context.Context, string, string, string) (receiverEnableDraft, error),
 ) http.HandlerFunc {
-	page := template.Must(newWorkspacePage("receiver enable").Parse(configReceiverEnableHTML))
+	page := newWorkspacePage("receiver enable").Parse(configReceiverEnableHTML)
 	return func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Cache-Control", "no-store")
 		post := r.Method == http.MethodPost
@@ -122,6 +121,6 @@ func configReceiverEnableHandler(sources func() ([]webSource, error),
 			}
 		}
 		w.Header().Set("Content-Type", "text/html; charset=utf-8")
-		_ = page.Execute(w, view)
+		_ = page.Execute(w, r, view)
 	}
 }

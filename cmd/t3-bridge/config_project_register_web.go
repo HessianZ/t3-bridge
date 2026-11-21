@@ -4,7 +4,6 @@ import (
 	"context"
 	_ "embed"
 	"errors"
-	"html/template"
 	"maps"
 	"net/http"
 	"net/url"
@@ -36,7 +35,7 @@ func configProjectRegisterHandler(sources func() ([]webSource, error),
 	register func(context.Context, string, string, string, string, string, string) ([]byte, error),
 	workspace func(string, bridge.Config, string) (string, error),
 ) http.HandlerFunc {
-	page := template.Must(newWorkspacePage("project register").Parse(configProjectRegisterHTML))
+	page := newWorkspacePage("project register").Parse(configProjectRegisterHTML)
 	return func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Cache-Control", "no-store")
 		post := r.Method == http.MethodPost
@@ -160,7 +159,7 @@ func configProjectRegisterHandler(sources func() ([]webSource, error),
 		}
 		w.Header().Set("Content-Type", "text/html; charset=utf-8")
 		w.WriteHeader(status)
-		_ = page.Execute(w, view)
+		_ = page.Execute(w, r, view)
 	}
 }
 

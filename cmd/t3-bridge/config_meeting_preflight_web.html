@@ -1,59 +1,60 @@
 <!doctype html>
-<html lang="zh-CN">
+<html lang="{{uiLanguage}}">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>会议权限预检 · T3 Bridge</title>
+  <title>{{tr "会议权限预检 · T3 Bridge"}}</title>
   <link rel="stylesheet" href="/workspace.css">
+  <script defer src="/workspace-language.js"></script>
 </head>
 <body>
 <div class="shell">
 {{template "workspace-header" (workspaceNav "advanced" .Source.ID)}}
 <main class="container tool-page inline-forms">
-  <nav aria-label="会议权限预检导航"><a href="/{{if .Source.ID}}?source={{.Source.ID}}{{end}}">配置工作台</a></nav>
-  <h1>会议权限预检</h1>
-  <p>打开已保存配置只读取本机文件。提交检查后才向飞书或 Lark 查询所选应用的权限和已发布版本的事件配置。</p>
-  <p>事件实际投递、平台会议功能资格和实际会议准入均未验证。</p>
+  <nav aria-label="{{tr "会议权限预检导航"}}"><a href="/{{if .Source.ID}}?source={{.Source.ID}}{{end}}">{{tr "配置工作台"}}</a></nav>
+  <h1>{{tr "会议权限预检"}}</h1>
+  <p>{{tr "打开已保存配置只读取本机文件。提交检查后才向飞书或 Lark 查询所选应用的权限和已发布版本的事件配置。"}}</p>
+  <p>{{tr "事件实际投递、平台会议功能资格和实际会议准入均未验证。"}}</p>
   {{if .Error}}<p role="alert">{{.Error}}</p>{{end}}
   {{if .Sources}}
   <form method="get" action="/meeting-preflight">
-    <label>已保存配置<select name="source">
+    <label>{{tr "已保存配置"}}<select name="source">
       {{range .Sources}}<option value="{{.ID}}"{{if eq .ID $.Source.ID}} selected{{end}}>{{.Label}}</option>{{end}}
     </select></label>
-    <button type="submit">打开配置</button>
+    <button type="submit">{{tr "打开配置"}}</button>
   </form>
   {{if .Choices}}
-  <section aria-label="选择会议应用">
+  <section aria-label="{{tr "选择会议应用"}}">
     <form method="post" action="/meeting-preflight">
       <input type="hidden" name="source" value="{{.Source.ID}}">
       <input type="hidden" name="revision" value="{{.Source.Revision}}">
-      <label>应用 · 租户<select name="choice" required>
-        <option value=""{{if lt .ChoiceIndex 0}} selected{{end}} disabled>请选择应用</option>
+      <label>{{tr "应用 · 租户"}}<select name="choice" required>
+        <option value=""{{if lt .ChoiceIndex 0}} selected{{end}} disabled>{{tr "请选择应用"}}</option>
         {{range $index, $choice := .Choices}}<option value="{{$index}}"{{if eq $index $.ChoiceIndex}} selected{{end}}>{{$choice.AppID}} · {{$choice.Tenant}}</option>{{end}}
       </select></label>
-      <button type="submit">开始只读检查</button>
-      <button type="submit" name="probe" value="availability">同时检查活动会议接口</button>
+      <button type="submit">{{tr "开始只读检查"}}</button>
+      <button type="submit" name="probe" value="availability">{{tr "同时检查活动会议接口"}}</button>
     </form>
-    <p>选择「同时检查活动会议接口」会额外查询所选应用所有者的活动会议，结果仅显示接口状态。</p>
+    <p>{{tr "选择「同时检查活动会议接口」会额外查询所选应用所有者的活动会议，结果仅显示接口状态。"}}</p>
   </section>
-  {{else if and .Source.ID (not .Error)}}<p>此配置没有可检查的应用。</p>{{end}}
-  {{else}}<p>请先在配置工作台保存有效的本机 JSON 配置。</p>{{end}}
+  {{else if and .Source.ID (not .Error)}}<p>{{tr "此配置没有可检查的应用。"}}</p>{{end}}
+  {{else}}<p>{{tr "请先在配置工作台保存有效的本机 JSON 配置。"}}</p>{{end}}
   {{with $report := .Report}}
   <section aria-labelledby="meeting-preflight-result">
-    <h2 id="meeting-preflight-result">会议权限检查结果</h2>
+    <h2 id="meeting-preflight-result">{{tr "会议权限检查结果"}}</h2>
     <dl>
-      <dt>应用 ID</dt><dd><code>{{.AppID}}</code></dd>
-      <dt>租户</dt><dd><code>{{.Tenant}}</code></dd>
-      <dt>会议入会设置</dt><dd>{{if .Enabled}}已启用{{else}}未启用{{end}} <code>meetingEnabled</code></dd>
-      {{if .Availability}}<dt>活动会议接口状态</dt><dd>{{availabilityText .Availability}}</dd>{{end}}
+      <dt>{{tr "应用 ID"}}</dt><dd><code>{{.AppID}}</code></dd>
+      <dt>{{tr "租户"}}</dt><dd><code>{{.Tenant}}</code></dd>
+      <dt>{{tr "会议入会设置"}}</dt><dd>{{if .Enabled}}{{tr "已启用"}}{{else}}{{tr "未启用"}}{{end}} <code>meetingEnabled</code></dd>
+      {{if .Availability}}<dt>{{tr "活动会议接口状态"}}</dt><dd>{{availabilityText .Availability}}</dd>{{end}}
     </dl>
-    <h3>应用权限</h3>
-    <ul>{{range .Scopes}}<li>{{scopeText .Scope}} <code>{{.Scope}}</code> · {{stateText .State}}{{if and (eq .State "missing") .AuthorizationURL}} · <a href="{{.AuthorizationURL}}" target="_blank" rel="noopener noreferrer">在开放平台申请</a>{{end}}</li>{{end}}</ul>
+    <h3>{{tr "应用权限"}}</h3>
+    <ul>{{range .Scopes}}<li>{{scopeText .Scope}} <code>{{.Scope}}</code> · {{stateText .State}}{{if and (eq .State "missing") .AuthorizationURL}} · <a href="{{.AuthorizationURL}}" target="_blank" rel="noopener noreferrer">{{tr "在开放平台申请"}}</a>{{end}}</li>{{end}}</ul>
     {{if .Events}}
-    <h3>已发布版本的事件订阅配置</h3>
+    <h3>{{tr "已发布版本的事件订阅配置"}}</h3>
     <dl>
-      <dt>发布状态</dt><dd>{{publicationStateText .PublicationState}}</dd>
-      {{if .PublishedVersionID}}<dt>核对的版本 ID</dt><dd><code>{{.PublishedVersionID}}</code></dd>{{end}}
+      <dt>{{tr "发布状态"}}</dt><dd>{{publicationStateText .PublicationState}}</dd>
+      {{if .PublishedVersionID}}<dt>{{tr "核对的版本 ID"}}</dt><dd><code>{{.PublishedVersionID}}</code></dd>{{end}}
     </dl>
     <ul>{{range .Events}}<li><code>{{.}}</code> · {{eventStateText (index $report.EventStates .)}}</li>{{end}}</ul>
     {{end}}

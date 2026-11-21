@@ -4,7 +4,6 @@ import (
 	_ "embed"
 	"errors"
 	"fmt"
-	"html/template"
 	"net/http"
 	"os"
 	"slices"
@@ -53,7 +52,7 @@ type runtimeWorkerRow struct {
 }
 
 func configRuntimeHandler(profiles profileRegistry, listServices func() ([]serviceInventoryEntry, error)) http.HandlerFunc {
-	page := template.Must(newWorkspacePage("runtime").Parse(configRuntimeHTML))
+	page := newWorkspacePage("runtime").Parse(configRuntimeHTML)
 	var manageMu sync.Mutex
 	return func(w http.ResponseWriter, r *http.Request) {
 		if !runtimeRequestOriginAllowed(r) {
@@ -173,7 +172,7 @@ func configRuntimeHandler(profiles profileRegistry, listServices func() ([]servi
 		w.Header().Set("Referrer-Policy", "same-origin")
 		w.Header().Set("Content-Type", "text/html; charset=utf-8")
 		w.WriteHeader(status)
-		_ = page.Execute(w, view)
+		_ = page.Execute(w, r, view)
 	}
 }
 

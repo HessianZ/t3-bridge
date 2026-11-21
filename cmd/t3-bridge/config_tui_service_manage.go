@@ -242,57 +242,57 @@ func (m *configTUI) setServiceManageLogContent(content string) {
 
 func (m *configTUI) serviceManageView() (title, body, shortcuts, actions string) {
 	s := &m.serviceManage
-	title = "管理后台服务实例"
+	title = m.language.text("管理后台服务实例")
 	switch m.screen {
 	case tuiServiceManageLoading:
-		return title, "正在读取本机实例清单…", "Esc 返回配置", ""
+		return title, m.language.text("正在读取本机实例清单…"), m.language.text("Esc 返回配置"), ""
 	case tuiServiceManagePick:
-		shortcuts = "↑↓ 选择 · r 刷新 · Esc 返回配置"
+		shortcuts = m.language.text("↑↓ 选择 · r 刷新 · Esc 返回配置")
 		switch {
 		case s.listFailed:
-			body = "无法读取本机服务实例清单。"
+			body = m.language.text("无法读取本机服务实例清单。")
 		case len(s.entries) == 0:
-			body = "未找到受管服务实例。"
+			body = m.language.text("未找到受管服务实例。")
 		default:
 			body = m.serviceManageList()
 			entry := s.entries[s.row]
 			if entry.err == nil && entry.manage != nil {
-				actions = "u 注销 · l 查看日志 · t 查看遥测 · s 启动 · x 停止 · R 重启"
+				actions = m.language.text("u 注销 · l 查看日志 · t 查看遥测 · s 启动 · x 停止 · R 重启")
 			}
 		}
 		return title, body, shortcuts, actions
 	case tuiServiceManageConfirm:
 		if s.action == "unregister" {
 			body = strings.Join([]string{
-				"实例名 · " + s.entries[s.row].name,
-				"整个实例将停止。",
-				"实例内所有 App 将停止接收。",
-				"服务定义将移除。",
-				"配置、凭据、状态和日志保留。",
-				"T3 在途 run 可能继续。",
+				m.language.text("实例名 · ") + s.entries[s.row].name,
+				m.language.text("整个实例将停止。"),
+				m.language.text("实例内所有 App 将停止接收。"),
+				m.language.text("服务定义将移除。"),
+				m.language.text("配置、凭据、状态和日志保留。"),
+				m.language.text("T3 在途 run 可能继续。"),
 			}, "\n")
-			return "确认注销服务实例", ansi.Hardwrap(configTUIPlain(body), m.width, true), "y 确认 · Esc 取消", ""
+			return m.language.text("确认注销服务实例"), ansi.Hardwrap(configTUIPlain(body), m.width, true), m.language.text("y 确认 · Esc 取消"), ""
 		}
-		autostart := "此操作会开启登录自启。"
+		autostart := m.language.text("此操作会开启登录自启。")
 		if s.action == "stop" {
-			autostart = "此操作会关闭登录自启。"
+			autostart = m.language.text("此操作会关闭登录自启。")
 		}
 		body = strings.Join([]string{
-			m.serviceManageLine("实例名 · " + s.entries[s.row].name),
-			m.serviceManageLine("此操作影响整个实例及其中的所有账号。"),
+			m.serviceManageLine(m.language.text("实例名 · ") + s.entries[s.row].name),
+			m.serviceManageLine(m.language.text("此操作影响整个实例及其中的所有账号。")),
 			m.serviceManageLine(autostart),
 		}, "\n")
-		return "确认" + s.label + "服务实例", body, "y 确认 · Esc 取消", ""
+		return m.language.text("确认") + s.label + m.language.text("服务实例"), body, m.language.text("y 确认 · Esc 取消"), ""
 	case tuiServiceManageApplying:
-		return "正在" + s.label + "服务实例…", m.serviceManageLine("实例名 · " + s.entries[s.row].name), "", ""
+		return m.language.text("正在") + s.label + m.language.text("服务实例…"), m.serviceManageLine(m.language.text("实例名 · ") + s.entries[s.row].name), "", ""
 	default:
-		title = "实例日志 · " + s.entries[s.row].name
-		shortcuts = "↑↓←→ 滚动 · Esc 返回实例清单"
+		title = m.language.text("实例日志 · ") + s.entries[s.row].name
+		shortcuts = m.language.text("↑↓←→ 滚动 · Esc 返回实例清单")
 		if s.telemetry {
-			title = "实例遥测 · " + s.entries[s.row].name
-			shortcuts = "Tab/Shift+Tab 切换 · ↑↓←→ · Esc 返回"
+			title = m.language.text("实例遥测 · ") + s.entries[s.row].name
+			shortcuts = m.language.text("Tab/Shift+Tab 切换 · ↑↓←→ · Esc 返回")
 		}
-		actions = fmt.Sprintf("只读 · 每个日志流最多最近 %d 行", serviceLogViewerLines)
+		actions = fmt.Sprintf(m.language.text("只读 · 每个日志流最多最近 %d 行"), serviceLogViewerLines)
 		return title, m.review.View(), shortcuts, actions
 	}
 }

@@ -30,7 +30,7 @@ func (t runtimeAccessTarget) editURL(entry bridge.LocalAccessPolicyEntry) string
 }
 
 func configRuntimeAccessHandler(list func() ([]receiverProcess, error), apply func(context.Context, string, string, string, bridge.LocalAccessPolicyRequest) (bridge.LocalAccessPolicyView, error)) http.HandlerFunc {
-	page := template.Must(newWorkspacePage("runtime access").Funcs(template.FuncMap{
+	page := newWorkspacePage("runtime access").Funcs(template.FuncMap{
 		"editURL": runtimeAccessTarget.editURL,
 		"kindLabel": func(kind string) string {
 			switch kind {
@@ -52,7 +52,7 @@ func configRuntimeAccessHandler(list func() ([]receiverProcess, error), apply fu
 				return "继承"
 			}
 		},
-	}).Parse(configRuntimeAccessHTML))
+	}).Parse(configRuntimeAccessHTML)
 	return func(w http.ResponseWriter, r *http.Request) {
 		if !runtimeRequestOriginAllowed(r) {
 			http.Error(w, "invalid origin", http.StatusForbidden)
@@ -136,7 +136,7 @@ func configRuntimeAccessHandler(list func() ([]receiverProcess, error), apply fu
 		}
 		w.Header().Set("Content-Type", "text/html; charset=utf-8")
 		w.WriteHeader(status)
-		_ = page.Execute(w, view)
+		_ = page.Execute(w, r, view)
 	}
 }
 

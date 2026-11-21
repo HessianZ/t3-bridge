@@ -162,19 +162,19 @@ func (m *configTUI) receiveLegacyCopy(result configTUILegacyCopyResult) {
 }
 
 func (m *configTUI) legacyImportView() (title, body, shortcuts, actions string) {
-	title = "导入 lark-channel-bridge · " + configTUILegacyImportLabels[m.legacyImport.row]
+	title = m.language.text("导入 lark-channel-bridge · ") + configTUILegacyImportLabels[m.legacyImport.row]
 	body = ansi.Truncate(m.input.View(), m.width, "")
 	if m.bodyHeight() > 1 {
-		body += "\n" + ansi.Truncate("单路由模板可沿用旧用户名单。启用前请核对 T3 目标。", m.width, "…")
+		body += "\n" + ansi.Truncate(m.language.text("单路由模板可沿用旧用户名单。启用前请核对 T3 目标。"), m.width, "…")
 	}
 	if m.bodyHeight() > 2 {
-		body += "\n" + ansi.Truncate("可导入显示设置、并发额度和允许群的 @ 规则。", m.width, "…")
+		body += "\n" + ansi.Truncate(m.language.text("可导入显示设置、并发额度和允许群的 @ 规则。"), m.width, "…")
 	}
-	reuse := "关闭"
+	reuse := m.language.text("关闭")
 	if m.legacyImport.reuseT3 {
-		reuse = "开启"
+		reuse = m.language.text("开启")
 	}
-	shortcuts = "Ctrl+S 预览 · F2 清空 · Esc 取消 · Tab 下一项 · Ctrl+T 沿用 T3 " + reuse
-	actions = "旧单账号缺用户名单时沿用底稿用户。关闭所有账号的接收授权。"
+	shortcuts = m.language.text("Ctrl+S 预览 · F2 清空 · Esc 取消 · Tab 下一项 · Ctrl+T 沿用 T3 ") + reuse
+	actions = m.language.text("旧单账号缺用户名单时沿用底稿用户。关闭所有账号的接收授权。")
 	return
 }

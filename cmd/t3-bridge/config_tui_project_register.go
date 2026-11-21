@@ -146,24 +146,24 @@ func (m *configTUI) projectRegisterView() (title, body, shortcuts, actions strin
 	case tuiProjectRegisterInput:
 		input := ansi.Truncate(m.input.View(), m.width, "")
 		if m.projectRegister.editingSetupToken {
-			return "输入单独授权的私有 OAuth JSON 路径", input,
-				"Enter 返回 · F2 清空 · Esc 取消", "本机绝对路径 · 留空使用账号 MCP 凭据"
+			return m.language.text("输入单独授权的私有 OAuth JSON 路径"), input,
+				m.language.text("Enter 返回 · F2 清空 · Esc 取消"), m.language.text("本机绝对路径 · 留空使用账号 MCP 凭据")
 		}
 		hint := ""
 		if m.projectRegister.managedDirectory != "" {
-			hint = "留空按 Enter 预览专用目录"
+			hint = m.language.text("留空按 Enter 预览专用目录")
 		}
-		return "输入目标机已有目录的绝对路径", input,
-			"Enter 预览 F3 授权 F2 清空 Esc 取消", hint
+		return m.language.text("输入目标机已有目录的绝对路径"), input,
+			m.language.text("Enter 预览 F3 授权 F2 清空 Esc 取消"), hint
 	case tuiProjectRegisterConfirm:
-		title := "确认登记 T3 项目"
-		actions := "将在 T3 查找或登记项目。配置需在差异页按 s 保存。"
+		title := m.language.text("确认登记 T3 项目")
+		actions := m.language.text("将在 T3 查找或登记项目。配置需在差异页按 s 保存。")
 		if m.input.Value() == "" {
-			title = "确认创建本机目录并登记 T3"
-			actions = "配置需在差异页按 s 保存。"
+			title = m.language.text("确认创建本机目录并登记 T3")
+			actions = m.language.text("配置需在差异页按 s 保存。")
 		}
-		return title, m.review.View(), "y 确认 · Esc 取消 · ↑↓←→ 滚动", actions
+		return title, m.review.View(), m.language.text("y 确认 · Esc 取消 · ↑↓←→ 滚动"), actions
 	default:
-		return "正在登记 T3 项目…", "请等待 T3 返回结果。", "", ""
+		return m.language.text("正在登记 T3 项目…"), m.language.text("请等待 T3 返回结果。"), "", ""
 	}
 }

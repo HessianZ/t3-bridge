@@ -230,33 +230,33 @@ func (m *configTUI) profileView() (title, body, shortcuts, actions string) {
 	p := &m.profiles
 	switch m.screen {
 	case tuiCreateProfile:
-		fields := [...]string{"配置名称", "来源 JSON 路径（可选）"}
-		return "新建命名配置 · " + fields[p.createField], m.input.View(),
-			"Tab 切换名称和来源 · Enter 新建 · Esc 取消", "来源留空时使用单路由模板"
+		fields := [...]string{m.language.text("配置名称"), m.language.text("来源 JSON 路径（可选）")}
+		return m.language.text("新建命名配置 · ") + fields[p.createField], m.input.View(),
+			m.language.text("Tab 切换名称和来源 · Enter 新建 · Esc 取消"), m.language.text("来源留空时使用单路由模板")
 	case tuiConfirmProfileOpen:
-		return "打开命名配置 · " + p.entries[p.row], "当前草稿尚未保存。",
-			"d 丢弃草稿并打开 · Esc 返回列表", "返回编辑后可用 p 预览并保存或导出"
+		return m.language.text("打开命名配置 · ") + p.entries[p.row], m.language.text("当前草稿尚未保存。"),
+			m.language.text("d 丢弃草稿并打开 · Esc 返回列表"), m.language.text("返回编辑后可用 p 预览并保存或导出")
 	case tuiConfirmProfileArchive:
 		name := p.entries[p.row]
-		title = "归档命名配置 · " + name
-		body = "将归档配置及备份，保留状态目录。"
+		title = m.language.text("归档命名配置 · ") + name
+		body = m.language.text("将归档配置及备份，保留状态目录。")
 		if p.isOpen(m.source, name) {
-			body += "完成后回到启动模板。"
+			body += m.language.text("完成后回到启动模板。")
 		}
 		if m.discardsProfileDraft(name) {
-			return title, body, "d 丢弃当前草稿并归档 · Esc 取消", "返回编辑后可用 p 预览并保存或导出"
+			return title, body, m.language.text("d 丢弃当前草稿并归档 · Esc 取消"), m.language.text("返回编辑后可用 p 预览并保存或导出")
 		}
-		return title, body, "Enter 归档 · Esc 取消", ""
+		return title, body, m.language.text("Enter 归档 · Esc 取消"), ""
 	}
-	title, actions, body = "命名配置", "n 新建", "暂无命名配置"
-	shortcuts = "i 导入私有包 · ↑↓ 选择 · Tab 查看归档 · Esc 返回编辑"
+	title, actions, body = m.language.text("命名配置"), m.language.text("n 新建"), m.language.text("暂无命名配置")
+	shortcuts = m.language.text("i 导入私有包 · ↑↓ 选择 · Tab 查看归档 · Esc 返回编辑")
 	if p.archived {
-		title, actions, body = "已归档的命名配置", "Enter 恢复", "暂无归档"
-		shortcuts = "↑↓ 选择 · Tab 查看命名配置 · Esc 返回编辑"
+		title, actions, body = m.language.text("已归档的命名配置"), m.language.text("Enter 恢复"), m.language.text("暂无归档")
+		shortcuts = m.language.text("↑↓ 选择 · Tab 查看命名配置 · Esc 返回编辑")
 	}
 	if len(p.entries) != 0 {
 		if !p.archived {
-			actions = "Enter 打开 · u 设为默认 · n 新建 · a 归档 · x 清除 · e 私有导出"
+			actions = m.language.text("Enter 打开 · u 设为默认 · n 新建 · a 归档 · x 清除 · e 私有导出")
 		}
 		height := m.bodyHeight()
 		first := max(0, p.row-height+1)
@@ -270,10 +270,10 @@ func (m *configTUI) profileView() (title, body, shortcuts, actions string) {
 			label += name
 			if !p.archived {
 				if name == p.active {
-					label += " · 默认"
+					label += m.language.text(" · 默认")
 				}
 				if p.isOpen(m.source, name) {
-					label += " · 当前编辑"
+					label += m.language.text(" · 当前编辑")
 				}
 			}
 			lines = append(lines, ansi.Truncate(configTUIPlain(label), m.width, "…"))

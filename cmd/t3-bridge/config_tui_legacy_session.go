@@ -327,53 +327,53 @@ func (m *configTUI) legacySessionView() (title, body, shortcuts, actions string)
 	f := &m.legacySession
 	app := " · App " + f.request.AppID
 	const catalogLimit = "旧目录无法验证聊天类型或成员。"
-	title = "旧 T3 会话转接" + app
-	actions = "写入前请停止旧接收端，并确认新 Store 已离线。"
+	title = m.language.text("旧 T3 会话转接") + app
+	actions = m.language.text("写入前请停止旧接收端，并确认新 Store 已离线。")
 	switch m.screen {
 	case tuiLegacySessionForm:
 		title = configTUILegacySessionLabels[f.row] + app
 		body = ansi.Truncate(m.input.View(), m.width, "")
-		shortcuts = "F3 盘点/查找 · Ctrl+S 离线预览 · Ctrl+T 预览并核验 T3 · F2 清空 · Esc · ↑↓/Tab"
+		shortcuts = m.language.text("F3 盘点/查找 · Ctrl+S 离线预览 · Ctrl+T 预览并核验 T3 · F2 清空 · Esc · ↑↓/Tab")
 		switch f.row {
 		case 1:
-			actions = "留空时仅自动选用同 App、同租户的唯一旧 T3 V2 profile。"
+			actions = m.language.text("留空时仅自动选用同 App、同租户的唯一旧 T3 V2 profile。")
 		case 3:
-			actions = "留空按 F3 盘点范围。填好聊天 ID、类型和可选话题后按 F3 查找。"
+			actions = m.language.text("留空按 F3 盘点范围。填好聊天 ID、类型和可选话题后按 F3 查找。")
 		case 7:
-			actions = "群聊留空时查找无话题的线程。转接话题须填完整话题 ID。"
+			actions = m.language.text("群聊留空时查找无话题的线程。转接话题须填完整话题 ID。")
 		}
-		actions = "Ctrl+R 准备路由配置 · " + actions
+		actions = m.language.text("Ctrl+R 准备路由配置 · ") + actions
 	case tuiLegacySessionInspecting:
-		body, shortcuts, actions = "正在按所选范围查找旧 T3 线程…", "Esc 返回表单", catalogLimit
+		body, shortcuts, actions = m.language.text("正在按所选范围查找旧 T3 线程…"), m.language.text("Esc 返回表单"), catalogLimit
 		if f.request.ChatID == "" {
-			body = "正在只读盘点旧 T3 会话范围…"
+			body = m.language.text("正在只读盘点旧 T3 会话范围…")
 		}
 	case tuiLegacySessionPick:
-		title = "选择旧 T3 线程" + app + " · " + f.request.ChatID
+		title = m.language.text("选择旧 T3 线程") + app + " · " + f.request.ChatID
 		body = m.legacySessionPickerView()
-		shortcuts = fmt.Sprintf("↑↓ 选择 · %d/%d · Enter 填入 · Esc 返回", f.selected+1, len(f.candidates))
+		shortcuts = fmt.Sprintf(m.language.text("↑↓ 选择 · %d/%d · Enter 填入 · Esc 返回"), f.selected+1, len(f.candidates))
 		actions = catalogLimit
 		if len(f.scopes) > 0 {
-			title = "旧 T3 会话范围（只读盘点）" + app
-			selection := fmt.Sprintf("↑↓ 选择 · %d/%d", f.selected+1, len(f.scopes))
-			shortcuts = selection + " · Enter 填入聊天 ID · Esc 返回"
+			title = m.language.text("旧 T3 会话范围（只读盘点）") + app
+			selection := fmt.Sprintf(m.language.text("↑↓ 选择 · %d/%d"), f.selected+1, len(f.scopes))
+			shortcuts = selection + m.language.text(" · Enter 填入聊天 ID · Esc 返回")
 			if f.scopes[f.selected].TopicID != "" {
-				shortcuts = selection + " · Enter 填入群聊和话题 · Esc 返回"
+				shortcuts = selection + m.language.text(" · Enter 填入群聊和话题 · Esc 返回")
 			}
 		} else if f.request.ChatType == "group" {
 			title += " · " + configTUILegacySessionScope(f.request.ChatType, f.request.TopicID)
 		}
 	case tuiLegacySessionLoading:
-		body, shortcuts = "正在预览旧 T3 会话…", "Esc 返回表单"
+		body, shortcuts = m.language.text("正在预览旧 T3 会话…"), m.language.text("Esc 返回表单")
 	case tuiLegacySessionReview:
-		body, shortcuts = m.review.View(), "↑↓←→ 滚动 · Esc 返回表单"
+		body, shortcuts = m.review.View(), m.language.text("↑↓←→ 滚动 · Esc 返回表单")
 		if f.review != "" {
-			shortcuts = "s 确认写入 · " + shortcuts
+			shortcuts = m.language.text("s 确认写入 · ") + shortcuts
 		} else {
-			actions = "核对结果后返回表单，按 Ctrl+T 重新核验或 Ctrl+S 离线预览。"
+			actions = m.language.text("核对结果后返回表单，按 Ctrl+T 重新核验或 Ctrl+S 离线预览。")
 		}
 	case tuiLegacySessionApplying:
-		body, actions = "正在确认新 Store 离线并写入会话元数据…", ""
+		body, actions = m.language.text("正在确认新 Store 离线并写入会话元数据…"), ""
 	}
 	return
 }
@@ -391,7 +391,7 @@ func (m *configTUI) legacySessionPickerView() string {
 		}
 		if len(f.scopes) > 0 {
 			scope := f.scopes[i]
-			label := fmt.Sprintf("%d 个线程 · %s", scope.ActiveThreads, scope.ChatID)
+			label := fmt.Sprintf(m.language.text("%d 个线程 · %s"), scope.ActiveThreads, scope.ChatID)
 			if scope.TopicID != "" {
 				label += " / " + scope.TopicID
 			}
@@ -406,11 +406,11 @@ func (m *configTUI) legacySessionPickerView() string {
 			scope := f.scopes[f.selected]
 			detail := legacySessionUpdatedAt(scope.UpdatedAt)
 			if scope.TopicID != "" {
-				detail = "话题 · " + scope.TopicID + " · " + detail
+				detail = m.language.text("话题 · ") + scope.TopicID + " · " + detail
 			}
 			lines = append(lines, detail)
 		} else {
-			lines = append(lines, "项目目录 · "+f.candidates[f.selected].ProjectPath)
+			lines = append(lines, m.language.text("项目目录 · ")+f.candidates[f.selected].ProjectPath)
 		}
 	}
 	for i, line := range lines {

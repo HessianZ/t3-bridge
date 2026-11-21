@@ -1,11 +1,12 @@
 <!doctype html>
-<html lang="zh-CN">
+<html lang="{{uiLanguage}}">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>配置工作台 · T3 Bridge</title>
+  <title>{{tr "配置工作台 · T3 Bridge"}}</title>
   <link rel="icon" type="image/png" href="/workspace-icon.png">
   <link rel="stylesheet" href="/workspace.css">
+  <script defer src="/workspace-language.js"></script>
   <script defer src="/config.js"></script>
   <script defer src="/workspace-session.js"></script>
 </head>
@@ -13,27 +14,30 @@
 <div class="shell">
 <header class="top">
   <div class="brand">{{template "workspace-brand"}}</div>
-  <nav class="tabs" aria-label="工作台页面">
+  <nav class="tabs" aria-label="{{tr "工作台页面"}}">
     {{if .ShowFields}}
-    <a href="#accounts" data-workbench-tab>账号</a>
-    <a href="#routes" data-workbench-tab>项目与路由</a>
+    <a href="#accounts" data-workbench-tab>{{tr "账号"}}</a>
+    <a href="#routes" data-workbench-tab>{{tr "项目与路由"}}</a>
     {{end}}
-    <a href="#runtime" data-workbench-tab>运行</a>
-    <a href="#advanced" data-workbench-tab>高级</a>
-    {{if or .Reviewed .Changes .LegacyReview}}<a href="#review" data-workbench-tab>审阅</a>{{end}}
+    <a href="#runtime" data-workbench-tab>{{tr "运行"}}</a>
+    <a href="#advanced" data-workbench-tab>{{tr "高级"}}</a>
+    {{if or .Reviewed .Changes .LegacyReview}}<a href="#review" data-workbench-tab>{{tr "审阅"}}</a>{{end}}
   </nav>
+  <div class="top-controls">
+  {{template "workspace-language"}}
   <details class="profile">
-    <summary>{{.Source.Label}}</summary>
-    <nav aria-label="配置来源">
-      {{range .Sources}}<a href="/?source={{.ID}}"{{if eq .ID $.Source.ID}} aria-current="page"{{end}}>{{.Label}}</a>{{end}}
-      {{if .Profiles}}<a href="/profiles">管理命名配置</a>{{end}}
+    <summary title="{{sourceLabel .Source.Label}}">{{if .Source.Path}}{{fileName .Source.Path}}{{else}}{{sourceLabel .Source.Label}}{{end}}</summary>
+    <nav aria-label="{{tr "配置来源"}}">
+      {{range .Sources}}<a href="/?source={{.ID}}"{{if eq .ID $.Source.ID}} aria-current="page"{{end}}>{{sourceLabel .Label}}</a>{{end}}
+      {{if .Profiles}}<a href="/profiles">{{tr "管理命名配置"}}</a>{{end}}
     </nav>
   </details>
+  </div>
 </header>
 <main class="container">
-  <h1 class="sr-only">配置工作台</h1>
-  {{if .Saved}}<p class="muted" role="status">已保存到本机配置文件。重启接收实例后读取新版本。{{if .Source.Path}} <a href="/runtime/receiver-readiness?source={{.Source.ID}}">接收就绪状态</a> · <a href="/runtime/install?source={{.Source.ID}}">接收预检</a>{{end}}</p>{{end}}
-  {{if .LegacyCopied}}<p class="muted" role="status">App Secret 已复制到 <code>{{.LegacyCopied}}</code>。</p>{{end}}
+  <h1 class="sr-only">{{tr "配置工作台"}}</h1>
+  {{if .Saved}}<p class="muted" role="status">{{tr "已保存到本机配置文件。重启接收实例后读取新版本。"}}{{if .Source.Path}} <a href="/runtime/receiver-readiness?source={{.Source.ID}}">{{tr "接收就绪状态"}}</a> · <a href="/runtime/install?source={{.Source.ID}}">{{tr "接收预检"}}</a>{{end}}</p>{{end}}
+  {{if .LegacyCopied}}<p class="muted" role="status">{{tr "App Secret 已复制到"}} <code>{{.LegacyCopied}}</code>。</p>{{end}}
   {{if .Error}}<p class="error" role="alert">{{.Error}}</p>{{end}}
   <form id="config-form" data-workbench-default="{{if or .Reviewed .LegacyReview}}review{{else if or (not .ShowFields) .RawOpen .LegacyImport}}advanced{{else}}accounts{{end}}" method="post" action="/?source={{.Source.ID}}"{{if .DraftProject}} data-draft-project{{end}}>
     <input type="hidden" name="reviewed" value="{{.Reviewed}}">
@@ -48,34 +52,34 @@
     {{end}}
     <div id="config-actions" class="actions editor-toolbar">
       <div class="status">
-        <span>结构校验 <b id="check-status" {{if .Valid}}class="ok">通过{{else}}class="bad">未通过{{end}}</b></span>
-        <span hidden>账号联通 <span id="connection-status">未检查</span></span>
+        <span>{{tr "结构校验"}} <b id="check-status" class="{{if .Valid}}ok{{else}}bad{{end}}">{{if .Valid}}{{tr "通过"}}{{else}}{{tr "未通过"}}{{end}}</b></span>
+        <span hidden>{{tr "账号联通"}} <span id="connection-status">{{tr "未检查"}}</span></span>
       </div>
-      <button type="submit" name="action" value="check">校验并查看差异</button>
-      <button class="secondary" type="submit" name="action" value="download"{{if not .Reviewed}} disabled{{end}}>下载候选 JSON</button>
-      {{if .Source.Path}}<button class="secondary" type="submit" name="action" value="save"{{if not .Reviewed}} disabled{{end}}>保存到配置文件</button>{{end}}
+      <button type="submit" name="action" value="check">{{tr "校验并查看差异"}}</button>
+      <button class="secondary" type="submit" name="action" value="download"{{if not .Reviewed}} disabled{{end}}>{{tr "下载候选 JSON"}}</button>
+      {{if .Source.Path}}<button class="secondary" type="submit" name="action" value="save"{{if not .Reviewed}} disabled{{end}}>{{tr "保存到配置文件"}}</button>{{end}}
     </div>
     {{if or .Reviewed .Changes}}
-    <section class="panel" data-workbench-page="review" aria-label="差异">
-      <h2>与来源的差异</h2>
+    <section class="panel" data-workbench-page="review" aria-label="{{tr "差异"}}">
+      <h2>{{tr "与来源的差异"}}</h2>
       {{if .Changes}}
-      <p class="muted">本页修改的是启动配置。保存后，重启接收实例才会读取新版本。</p>
+      <p class="muted">{{tr "本页修改的是启动配置。保存后，重启接收实例才会读取新版本。"}}</p>
       <pre class="diff">{{range .Changes}}<span class="range">{{.Header}}</span>{{if .Removed}}<span class="removed">{{.Removed}}</span>{{end}}{{if .Added}}<span class="added">{{.Added}}</span>{{end}}{{end}}</pre>
       <details>
-        <summary>配置何时生效</summary>
+        <summary>{{tr "配置何时生效"}}</summary>
         <ul>
-          <li><b>在线生效</b> · <a href="/runtime/settings">并发、回复与进度</a>、<a href="/runtime/access">用户和路由授权</a>、<a href="/runtime/groups">群授权与 @ 规则</a>。回复样式等按后续轮次取值。</li>
-          <li><b>按 App 重连</b> · 在 <a href="/runtime">运行状态</a> 更换该 App 的连接。重连重读原路径的飞书密钥、T3 凭据和运行文件。</li>
-          <li><b>重启实例</b> · 读取保存的 JSON，包括 App、凭据路径、路由、模型、执行权限和静态 ACL。</li>
-          <li><b>首次初始化</b> · <code>initialRuntime</code> 给新绑定的状态赋初值。已有状态通过在线设置管理。</li>
+          <li><b>{{tr "在线生效"}}</b> · <a href="/runtime/settings">{{tr "并发、回复与进度"}}</a>、<a href="/runtime/access">{{tr "用户和路由授权"}}</a>、<a href="/runtime/groups">{{tr "群授权与 @ 规则"}}</a>{{tr "。回复样式等按后续轮次取值。"}}</li>
+          <li><b>{{tr "按 App 重连"}}</b> {{tr "· 在"}} <a href="/runtime">{{tr "运行状态"}}</a> {{tr "更换该 App 的连接。重连重读原路径的飞书密钥、T3 凭据和运行文件。"}}</li>
+          <li><b>{{tr "重启实例"}}</b> {{tr "· 读取保存的 JSON，包括 App、凭据路径、路由、模型、执行权限和静态 ACL。"}}</li>
+          <li><b>{{tr "首次初始化"}}</b> · <code>initialRuntime</code> {{tr "给新绑定的状态赋初值。已有状态通过在线设置管理。"}}</li>
         </ul>
       </details>
-      {{else}}<p class="muted">候选配置与来源一致。</p>{{end}}
+      {{else}}<p class="muted">{{tr "候选配置与来源一致。"}}</p>{{end}}
     </section>
     {{end}}
     {{if .ShowFields}}
     <noscript>
-      <p class="muted">展开「完整 JSON」可编辑配置。结构化表单需要 JavaScript。</p>
+      <p class="muted">{{tr "展开「完整 JSON」可编辑配置。结构化表单需要 JavaScript。"}}</p>
       <style>.workspace { display: none; }</style>
     </noscript>
     {{range .Accounts}}
@@ -84,96 +88,96 @@
     <section class="workbench-list" data-workbench-page="accounts">
         {{if and .Source.Path (eq .Source.Revision "missing") (not .LegacyReview)}}
         <details class="account-actions" id="first-run"{{if not (or .Reviewed .Changes)}} open{{end}}>
-          <summary class="row-heading"><span class="row-label"><b>首次配置</b></span></summary>
+          <summary class="row-heading"><span class="row-label"><b>{{tr "首次配置"}}</b></span></summary>
           <div class="row-body">
           <ol class="muted">
-            <li><a href="#feishu-bind">扫码绑定飞书应用</a>，或在<a href="#primary-feishu">飞书与接收端</a>填写主账号的应用 ID、私有密钥文件路径和租户。在<a href="#primary-access">访问控制</a>核对用户 Open ID。</li>
-            <li>在<a href="#primary-t3">T3 MCP</a>点击「采用本机 T3」或手填连接信息，核对私有令牌文件路径，再展开「申请 T3 授权」。在<a href="#primary-routes">路由</a>展开「从 T3 查询项目与模型」，选择并填入目标，核对默认路由 ID。</li>
-            <li>到<a href="#config-actions">配置操作</a>点击「校验并查看差异」，核对后点击「保存到配置文件」。首次保存时先保持接收授权关闭。</li>
-            <li>保存后打开「接收预检」，核对飞书应用、T3 路由和本机接收锁。</li>
+            <li><a href="#feishu-bind">{{tr "扫码绑定飞书应用"}}</a>{{tr "，或在"}}<a href="#primary-feishu">{{tr "飞书与接收端"}}</a>{{tr "填写主账号的应用 ID、私有密钥文件路径和租户。在"}}<a href="#primary-access">{{tr "访问控制"}}</a>{{tr "核对用户 Open ID。"}}</li>
+            <li>{{tr "在"}}<a href="#primary-t3">T3 MCP</a>{{tr "点击「采用本机 T3」或手填连接信息，核对私有令牌文件路径，再展开「申请 T3 授权」。在"}}<a href="#primary-routes">{{tr "路由"}}</a>{{tr "展开「从 T3 查询项目与模型」，选择并填入目标，核对默认路由 ID。"}}</li>
+            <li>{{tr "到"}}<a href="#config-actions">{{tr "配置操作"}}</a>{{tr "点击「校验并查看差异」，核对后点击「保存到配置文件」。首次保存时先保持接收授权关闭。"}}</li>
+            <li>{{tr "保存后打开「接收预检」，核对飞书应用、T3 路由和本机接收锁。"}}</li>
           </ol>
           </div>
         </details>
         {{end}}
         <details class="account-actions"{{if or .BindingID .NewAccount.Tenant .Replacement}} open{{end}}>
           <summary class="row-heading">
-            <span class="row-label"><b>添加或替换账号</b></span>
+            <span class="row-label"><b>{{tr "添加或替换账号"}}</b></span>
           </summary>
           <div class="row-body">
         <details class="account-actions" id="feishu-bind"{{if .BindingID}} open{{end}}>
-          <summary class="row-heading"><span class="row-label"><b>扫码绑定飞书应用</b></span></summary>
+          <summary class="row-heading"><span class="row-label"><b>{{tr "扫码绑定飞书应用"}}</b></span></summary>
           <div class="row-body">
-          <p class="muted">使用飞书或 Lark 选择或创建应用。默认更新同 App 的凭据引用，或将新 App 加入草稿。</p>
-          <label class="toggle" hidden><input id="bind-replace" type="checkbox" autocomplete="off">替换已有账号</label>
+          <p class="muted">{{tr "使用飞书或 Lark 选择或创建应用。默认更新同 App 的凭据引用，或将新 App 加入草稿。"}}</p>
+          <label class="toggle" hidden><input id="bind-replace" type="checkbox" autocomplete="off">{{tr "替换已有账号"}}</label>
           <div id="bind-replace-options" hidden>
             <div class="fields">
-              <label>要替换的账号<select id="bind-replace-app" aria-describedby="bind-replace-note"></select></label>
+              <label>{{tr "要替换的账号"}}<select id="bind-replace-app" aria-describedby="bind-replace-note"></select></label>
             </div>
-            <p id="bind-replace-note" class="muted">请扫码选择或创建新应用。新账号只继承所选账号的默认 T3 路由和连接绑定，使用全新的状态目录，只给扫码用户授权，接收授权关闭。</p>
+            <p id="bind-replace-note" class="muted">{{tr "请扫码选择或创建新应用。新账号只继承所选账号的默认 T3 路由和连接绑定，使用全新的状态目录，只给扫码用户授权，接收授权关闭。"}}</p>
           </div>
-          <label class="toggle"><input id="bind-comments" type="checkbox">申请云文档评论权限</label>
-          <button id="bind-start" class="secondary" type="button">生成二维码</button>
-          <button id="bind-cancel" class="secondary" type="button" hidden>取消扫码</button>
+          <label class="toggle"><input id="bind-comments" type="checkbox">{{tr "申请云文档评论权限"}}</label>
+          <button id="bind-start" class="secondary" type="button">{{tr "生成二维码"}}</button>
+          <button id="bind-cancel" class="secondary" type="button" hidden>{{tr "取消扫码"}}</button>
           <p id="bind-status" role="status"></p>
-          <img id="bind-image" width="216" height="216" alt="飞书应用绑定二维码" hidden>
-          <a id="bind-url" target="_blank" rel="noopener noreferrer" hidden>打开飞书授权页</a>
-          <button id="bind-apply" type="submit" name="action" value="bind" hidden>保存本机凭据并更新草稿</button>
+          <img id="bind-image" width="216" height="216" alt="{{tr "飞书应用绑定二维码"}}" hidden>
+          <a id="bind-url" target="_blank" rel="noopener noreferrer" hidden>{{tr "打开飞书授权页"}}</a>
+          <button id="bind-apply" type="submit" name="action" value="bind" hidden>{{tr "保存本机凭据并更新草稿"}}</button>
           </div>
         </details>
         <details class="account-actions"{{if .NewAccount.Tenant}} open{{end}}>
-          <summary class="row-heading"><span class="row-label"><b>手动添加附加账号</b></span></summary>
+          <summary class="row-heading"><span class="row-label"><b>{{tr "手动添加附加账号"}}</b></span></summary>
           <div class="row-body">
           <div class="fields">
-            <label>应用 ID<input name="newAppId" value="{{.NewAccount.AppID}}"></label>
-            <label>租户<select name="newTenant">
-              <option value="feishu">飞书</option>
+            <label>{{tr "应用 ID"}}<input name="newAppId" value="{{.NewAccount.AppID}}"></label>
+            <label>{{tr "租户"}}<select name="newTenant">
+              <option value="feishu">{{tr "飞书"}}</option>
               <option value="lark"{{if eq .NewAccount.Tenant "lark"}} selected{{end}}>Lark</option>
             </select></label>
-            <label>应用密钥文件<input name="newAppSecretFile" value="{{.NewAccount.AppSecretFile}}"></label>
-            <label>独立状态目录<input name="newStateDir" value="{{.NewAccount.StateDir}}"></label>
-            <label>初始用户 Open ID<input name="newUser" value="{{.NewAccount.User}}"></label>
-            <label>复用主账号的路由<select name="newRoute" data-new-account-route>
+            <label>{{tr "应用密钥文件"}}<input name="newAppSecretFile" value="{{.NewAccount.AppSecretFile}}"></label>
+            <label>{{tr "独立状态目录"}}<input name="newStateDir" value="{{.NewAccount.StateDir}}"></label>
+            <label>{{tr "初始用户 Open ID"}}<input name="newUser" value="{{.NewAccount.User}}"></label>
+            <label>{{tr "复用主账号的路由"}}<select name="newRoute" data-new-account-route>
               {{$root := index .Accounts 0}}
-              <option value="">选择路由</option>
+              <option value="">{{tr "选择路由"}}</option>
               {{$selected := or .NewAccount.Route $root.DefaultRoute}}
               {{range $id, $route := $root.Routes}}
               <option value="{{$id}}"{{if eq $id $selected}} selected{{end}}>{{$id}}</option>
               {{end}}
             </select></label>
           </div>
-          <p class="muted">新账号默认需要执行审批，接收授权关闭。</p>
-          <button class="secondary" type="submit" name="action" value="add-account">加入配置草稿</button>
+          <p class="muted">{{tr "新账号默认需要执行审批，接收授权关闭。"}}</p>
+          <button class="secondary" type="submit" name="action" value="add-account">{{tr "加入配置草稿"}}</button>
           </div>
         </details>
         <details class="account-actions"{{if .Replacement}} open{{end}}>
-          <summary class="row-heading"><span class="row-label"><b>手动替换账号</b></span></summary>
+          <summary class="row-heading"><span class="row-label"><b>{{tr "手动替换账号"}}</b></span></summary>
           <div class="row-body">
           {{$replacement := .Replacement}}
           <div class="fields">
-            <label>要替换的账号<select name="replaceAppId">
-              <option value="">请选择账号</option>
+            <label>{{tr "要替换的账号"}}<select name="replaceAppId">
+              <option value="">{{tr "请选择账号"}}</option>
               {{range .Accounts}}
               {{if validReplacementAppID .AppID}}
-              <option value="{{.AppID}}"{{if and $replacement (eq .AppID $replacement.ReplaceAppID)}} selected{{end}}>{{if .Index}}附加账号{{else}}主账号{{end}} · {{.AppID}}</option>
+              <option value="{{.AppID}}"{{if and $replacement (eq .AppID $replacement.ReplaceAppID)}} selected{{end}}>{{if .Index}}{{tr "附加账号"}}{{else}}{{tr "主账号"}}{{end}} · {{.AppID}}</option>
               {{end}}
               {{end}}
             </select></label>
-            <label>新应用 ID<input name="replacementAppId" value="{{with $replacement}}{{.AppID}}{{end}}"></label>
-            <label>新应用租户<select name="replacementTenant">
-              <option value="">请选择租户</option>
-              <option value="feishu"{{if and $replacement (eq $replacement.Tenant "feishu")}} selected{{end}}>飞书</option>
+            <label>{{tr "新应用 ID"}}<input name="replacementAppId" value="{{with $replacement}}{{.AppID}}{{end}}"></label>
+            <label>{{tr "新应用租户"}}<select name="replacementTenant">
+              <option value="">{{tr "请选择租户"}}</option>
+              <option value="feishu"{{if and $replacement (eq $replacement.Tenant "feishu")}} selected{{end}}>{{tr "飞书"}}</option>
               <option value="lark"{{if and $replacement (eq $replacement.Tenant "lark")}} selected{{end}}>Lark</option>
             </select></label>
-            <label>现有私有 App Secret 文件的绝对路径<input name="replacementAppSecretFile" value="{{with $replacement}}{{.AppSecretFile}}{{end}}"></label>
-            <label>新应用中的初始用户 Open ID<input name="replacementUser" value="{{with $replacement}}{{.User}}{{end}}"></label>
+            <label>{{tr "现有私有 App Secret 文件的绝对路径"}}<input name="replacementAppSecretFile" value="{{with $replacement}}{{.AppSecretFile}}{{end}}"></label>
+            <label>{{tr "新应用中的初始用户 Open ID"}}<input name="replacementUser" value="{{with $replacement}}{{.User}}{{end}}"></label>
           </div>
-          <p class="muted">草稿会为新账号分配独立状态目录，关闭接收授权，并沿用原账号的默认 T3 路由。原路由使用专用工具 provider 时，请重新选择 provider 和模型。</p>
-          <button class="secondary" type="submit" name="action" value="replace-app">生成替换草稿并审阅</button>
+          <p class="muted">{{tr "草稿会为新账号分配独立状态目录，关闭接收授权，并沿用原账号的默认 T3 路由。原路由使用专用工具 provider 时，请重新选择 provider 和模型。"}}</p>
+          <button class="secondary" type="submit" name="action" value="replace-app">{{tr "生成替换草稿并审阅"}}</button>
           {{if .Source.Revision}}
           <div id="replacement-secret-controls" hidden>
-            <p class="muted">如要输入新密钥，请将上方文件路径留空。新密钥会立即写入本机私有文件，配置仍需审阅后另行保存。</p>
-            <label>新应用 App Secret<input id="replacement-secret" type="password" autocomplete="off" autocapitalize="off" spellcheck="false" disabled></label>
-            <button id="replacement-secret-submit" class="secondary" type="submit" name="action" value="replace-app-secret" disabled>保存新私有密钥并生成换绑草稿</button>
+            <p class="muted">{{tr "如要输入新密钥，请将上方文件路径留空。新密钥会立即写入本机私有文件，配置仍需审阅后另行保存。"}}</p>
+            <label>{{tr "新应用 App Secret"}}<input id="replacement-secret" type="password" autocomplete="off" autocapitalize="off" spellcheck="false" disabled></label>
+            <button id="replacement-secret-submit" class="secondary" type="submit" name="action" value="replace-app-secret" disabled>{{tr "保存新私有密钥并生成换绑草稿"}}</button>
             <p id="replacement-secret-status" role="status"></p>
           </div>
           {{end}}
@@ -183,63 +187,63 @@
         </details>
     </section>
     {{end}}
-    <nav class="workbench-list" data-workbench-page="runtime" aria-label="运行与诊断">
-      <a class="link-row" href="/runtime">运行状态</a>
+    <nav class="workbench-list" data-workbench-page="runtime" aria-label="{{tr "运行与诊断"}}">
+      <a class="link-row" href="/runtime">{{tr "运行状态"}}</a>
       {{if and .Source.Path .Source.Revision (ne .Source.Revision "missing")}}
-      <a class="link-row" href="/runtime/install?source={{.Source.ID}}">接收预检</a>
-      <a class="link-row" href="/runtime/receiver-readiness?source={{.Source.ID}}">接收就绪状态</a>
-      <a class="link-row" href="/telemetry-archive?source={{.Source.ID}}">遥测归档</a>
+      <a class="link-row" href="/runtime/install?source={{.Source.ID}}">{{tr "接收预检"}}</a>
+      <a class="link-row" href="/runtime/receiver-readiness?source={{.Source.ID}}">{{tr "接收就绪状态"}}</a>
+      <a class="link-row" href="/telemetry-archive?source={{.Source.ID}}">{{tr "遥测归档"}}</a>
       {{end}}
-      <a class="link-row" href="/drain-check{{if and .Source.Path (ne .Source.Revision "missing")}}?source={{.Source.ID}}{{end}}">排空检查</a>
-      <a class="link-row" href="/message-receipt{{if .Source.Path}}?source={{.Source.ID}}{{end}}">消息回执</a>
+      <a class="link-row" href="/drain-check{{if and .Source.Path (ne .Source.Revision "missing")}}?source={{.Source.ID}}{{end}}">{{tr "排空检查"}}</a>
+      <a class="link-row" href="/message-receipt{{if .Source.Path}}?source={{.Source.ID}}{{end}}">{{tr "消息回执"}}</a>
     </nav>
-    <nav class="workbench-list" data-workbench-page="advanced" aria-label="管理工具">
-      <a class="link-row" href="/credentials{{if .Source.Path}}?source={{.Source.ID}}{{end}}">应用凭据</a>
+    <nav class="workbench-list" data-workbench-page="advanced" aria-label="{{tr "管理工具"}}">
+      <a class="link-row" href="/credentials{{if .Source.Path}}?source={{.Source.ID}}{{end}}">{{tr "应用凭据"}}</a>
       {{if and .Source.Path .Source.Revision (ne .Source.Revision "missing")}}
-      <a class="link-row" href="/tool-identity?source={{.Source.ID}}">核验飞书工具身份</a>
-      <a class="link-row" href="/meeting-preflight?source={{.Source.ID}}">会议权限预检</a>
-      <a class="link-row" href="/project-register?source={{.Source.ID}}">登记 T3 项目</a>
+      <a class="link-row" href="/tool-identity?source={{.Source.ID}}">{{tr "核验飞书工具身份"}}</a>
+      <a class="link-row" href="/meeting-preflight?source={{.Source.ID}}">{{tr "会议权限预检"}}</a>
+      <a class="link-row" href="/project-register?source={{.Source.ID}}">{{tr "登记 T3 项目"}}</a>
       {{end}}
-      <a class="link-row" href="/workspace-import{{if .Source.Path}}?source={{.Source.ID}}{{end}}">迁移旧命名工作区</a>
-      <a class="link-row" href="/legacy-session-import{{if .Source.Path}}?source={{.Source.ID}}{{end}}">转接旧会话</a>
+      <a class="link-row" href="/workspace-import{{if .Source.Path}}?source={{.Source.ID}}{{end}}">{{tr "迁移旧命名工作区"}}</a>
+      <a class="link-row" href="/legacy-session-import{{if .Source.Path}}?source={{.Source.ID}}{{end}}">{{tr "转接旧会话"}}</a>
     </nav>
-    {{if .HasBackup}}<div data-workbench-page="advanced"><button class="secondary" type="submit" name="action" value="load-backup">从备份载入草稿</button></div>{{end}}
+    {{if .HasBackup}}<div data-workbench-page="advanced"><button class="secondary" type="submit" name="action" value="load-backup">{{tr "从备份载入草稿"}}</button></div>{{end}}
     <details id="raw-config" class="panel advanced-row" data-workbench-page="advanced"{{if .RawOpen}} open{{end}}>
-      <summary>完整 JSON</summary>
-      <label for="config" class="muted">可编辑高级字段。凭据字段填写绝对文件路径。</label>
-      <label id="draft-import" hidden>选择 JSON 文件替换草稿<input type="file" accept=".json,application/json"></label>
+      <summary>{{tr "完整 JSON"}}</summary>
+      <label for="config" class="muted">{{tr "可编辑高级字段。凭据字段填写绝对文件路径。"}}</label>
+      <label id="draft-import" hidden>{{tr "选择 JSON 文件替换草稿"}}<input type="file" accept=".json,application/json"></label>
       <p id="draft-import-status" class="muted" role="status"></p>
       <textarea class="raw" id="config" name="config" spellcheck="false" autocapitalize="off">
 {{.JSON}}</textarea>
     </details>
     <details class="panel advanced-row" data-workbench-page="advanced"{{if .LegacyImport}} open{{end}}>
-      <summary>导入旧 lark-channel-bridge 配置</summary>
-      <p class="muted">单路由模板可沿用导入的用户名单。其他路由需先填写明确的 Open ID。旧单账号文件没有用户名单时，沿用底稿主账号的用户。导入会关闭所有账号的接收授权，启用前请核对 T3 目标。</p>
-      <p class="muted">可导入显示设置、并发额度和允许群的 @ 规则。</p>
+      <summary>{{tr "导入旧 lark-channel-bridge 配置"}}</summary>
+      <p class="muted">{{tr "单路由模板可沿用导入的用户名单。其他路由需先填写明确的 Open ID。旧单账号文件没有用户名单时，沿用底稿主账号的用户。导入会关闭所有账号的接收授权，启用前请核对 T3 目标。"}}</p>
+      <p class="muted">{{tr "可导入显示设置、并发额度和允许群的 @ 规则。"}}</p>
       <div class="fields">
-        <label>本机旧配置 JSON 的绝对路径<input name="legacySourcePath" value="{{.LegacyForm.SourcePath}}"></label>
-        <label>旧配置名称（多配置留空用默认，单账号须留空）<input name="legacyProfile" value="{{.LegacyForm.Profile}}"></label>
-        <label>独立新状态目录的绝对路径<input name="legacyStateDir" value="{{.LegacyForm.StateDir}}"></label>
-        <label>私有 App Secret 文件的绝对路径<input name="legacyAppSecretFile" value="{{.LegacyForm.AppSecretFile}}"></label>
+        <label>{{tr "本机旧配置 JSON 的绝对路径"}}<input name="legacySourcePath" value="{{.LegacyForm.SourcePath}}"></label>
+        <label>{{tr "旧配置名称（多配置留空用默认，单账号须留空）"}}<input name="legacyProfile" value="{{.LegacyForm.Profile}}"></label>
+        <label>{{tr "独立新状态目录的绝对路径"}}<input name="legacyStateDir" value="{{.LegacyForm.StateDir}}"></label>
+        <label>{{tr "私有 App Secret 文件的绝对路径"}}<input name="legacyAppSecretFile" value="{{.LegacyForm.AppSecretFile}}"></label>
       </div>
-      <label><input type="checkbox" name="legacyReuseT3" value="1"{{if .LegacyForm.ReuseT3}} checked{{end}}>沿用旧 T3 连接和 OAuth 文件路径</label>
-      <p class="muted">沿用本机 T3 时，续聊附件缓存会在预览中默认开启，草稿里已设置的值优先。</p>
-      <button class="secondary" type="submit" name="action" value="import-legacy">导入草稿并查看差异</button>
-      <button class="secondary" type="submit" name="action" value="preview-legacy-credential">预览导入与复制 App Secret</button>
+      <label><input type="checkbox" name="legacyReuseT3" value="1"{{if .LegacyForm.ReuseT3}} checked{{end}}>{{tr "沿用旧 T3 连接和 OAuth 文件路径"}}</label>
+      <p class="muted">{{tr "沿用本机 T3 时，续聊附件缓存会在预览中默认开启，草稿里已设置的值优先。"}}</p>
+      <button class="secondary" type="submit" name="action" value="import-legacy">{{tr "导入草稿并查看差异"}}</button>
+      <button class="secondary" type="submit" name="action" value="preview-legacy-credential">{{tr "预览导入与复制 App Secret"}}</button>
     </details>
     {{with .LegacyReview}}
-    <section class="panel" data-workbench-page="review" aria-label="复制 App Secret">
-      <h2>复制 App Secret</h2>
+    <section class="panel" data-workbench-page="review" aria-label="{{tr "复制 App Secret"}}">
+      <h2>{{tr "复制 App Secret"}}</h2>
       <dl>
-        <dt>旧配置文件</dt><dd><code>{{.Plan.SourcePath}}</code></dd>
-        {{if .Plan.Inline}}<dt>旧配置类型</dt><dd>单账号配置</dd>{{else}}<dt>旧配置名称</dt><dd>{{.Plan.Profile}}</dd>{{end}}
-        <dt>应用 ID</dt><dd>{{.Plan.AppID}}</dd>
-        <dt>私有凭据文件</dt><dd><code>{{.Plan.Destination}}</code></dd>
+        <dt>{{tr "旧配置文件"}}</dt><dd><code>{{.Plan.SourcePath}}</code></dd>
+        {{if .Plan.Inline}}<dt>{{tr "旧配置类型"}}</dt><dd>{{tr "单账号配置"}}</dd>{{else}}<dt>{{tr "旧配置名称"}}</dt><dd>{{.Plan.Profile}}</dd>{{end}}
+        <dt>{{tr "应用 ID"}}</dt><dd>{{.Plan.AppID}}</dd>
+        <dt>{{tr "私有凭据文件"}}</dt><dd><code>{{.Plan.Destination}}</code></dd>
       </dl>
-      <p class="muted">请核对差异与凭据路径。确认后将凭据写入私有文件，候选 JSON 仍需单独保存。</p>
+      <p class="muted">{{tr "请核对差异与凭据路径。确认后将凭据写入私有文件，候选 JSON 仍需单独保存。"}}</p>
       <input type="hidden" name="legacyReview" value="{{.Token}}">
-      <button type="submit" name="action" value="confirm-legacy-credential">确认复制 App Secret</button>
-      <button class="secondary" type="submit" name="action" value="cancel-legacy-credential">取消复制，保留草稿</button>
+      <button type="submit" name="action" value="confirm-legacy-credential">{{tr "确认复制 App Secret"}}</button>
+      <button class="secondary" type="submit" name="action" value="cancel-legacy-credential">{{tr "取消复制，保留草稿"}}</button>
     </section>
     {{end}}
   </form>
@@ -248,7 +252,7 @@
 <template id="route-template">
   <details class="workbench-row" data-section data-route open>
     <summary class="row-heading">
-      <span class="row-label"><b class="mono" data-route-summary-id></b><small data-route-summary-project>未选择项目</small></span>
+      <span class="row-label"><b class="mono" data-route-summary-id></b><small data-route-summary-project>{{tr "未选择项目"}}</small></span>
       <span class="row-meta mono" data-route-summary-model></span>
     </summary>
     <div class="row-body">{{template "route-fields" newRoute}}</div>
@@ -264,111 +268,111 @@
 </html>
 {{define "account-fields"}}
     <div class="workspace"{{if .Index}} data-account="{{.Index}}"{{end}}>
-      <section class="workbench-list" data-workbench-page="accounts" aria-label="飞书账号和权限">
+      <section class="workbench-list" data-workbench-page="accounts" aria-label="{{tr "飞书账号和权限"}}">
       <details class="workbench-row"{{if not .Index}} id="primary-feishu"{{end}}>
         <summary class="row-heading">
-          <span class="row-label"><b>{{if eq .Tenant "lark"}}Lark{{else}}飞书{{end}}{{if .Index}}附加账号{{else}}主账号{{end}}</b><small class="mono" data-account-summary-id>{{.AppID}}</small></span>
-          <span class="row-meta{{if .ReceiverAuthorized}} ok{{end}}" data-account-summary-receiver>{{if .ReceiverAuthorized}}接收已授权{{else}}接收待授权{{end}}</span>
+          <span class="row-label"><b>{{if eq .Tenant "lark"}}Lark{{else}}{{tr "飞书"}}{{end}}{{if .Index}}{{tr "附加账号"}}{{else}}{{tr "主账号"}}{{end}}</b><small class="mono" data-account-summary-id>{{.AppID}}</small></span>
+          <span class="row-meta{{if .ReceiverAuthorized}} ok{{end}}" data-account-summary-receiver>{{if .ReceiverAuthorized}}{{tr "接收已授权"}}{{else}}{{tr "接收待授权"}}{{end}}</span>
         </summary>
-        <fieldset class="row-body" data-section data-feishu aria-label="飞书与接收端">
+        <fieldset class="row-body" data-section data-feishu aria-label="{{tr "飞书与接收端"}}">
         <div class="fields">
-          <label>应用 ID<input data-key="appId" value="{{.AppID}}"></label>
-          <label>应用密钥文件<input data-key="appSecretFile" value="{{.AppSecretFile}}"></label>
-          <label>租户<input data-key="tenant" value="{{.Tenant}}" placeholder="feishu 或 lark"></label>
-          <label>实例标识<input data-key="receiverMachine" value="{{.ReceiverMachine}}"></label>
-          <label>状态目录<input data-key="stateDir" value="{{.StateDir}}"></label>
-          <label class="span toggle"><input type="checkbox" data-key="receiverAuthorized"{{if .ReceiverAuthorized}} checked{{end}}>已确认接收端授权</label>
+          <label>{{tr "应用 ID"}}<input data-key="appId" value="{{.AppID}}"></label>
+          <label>{{tr "应用密钥文件"}}<input data-key="appSecretFile" value="{{.AppSecretFile}}"></label>
+          <label>{{tr "租户"}}<input data-key="tenant" value="{{.Tenant}}" placeholder="{{tr "feishu 或 lark"}}"></label>
+          <label>{{tr "实例标识"}}<input data-key="receiverMachine" value="{{.ReceiverMachine}}"></label>
+          <label>{{tr "状态目录"}}<input data-key="stateDir" value="{{.StateDir}}"></label>
+          <label class="span toggle"><input type="checkbox" data-key="receiverAuthorized"{{if .ReceiverAuthorized}} checked{{end}}>{{tr "已确认接收端授权"}}</label>
         </div>
         <details class="details-note">
-          <summary>会议与首次启动设置</summary>
+          <summary>{{tr "会议与首次启动设置"}}</summary>
           <div class="fields">
-          <label class="span">首次启动运行设置（JSON 对象，可留空）
+          <label class="span">{{tr "首次启动运行设置（JSON 对象，可留空）"}}
             <textarea data-key="initialRuntime" data-object data-optional-object rows="6" spellcheck="false">
 {{.InitialRuntimeJSON}}</textarea>
-            <span>首次启动时应用；已有在线设置由运行状态管理。</span>
+            <span>{{tr "首次启动时应用；已有在线设置由运行状态管理。"}}</span>
           </label>
-          <label class="span toggle"><input type="checkbox" data-key="meetingEnabled"{{if .MeetingEnabled}} checked{{end}}>允许管理员从私聊控制会议入会</label>
-          <label class="span">字幕及会议问答路由<input data-key="meetingRoute" value="{{.MeetingRoute}}" placeholder="留空关闭字幕和问答"></label>
-          <label class="span">会后自动纪要投递<select data-key="meetingSummaryTarget">
-            <option value=""{{if eq .MeetingSummaryTarget ""}} selected{{end}}>关闭</option>
-            <option value="origin"{{if eq .MeetingSummaryTarget "origin"}} selected{{end}}>原私聊</option>
-            <option value="owner"{{if eq .MeetingSummaryTarget "owner"}} selected{{end}}>应用所有者私聊</option>
+          <label class="span toggle"><input type="checkbox" data-key="meetingEnabled"{{if .MeetingEnabled}} checked{{end}}>{{tr "允许管理员从私聊控制会议入会"}}</label>
+          <label class="span">{{tr "字幕及会议问答路由"}}<input data-key="meetingRoute" value="{{.MeetingRoute}}" placeholder="{{tr "留空关闭字幕和问答"}}"></label>
+          <label class="span">{{tr "会后自动纪要投递"}}<select data-key="meetingSummaryTarget">
+            <option value=""{{if eq .MeetingSummaryTarget ""}} selected{{end}}>{{tr "关闭"}}</option>
+            <option value="origin"{{if eq .MeetingSummaryTarget "origin"}} selected{{end}}>{{tr "原私聊"}}</option>
+            <option value="owner"{{if eq .MeetingSummaryTarget "owner"}} selected{{end}}>{{tr "应用所有者私聊"}}</option>
             {{if and .MeetingSummaryTarget (not (eq .MeetingSummaryTarget "origin" "owner"))}}
-            <option value="{{.MeetingSummaryTarget}}" selected disabled>无效值，请重新选择</option>
+            <option value="{{.MeetingSummaryTarget}}" selected disabled>{{tr "无效值，请重新选择"}}</option>
             {{end}}
           </select></label>
-          <label class="span toggle"><input type="checkbox" data-key="meetingRoomReplies"{{if .MeetingRoomReplies}} checked{{end}}>允许机器人在会议内公开回复</label>
-          <label class="span">自动入会的邀请人 Open ID（每行一个）<textarea data-key="meetingAutoJoinUsers" data-list rows="2" placeholder="留空关闭自动入会">{{lines .MeetingAutoJoinUsers}}</textarea></label>
+          <label class="span toggle"><input type="checkbox" data-key="meetingRoomReplies"{{if .MeetingRoomReplies}} checked{{end}}>{{tr "允许机器人在会议内公开回复"}}</label>
+          <label class="span">{{tr "自动入会的邀请人 Open ID（每行一个）"}}<textarea data-key="meetingAutoJoinUsers" data-list rows="2" placeholder="{{tr "留空关闭自动入会"}}">{{lines .MeetingAutoJoinUsers}}</textarea></label>
           </div>
         </details>
-        <button class="secondary" type="button" data-feishu-check>检查应用 API</button>
+        <button class="secondary" type="button" data-feishu-check>{{tr "检查应用 API"}}</button>
         <p class="muted" role="status" data-feishu-status></p>
-        {{if .Index}}<button class="secondary" type="button" data-remove-account>移除账号</button>{{end}}
+        {{if .Index}}<button class="secondary" type="button" data-remove-account>{{tr "移除账号"}}</button>{{end}}
         </fieldset>
       </details>
       <details class="workbench-row"{{if not .Index}} id="primary-access"{{end}}>
         <summary class="row-heading">
-          <span class="row-label"><b>访问控制</b><small data-account-summary-access>{{len .Users}} 位用户 · {{len .Chats}} 个群</small></span>
+          <span class="row-label"><b>{{tr "访问控制"}}</b><small data-account-summary-access>{{len .Users}} {{tr "位用户 ·"}} {{len .Chats}} {{tr "个群"}}</small></span>
           {{if .Index}}<span class="row-meta mono">{{.AppID}}</span>{{end}}
         </summary>
-        <fieldset class="row-body" data-section data-group-access aria-label="访问控制">
-        <p class="muted">每行一个 ID</p>
+        <fieldset class="row-body" data-section data-group-access aria-label="{{tr "访问控制"}}">
+        <p class="muted">{{tr "每行一个 ID"}}</p>
         <div class="fields">
-          <label>用户<textarea data-key="users" data-list rows="2">
+          <label>{{tr "用户"}}<textarea data-key="users" data-list rows="2">
 {{lines .Users}}</textarea></label>
-          <label>管理员<textarea data-key="admins" data-list rows="2">
+          <label>{{tr "管理员"}}<textarea data-key="admins" data-list rows="2">
 {{lines .Admins}}</textarea></label>
-          <label>群聊<textarea data-key="chats" data-list rows="2">
+          <label>{{tr "群聊"}}<textarea data-key="chats" data-list rows="2">
 {{lines .Chats}}</textarea></label>
-          <label>话题<textarea data-key="topics" data-list rows="2">
+          <label>{{tr "话题"}}<textarea data-key="topics" data-list rows="2">
 {{lines .Topics}}</textarea></label>
-          <label class="span toggle"><input type="checkbox" data-list-override="directChats"{{if .DirectChats}} checked{{end}}>单独设置私聊范围</label>
-          <label class="span" data-direct-chats{{if not .DirectChats}} hidden{{end}}>私聊 ID（留空时允许已授权用户的私聊）<textarea data-key="directChats" data-list rows="2">
+          <label class="span toggle"><input type="checkbox" data-list-override="directChats"{{if .DirectChats}} checked{{end}}>{{tr "单独设置私聊范围"}}</label>
+          <label class="span" data-direct-chats{{if not .DirectChats}} hidden{{end}}>{{tr "私聊 ID（留空时允许已授权用户的私聊）"}}<textarea data-key="directChats" data-list rows="2">
 {{with .DirectChats}}{{lines .}}{{end}}</textarea></label>
         </div>
         <div class="group-picker">
-          <button class="secondary" type="button" data-groups-list>查询机器人所在群</button>
+          <button class="secondary" type="button" data-groups-list>{{tr "查询机器人所在群"}}</button>
           <p class="muted" role="status" data-groups-status></p>
           <div data-groups-picker hidden>
-            <label>搜索群名或 ID<input type="search" data-groups-filter></label>
+            <label>{{tr "搜索群名或 ID"}}<input type="search" data-groups-filter></label>
             <div class="group-options" data-groups-options></div>
-            <button class="secondary" type="button" data-groups-add>加入群聊草稿</button>
+            <button class="secondary" type="button" data-groups-add>{{tr "加入群聊草稿"}}</button>
           </div>
         </div>
         <details data-my-groups>
-          <summary>我的群</summary>
-          <fieldset class="group-picker" aria-label="我的群操作" data-my-controls>
-            <p class="muted">通过本机 lark-cli，以当前应用的所有者身份查群或邀请机器人。</p>
+          <summary>{{tr "我的群"}}</summary>
+          <fieldset class="group-picker" aria-label="{{tr "我的群操作"}}" data-my-controls>
+            <p class="muted">{{tr "通过本机 lark-cli，以当前应用的所有者身份查群或邀请机器人。"}}</p>
             <div class="actions">
-              <button class="secondary" type="button" data-my-action="open">查询我的群</button>
-              <button class="secondary" type="button" data-my-action="authorize-list" hidden>授权查群</button>
-              <button class="secondary" type="button" data-my-action="authorize-invite" hidden>授权邀请机器人</button>
+              <button class="secondary" type="button" data-my-action="open">{{tr "查询我的群"}}</button>
+              <button class="secondary" type="button" data-my-action="authorize-list" hidden>{{tr "授权查群"}}</button>
+              <button class="secondary" type="button" data-my-action="authorize-invite" hidden>{{tr "授权邀请机器人"}}</button>
             </div>
             <div data-my-authorization hidden>
               <img width="240" height="240" alt="飞书用户授权二维码" data-my-image>
-              <p><a target="_blank" rel="noopener noreferrer" data-my-link>在浏览器打开飞书授权</a></p>
+              <p><a target="_blank" rel="noopener noreferrer" data-my-link>{{tr "在浏览器打开飞书授权"}}</a></p>
               <div class="actions">
-                <button type="button" data-my-action="finish">已授权，继续</button>
-                <button class="secondary" type="button" data-my-action="cancel">取消授权</button>
+                <button type="button" data-my-action="finish">{{tr "已授权，继续"}}</button>
+                <button class="secondary" type="button" data-my-action="cancel">{{tr "取消授权"}}</button>
               </div>
             </div>
             <div data-my-picker hidden>
-              <label>搜索群名<input type="search" data-my-query></label>
+              <label>{{tr "搜索群名"}}<input type="search" data-my-query></label>
               <div class="actions">
-                <button class="secondary" type="button" data-my-action="search">搜索</button>
-                <button class="secondary" type="button" data-my-action="next" hidden>下一页</button>
+                <button class="secondary" type="button" data-my-action="search">{{tr "搜索"}}</button>
+                <button class="secondary" type="button" data-my-action="next" hidden>{{tr "下一页"}}</button>
               </div>
-              <label>选择群聊<select data-my-selection></select></label>
+              <label>{{tr "选择群聊"}}<select data-my-selection></select></label>
               <div class="actions">
-                <button class="secondary" type="button" data-my-action="add" hidden>加入群聊草稿</button>
-                <button class="secondary" type="button" data-my-action="invite" hidden>邀请机器人</button>
+                <button class="secondary" type="button" data-my-action="add" hidden>{{tr "加入群聊草稿"}}</button>
+                <button class="secondary" type="button" data-my-action="invite" hidden>{{tr "邀请机器人"}}</button>
               </div>
-              <p class="muted" data-my-runtime hidden><a>管理此群的在线授权</a> · 链接将在当前页打开。如有配置草稿，请先校验并保存。</p>
+              <p class="muted" data-my-runtime hidden><a>{{tr "管理此群的在线授权"}}</a> {{tr "· 链接将在当前页打开。如有配置草稿，请先校验并保存。"}}</p>
               <div data-my-confirmation hidden>
                 <p data-my-target></p>
                 <div class="actions">
-                  <button type="button" data-my-action="confirm">确认邀请</button>
-                  <button class="secondary" type="button" data-my-action="back">取消邀请</button>
+                  <button type="button" data-my-action="confirm">{{tr "确认邀请"}}</button>
+                  <button class="secondary" type="button" data-my-action="back">{{tr "取消邀请"}}</button>
                 </div>
               </div>
             </div>
@@ -378,12 +382,12 @@
         </fieldset>
       </details>
       </section>
-      <section{{if not .Index}} id="primary-routes"{{end}} data-workbench-page="routes" data-route-editor aria-label="项目与路由">
+      <section{{if not .Index}} id="primary-routes"{{end}} data-workbench-page="routes" data-route-editor aria-label="{{tr "项目与路由"}}">
         <div class="workbench-list" data-route-list>
           {{range $id, $route := .RouteFields}}
           <details class="workbench-row" data-section data-route="{{$id}}">
             <summary class="row-heading">
-              <span class="row-label"><b class="mono" data-route-summary-id>{{$id}}</b><small data-route-summary-project>{{if $route.ProjectName}}{{$route.ProjectName}}{{else if $route.ProjectID}}已绑定项目{{else}}未选择项目{{end}}</small></span>
+              <span class="row-label"><b class="mono" data-route-summary-id>{{$id}}</b><small data-route-summary-project>{{if $route.ProjectName}}{{$route.ProjectName}}{{else if $route.ProjectID}}{{tr "已绑定项目"}}{{else}}{{tr "未选择项目"}}{{end}}</small></span>
               <span class="row-meta mono" data-route-summary-model>{{$route.Model}}</span>
             </summary>
             <div class="row-body">{{template "route-fields" $route}}</div>
@@ -391,54 +395,54 @@
           {{end}}
         </div>
         <details class="details-note add-route">
-          <summary>添加路由</summary>
+          <summary>{{tr "添加路由"}}</summary>
           <div class="route-head fields">
-            <input data-route-id aria-label="新路由 ID" placeholder="路由 ID">
-            <button data-add-route class="secondary" type="button">添加路由</button>
+            <input data-route-id aria-label="{{tr "新路由 ID"}}" placeholder="{{tr "路由 ID"}}">
+            <button data-add-route class="secondary" type="button">{{tr "添加路由"}}</button>
           </div>
         </details>
       </section>
-      <section class="workbench-list" data-workbench-page="routes" aria-label="T3 连接与默认路由">
+      <section class="workbench-list" data-workbench-page="routes" aria-label="{{tr "T3 连接与默认路由"}}">
       <details class="workbench-row"{{if not .Index}} id="primary-t3"{{end}}>
         <summary class="row-heading">
-          <span class="row-label"><b>T3 MCP</b><small class="mono" data-mcp-summary>{{if .MCP.Endpoint}}{{.MCP.Endpoint}}{{else if .MCP.RuntimeFile}}通过本机运行文件连接{{else}}待配置{{end}}</small></span>
+          <span class="row-label"><b>T3 MCP</b><small class="mono" data-mcp-summary>{{if .MCP.Endpoint}}{{.MCP.Endpoint}}{{else if .MCP.RuntimeFile}}{{tr "通过本机运行文件连接"}}{{else}}{{tr "待配置"}}{{end}}</small></span>
           {{if .Index}}<span class="row-meta mono">{{.AppID}}</span>{{end}}
         </summary>
         <fieldset class="row-body" data-section="mcp" aria-label="T3 MCP">
         <div class="fields">
-          <label class="span">MCP 端点（回环 HTTP 或 HTTPS）<input data-key="endpoint" value="{{.MCP.Endpoint}}"></label>
-          <label class="span">T3 运行文件（与端点二选一）<input data-key="runtimeFile" value="{{.MCP.RuntimeFile}}"></label>
-          <label>环境 ID<input data-key="environmentId" value="{{.MCP.EnvironmentID}}"></label>
-          <label>令牌文件<input data-key="tokenFile" value="{{.MCP.TokenFile}}"></label>
+          <label class="span">{{tr "MCP 端点（回环 HTTP 或 HTTPS）"}}<input data-key="endpoint" value="{{.MCP.Endpoint}}"></label>
+          <label class="span">{{tr "T3 运行文件（与端点二选一）"}}<input data-key="runtimeFile" value="{{.MCP.RuntimeFile}}"></label>
+          <label>{{tr "环境 ID"}}<input data-key="environmentId" value="{{.MCP.EnvironmentID}}"></label>
+          <label>{{tr "令牌文件"}}<input data-key="tokenFile" value="{{.MCP.TokenFile}}"></label>
         </div>
         {{if eq .MCP.EnvironmentID "REPLACE_ENVIRONMENT_ID"}}
-        <button class="secondary" type="submit" name="action" value="use-local-t3:{{.Number}}" data-use-local-t3>采用本机 T3</button>
-        <p class="muted" role="status" data-local-t3-status>读取本机 T3 运行文件和环境 ID，更新当前账号草稿并显示差异。</p>
+        <button class="secondary" type="submit" name="action" value="use-local-t3:{{.Number}}" data-use-local-t3>{{tr "采用本机 T3"}}</button>
+        <p class="muted" role="status" data-local-t3-status>{{tr "读取本机 T3 运行文件和环境 ID，更新当前账号草稿并显示差异。"}}</p>
         {{end}}
         <details data-t3-authorize>
-          <summary>申请 T3 授权</summary>
-          <p class="muted">指定私有的 .json 令牌文件，在本机浏览器完成批准。</p>
-          <p class="muted">若 T3 授权页要求 Sign-in code，请在同一 T3 环境的 Settings → Sharing &amp; access → Use T3 Code in another app (MCP) 取得一次性登录码，粘贴到 T3 授权页。登录码过期或已使用时，请重新取得。</p>
-          <p class="muted">用于 <code>approval-required</code> 路由时，在 T3 选择 Supervised。</p>
-          <label><input type="checkbox" data-t3-auth-replace> 重新授权并替换凭据</label>
-          <button type="button" class="secondary" data-t3-auth-start>准备授权</button>
-          <a data-t3-auth-link target="_blank" rel="noopener noreferrer" hidden>打开 T3 授权页</a>
-          <label data-t3-auth-address hidden>授权地址<input readonly></label>
-          <button type="button" class="secondary" data-t3-auth-cancel hidden>取消</button>
+          <summary>{{tr "申请 T3 授权"}}</summary>
+          <p class="muted">{{tr "指定私有的 .json 令牌文件，在本机浏览器完成批准。"}}</p>
+          <p class="muted">{{tr "若 T3 授权页要求 Sign-in code，请在同一 T3 环境的 Settings → Sharing & access → Use T3 Code in another app (MCP) 取得一次性登录码，粘贴到 T3 授权页。登录码过期或已使用时，请重新取得。"}}</p>
+          <p class="muted">{{tr "用于"}} <code>approval-required</code> {{tr "路由时，在 T3 选择 Supervised。"}}</p>
+          <label><input type="checkbox" data-t3-auth-replace> {{tr "重新授权并替换凭据"}}</label>
+          <button type="button" class="secondary" data-t3-auth-start>{{tr "准备授权"}}</button>
+          <a data-t3-auth-link target="_blank" rel="noopener noreferrer" hidden>{{tr "打开 T3 授权页"}}</a>
+          <label data-t3-auth-address hidden>{{tr "授权地址"}}<input readonly></label>
+          <button type="button" class="secondary" data-t3-auth-cancel hidden>{{tr "取消"}}</button>
           <p class="muted" role="status" data-t3-auth-status></p>
         </details>
         </fieldset>
       </details>
       <details class="workbench-row">
         <summary class="row-heading">
-          <span class="row-label"><b>路由选择</b></span>
-          <span class="row-meta mono"><span class="muted">默认</span> <span data-default-route-summary>{{.DefaultRoute}}</span></span>
+          <span class="row-label"><b>{{tr "路由选择"}}</b></span>
+          <span class="row-meta mono"><span class="muted">{{tr "默认"}}</span> <span data-default-route-summary>{{.DefaultRoute}}</span></span>
         </summary>
-        <fieldset class="row-body" data-section aria-label="路由选择">
+        <fieldset class="row-body" data-section aria-label="{{tr "路由选择"}}">
         <div class="fields">
-          <label>默认路由 ID<input data-key="defaultRoute" value="{{.DefaultRoute}}"></label>
-          <label>独立复核路由 ID<input data-key="reviewRoute" value="{{.ReviewRoute}}"></label>
-          <label>云文档评论路由 ID<input data-key="commentRoute" value="{{.CommentRoute}}" placeholder="留空关闭"></label>
+          <label>{{tr "默认路由 ID"}}<input data-key="defaultRoute" value="{{.DefaultRoute}}"></label>
+          <label>{{tr "独立复核路由 ID"}}<input data-key="reviewRoute" value="{{.ReviewRoute}}"></label>
+          <label>{{tr "云文档评论路由 ID"}}<input data-key="commentRoute" value="{{.CommentRoute}}" placeholder="{{tr "留空关闭"}}"></label>
         </div>
         </fieldset>
       </details>
@@ -447,75 +451,75 @@
 {{end}}
 {{define "route-fields"}}
 <details data-target-chooser>
-  <summary>从 T3 查询项目与模型</summary>
+  <summary>{{tr "从 T3 查询项目与模型"}}</summary>
   <div class="target-search">
-    <input data-target-search aria-label="筛选模型名称" placeholder="模型名（可留空）">
-    <button class="secondary" type="button" data-target-list>查询</button>
+    <input data-target-search aria-label="{{tr "筛选模型名称"}}" placeholder="{{tr "模型名（可留空）"}}">
+    <button class="secondary" type="button" data-target-list>{{tr "查询"}}</button>
   </div>
   <p class="muted" role="status" data-target-status></p>
   <div class="fields" data-target-results hidden>
-    <label>项目<select data-target-project disabled></select></label>
-    <label>模型<select data-target-model disabled></select></label>
+    <label>{{tr "项目"}}<select data-target-project disabled></select></label>
+    <label>{{tr "模型"}}<select data-target-model disabled></select></label>
   </div>
   <p class="muted" role="status" data-target-options hidden></p>
   <div class="fields" data-target-option-fields hidden></div>
-  <button class="secondary" type="button" data-target-apply hidden disabled>填入草稿</button>
+  <button class="secondary" type="button" data-target-apply hidden disabled>{{tr "填入草稿"}}</button>
 </details>
 <details class="details-note" data-route-parameters>
-  <summary>编辑执行参数</summary>
+  <summary>{{tr "编辑执行参数"}}</summary>
 <div class="fields">
-  <label>环境 ID<input data-key="environmentId" value="{{.EnvironmentID}}"></label>
-  <label>项目 ID<input data-key="projectId" value="{{.ProjectID}}"></label>
-  <label>项目名称<input data-key="projectName" value="{{.ProjectName}}"></label>
-  <label>项目目录<input data-key="projectPath" value="{{.ProjectPath}}"></label>
+  <label>{{tr "环境 ID"}}<input data-key="environmentId" value="{{.EnvironmentID}}"></label>
+  <label>{{tr "项目 ID"}}<input data-key="projectId" value="{{.ProjectID}}"></label>
+  <label>{{tr "项目名称"}}<input data-key="projectName" value="{{.ProjectName}}"></label>
+  <label>{{tr "项目目录"}}<input data-key="projectPath" value="{{.ProjectPath}}"></label>
   <label>Driver<input data-key="driver" value="{{.Driver}}"></label>
   <label>Provider ID<input data-key="providerId" value="{{.ProviderID}}"></label>
-  <label>模型<input data-key="model" value="{{.Model}}"></label>
-  <label>目标别名（每行一个）<textarea data-key="aliases" data-list rows="2">
+  <label>{{tr "模型"}}<input data-key="model" value="{{.Model}}"></label>
+  <label>{{tr "目标别名（每行一个）"}}<textarea data-key="aliases" data-list rows="2">
 {{lines .Aliases}}</textarea></label>
-  <label>执行权限<input data-key="runtimeMode" list="runtime-modes" value="{{.RuntimeMode}}"></label>
-  <label>交互模式<input data-key="interactionMode" list="interaction-modes" value="{{.InteractionMode}}"></label>
-  <label class="span toggle"><input type="checkbox" data-key="cacheFollowupAttachments"{{if .CacheFollowupAttachments}} checked{{end}}>续聊附件通过本机缓存排队（T3 执行器须能读取接收账号的私有缓存）</label>
-  <label>授权用户（每行一个）<textarea data-key="users" data-list rows="3">
+  <label>{{tr "执行权限"}}<input data-key="runtimeMode" list="runtime-modes" value="{{.RuntimeMode}}"></label>
+  <label>{{tr "交互模式"}}<input data-key="interactionMode" list="interaction-modes" value="{{.InteractionMode}}"></label>
+  <label class="span toggle"><input type="checkbox" data-key="cacheFollowupAttachments"{{if .CacheFollowupAttachments}} checked{{end}}>{{tr "续聊附件通过本机缓存排队（T3 执行器须能读取接收账号的私有缓存）"}}</label>
+  <label>{{tr "授权用户（每行一个）"}}<textarea data-key="users" data-list rows="3">
 {{lines .Users}}</textarea></label>
-  <label>模型选项（JSON 对象）<textarea data-key="options" data-object rows="3" spellcheck="false">
+  <label>{{tr "模型选项（JSON 对象）"}}<textarea data-key="options" data-object rows="3" spellcheck="false">
 {{.OptionsJSON}}</textarea></label>
 </div>
 </details>
 <details data-tool-binding>
-  <summary>飞书工具</summary>
-  <p class="muted">点击「应用到草稿」后才会更新下方 JSON。之后可校验并查看差异。</p>
+  <summary>{{tr "飞书工具"}}</summary>
+  <p class="muted">{{tr "点击「应用到草稿」后才会更新下方 JSON。之后可校验并查看差异。"}}</p>
   <div class="fields">
-    <label>身份模式<select data-tool-binding-field="mode">
-      <option value="">请选择</option>
-      <option value="off">关闭并移除工具配置</option>
-      <option value="bot"{{if eq .ToolBinding.Mode "bot"}} selected{{end}}>机器人（bot）</option>
-      <option value="user"{{if eq .ToolBinding.Mode "user"}} selected{{end}}>用户（user）</option>
-      <option value="user-default"{{if eq .ToolBinding.Mode "user-default"}} selected{{end}}>机器人与用户（user-default）</option>
+    <label>{{tr "身份模式"}}<select data-tool-binding-field="mode">
+      <option value="">{{tr "请选择"}}</option>
+      <option value="off">{{tr "关闭并移除工具配置"}}</option>
+      <option value="bot"{{if eq .ToolBinding.Mode "bot"}} selected{{end}}>{{tr "机器人（bot）"}}</option>
+      <option value="user"{{if eq .ToolBinding.Mode "user"}} selected{{end}}>{{tr "用户（user）"}}</option>
+      <option value="user-default"{{if eq .ToolBinding.Mode "user-default"}} selected{{end}}>{{tr "机器人与用户（user-default）"}}</option>
     </select></label>
-    <label>CLI 可执行文件绝对路径<input data-tool-binding-field="cliPath" value="{{.ToolBinding.CLIPath}}"></label>
-    <label>工具应用 ID<input data-tool-binding-field="appId" value="{{.ToolBinding.AppID}}"></label>
-    <label>工具租户<select data-tool-binding-field="tenant">
-      <option value="feishu">飞书</option>
+    <label>{{tr "CLI 可执行文件绝对路径"}}<input data-tool-binding-field="cliPath" value="{{.ToolBinding.CLIPath}}"></label>
+    <label>{{tr "工具应用 ID"}}<input data-tool-binding-field="appId" value="{{.ToolBinding.AppID}}"></label>
+    <label>{{tr "工具租户"}}<select data-tool-binding-field="tenant">
+      <option value="feishu">{{tr "飞书"}}</option>
       <option value="lark"{{if eq .ToolBinding.Tenant "lark"}} selected{{end}}>Lark</option>
     </select></label>
     <label>CLI Profile<input data-tool-binding-field="profile" value="{{.ToolBinding.Profile}}"></label>
-    <label>CLI 配置目录绝对路径<input data-tool-binding-field="configDir" value="{{.ToolBinding.ConfigDir}}"></label>
-    <label>机器人 Open ID<input data-tool-binding-field="botOpenId" value="{{.ToolBinding.BotOpenID}}"></label>
-    <label>用户 Open ID<input data-tool-binding-field="userOpenId" value="{{.ToolBinding.UserOpenID}}"></label>
+    <label>{{tr "CLI 配置目录绝对路径"}}<input data-tool-binding-field="configDir" value="{{.ToolBinding.ConfigDir}}"></label>
+    <label>{{tr "机器人 Open ID"}}<input data-tool-binding-field="botOpenId" value="{{.ToolBinding.BotOpenID}}"></label>
+    <label>{{tr "用户 Open ID"}}<input data-tool-binding-field="userOpenId" value="{{.ToolBinding.UserOpenID}}"></label>
   </div>
-  <p class="muted">用户和双身份模式要求路由仅授权绑定用户的私聊。</p>
+  <p class="muted">{{tr "用户和双身份模式要求路由仅授权绑定用户的私聊。"}}</p>
   <div class="actions">
-    <button class="secondary" type="button" data-tool-binding-apply>应用到草稿</button>
+    <button class="secondary" type="button" data-tool-binding-apply>{{tr "应用到草稿"}}</button>
     <p class="muted" role="status" data-tool-binding-status></p>
   </div>
-  <label>高级工具配置（JSON 对象，可留空）<textarea data-key="toolContext" data-object data-optional-object rows="6" spellcheck="false">
+  <label>{{tr "高级工具配置（JSON 对象，可留空）"}}<textarea data-key="toolContext" data-object data-optional-object rows="6" spellcheck="false">
 {{.ToolContextJSON}}</textarea></label>
 </details>
 
 <div class="actions" data-draft-project-action>
-  <button class="secondary" type="submit" name="action" value="register-draft-project">从草稿登记 T3 项目</button>
+  <button class="secondary" type="submit" name="action" value="register-draft-project">{{tr "从草稿登记 T3 项目"}}</button>
   <p class="muted" role="status" data-draft-project-status></p>
 </div>
-<button class="secondary remove" type="button" data-remove-route>移除路由</button>
+<button class="secondary remove" type="button" data-remove-route>{{tr "移除路由"}}</button>
 {{end}}

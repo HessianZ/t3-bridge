@@ -4,7 +4,6 @@ import (
 	"bytes"
 	_ "embed"
 	"errors"
-	"html/template"
 	"io"
 	"net/http"
 	"os"
@@ -15,8 +14,8 @@ import (
 var profilePageHTML string
 
 func registerProfileWebRoutes(mux *http.ServeMux, profiles profileRegistry) {
-	page := template.Must(newWorkspacePage("profiles").Parse(profilePageHTML))
-	mux.HandleFunc("GET /profiles", func(w http.ResponseWriter, _ *http.Request) {
+	page := newWorkspacePage("profiles").Parse(profilePageHTML)
+	mux.HandleFunc("GET /profiles", func(w http.ResponseWriter, r *http.Request) {
 		active, activeErr := profiles.active()
 		names, namesErr := profiles.names()
 		archives, archiveErr := os.ReadDir(filepath.Join(profiles.root, "profile-archive"))
@@ -40,7 +39,7 @@ func registerProfileWebRoutes(mux *http.ServeMux, profiles profileRegistry) {
 		w.Header().Set("Content-Type", "text/html; charset=utf-8")
 		// Native same-origin form POSTs need a non-opaque Origin header.
 		w.Header().Set("Referrer-Policy", "same-origin")
-		_ = page.Execute(w, data)
+		_ = page.Execute(w, r, data)
 	})
 	lifecycle := profileLifecycleHandler(profiles)
 	mux.HandleFunc("GET /profiles/lifecycle", lifecycle)

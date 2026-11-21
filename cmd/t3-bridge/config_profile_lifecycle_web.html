@@ -1,60 +1,61 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="{{uiLanguage}}">
 <head>
   <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>命名配置 · T3 Bridge</title>
+  <title>{{tr "命名配置 · T3 Bridge"}}</title>
   <link rel="stylesheet" href="/workspace.css">
   <style>
     label { margin-bottom: 8px; }
   </style>
+  <script defer src="/workspace-language.js"></script>
 </head>
 <body>
 <div class="shell">
 {{template "workspace-header" (workspaceNav "advanced" "")}}
 <main class="container tool-page">
-  <a href="/profiles">返回命名配置</a>
-  <h1>{{with .Review}}{{if eq .Target.Operation "purge"}}预览永久清除{{else}}预览私有导出{{end}}{{else}}命名配置{{end}}</h1>
+  <a href="/profiles">{{tr "返回命名配置"}}</a>
+  <h1>{{with .Review}}{{if eq .Target.Operation "purge"}}{{tr "预览永久清除"}}{{else}}{{tr "预览私有导出"}}{{end}}{{else}}{{tr "命名配置"}}{{end}}</h1>
   {{if .Error}}<p role="alert">{{.Error}}</p>{{end}}
   {{if .Message}}<p role="status">{{.Message}} {{if .ExportedPath}}<code>{{.ExportedPath}}</code>{{end}}</p>{{end}}
   {{with .Review}}
-  <section aria-label="操作预览">
-    <p>所选配置 <strong>{{.Target.Name}}</strong></p>
+  <section aria-label="{{tr "操作预览"}}">
+    <p>{{tr "所选配置"}} <strong>{{.Target.Name}}</strong></p>
     {{if eq .Target.Operation "purge"}}
-    <p>配置目录 <code>{{.Purge.ProfileDir}}</code></p>
-    <h2>将清除的路径</h2>
-    {{if .Purge.Paths}}<ul>{{range .Purge.Paths}}<li><code>{{.}}</code></li>{{end}}</ul>{{else}}<p>无</p>{{end}}
-    <h2>将保留的路径</h2>
-    {{if .Purge.Retained}}<ul>{{range .Purge.Retained}}<li><code>{{.}}</code></li>{{end}}</ul>{{else}}<p>无</p>{{end}}
-    <p>清除后的默认配置 {{if .Purge.DefaultAfter}}<strong>{{.Purge.DefaultAfter}}</strong>{{else}}未设置{{end}}</p>
+    <p>{{tr "配置目录"}} <code>{{.Purge.ProfileDir}}</code></p>
+    <h2>{{tr "将清除的路径"}}</h2>
+    {{if .Purge.Paths}}<ul>{{range .Purge.Paths}}<li><code>{{.}}</code></li>{{end}}</ul>{{else}}<p>{{tr "无"}}</p>{{end}}
+    <h2>{{tr "将保留的路径"}}</h2>
+    {{if .Purge.Retained}}<ul>{{range .Purge.Retained}}<li><code>{{.}}</code></li>{{end}}</ul>{{else}}<p>{{tr "无"}}</p>{{end}}
+    <p>{{tr "清除后的默认配置"}} {{if .Purge.DefaultAfter}}<strong>{{.Purge.DefaultAfter}}</strong>{{else}}{{tr "未设置"}}{{end}}</p>
     {{else}}
-    <p>来源 <code>{{.Export.Source}}</code></p>
-    <p>本机目标 <code>{{.Target.Destination}}</code></p>
-    <p>导出文件包含此配置及 {{.Export.Credentials}} 项 App Secret。</p>
+    <p>{{tr "来源"}} <code>{{.Export.Source}}</code></p>
+    <p>{{tr "本机目标"}} <code>{{.Target.Destination}}</code></p>
+    <p>{{tr "导出文件包含此配置及"}} {{.Export.Credentials}} {{tr "项 App Secret。"}}</p>
     {{end}}
     <form method="post" action="/profiles/lifecycle" autocomplete="off">
       {{template "review-fields" .}}
       {{if eq .Target.Operation "purge"}}
-      <label><input type="checkbox" name="confirm" value="yes" required> 确认永久清除上方所列路径</label>
-      <button class="danger" name="action" value="confirm">永久清除</button>
+      <label><input type="checkbox" name="confirm" value="yes" required> {{tr "确认永久清除上方所列路径"}}</label>
+      <button class="danger" name="action" value="confirm">{{tr "永久清除"}}</button>
       {{else}}
-      <label><input type="checkbox" name="confirm" value="yes" required> 确认将含 App Secret 的导出写入上方路径</label>
-      <button name="action" value="confirm">写入本机私有文件</button>
+      <label><input type="checkbox" name="confirm" value="yes" required> {{tr "确认将含 App Secret 的导出写入上方路径"}}</label>
+      <button name="action" value="confirm">{{tr "写入本机私有文件"}}</button>
       {{end}}
     </form>
     <form method="post" action="/profiles/lifecycle">
       {{template "review-fields" .}}
-      <button name="action" value="cancel">取消</button>
+      <button name="action" value="cancel">{{tr "取消"}}</button>
     </form>
   </section>
   {{else}}{{if .Name}}
-  <section aria-label="私有导出">
-    <h2>私有导出（含 App Secret）</h2>
-    <p>所选配置 <strong>{{.Name}}</strong></p>
+  <section aria-label="{{tr "私有导出"}}">
+    <h2>{{tr "私有导出（含 App Secret）"}}</h2>
+    <p>{{tr "所选配置"}} <strong>{{.Name}}</strong></p>
     <form method="post" action="/profiles/lifecycle" autocomplete="off">
       <input type="hidden" name="name" value="{{.Name}}">
       <input type="hidden" name="operation" value="export">
-      <label>本机新 JSON 文件的绝对路径<input type="text" name="destination" spellcheck="false" required></label>
-      <button name="action" value="preview">预览私有导出</button>
+      <label>{{tr "本机新 JSON 文件的绝对路径"}}<input type="text" name="destination" spellcheck="false" required></label>
+      <button name="action" value="preview">{{tr "预览私有导出"}}</button>
     </form>
   </section>
   {{end}}{{end}}

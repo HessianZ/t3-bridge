@@ -2,7 +2,6 @@ package main
 
 import (
 	_ "embed"
-	"html/template"
 	"net/http"
 	"net/url"
 	"os"
@@ -27,7 +26,7 @@ type configTelemetryArchivePage struct {
 
 func configTelemetryArchiveHandler(sources func() ([]webSource, error),
 	read func(string, receiverProcessAccount, time.Time, int) ([]byte, error)) http.HandlerFunc {
-	page := template.Must(newWorkspacePage("telemetry archive").Parse(configTelemetryArchiveHTML))
+	page := newWorkspacePage("telemetry archive").Parse(configTelemetryArchiveHTML)
 	return func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Cache-Control", "no-store")
 		if r.Method != http.MethodGet {
@@ -93,7 +92,7 @@ func configTelemetryArchiveHandler(sources func() ([]webSource, error),
 		}
 		w.Header().Set("Content-Type", "text/html; charset=utf-8")
 		w.WriteHeader(status)
-		_ = page.Execute(w, view)
+		_ = page.Execute(w, r, view)
 	}
 }
 

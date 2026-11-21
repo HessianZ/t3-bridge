@@ -129,17 +129,17 @@ func (m *configTUI) receiveTelemetryArchive(msg configTUITelemetryArchiveResult)
 func (m *configTUI) telemetryArchiveView() (title, body, shortcuts, actions, more string) {
 	a := &m.telemetry
 	app := ansi.Hardwrap(receiverStatusApp(a.account.Tenant, a.account.AppID), m.width, true)
-	more = fmt.Sprintf("最多 %d 行 · 已保存配置", workspaceTelemetryArchiveLines)
-	title = "每日遥测归档"
+	more = fmt.Sprintf(m.language.text("最多 %d 行 · 已保存配置"), workspaceTelemetryArchiveLines)
+	title = m.language.text("每日遥测归档")
 	if m.screen == tuiTelemetryArchiveDate {
-		body = app + "\nUTC 日期（YYYY-MM-DD）\n" + ansi.Truncate(m.input.View(), m.width, "")
-		return title, body, "Enter 查询 · F2 清空 · Esc 返回", "", more
+		body = app + m.language.text("\nUTC 日期（YYYY-MM-DD）\n") + ansi.Truncate(m.input.View(), m.width, "")
+		return title, body, m.language.text("Enter 查询 · F2 清空 · Esc 返回"), "", more
 	}
 	title += " · " + a.day.Format(receiverTelemetryArchiveDate) + " UTC"
-	shortcuts = "↑↓←→ 滚动 · Esc 返回"
-	actions = "[ 上一天 · ] 下一天 · r 刷新 · e 改日期"
+	shortcuts = m.language.text("↑↓←→ 滚动 · Esc 返回")
+	actions = m.language.text("[ 上一天 · ] 下一天 · r 刷新 · e 改日期")
 	if m.screen == tuiTelemetryArchiveLoading {
-		return title, app + "\n正在读取每日遥测…", "Esc 返回", actions, more
+		return title, app + m.language.text("\n正在读取每日遥测…"), m.language.text("Esc 返回"), actions, more
 	}
 	return title, m.review.View(), shortcuts, actions, more
 }

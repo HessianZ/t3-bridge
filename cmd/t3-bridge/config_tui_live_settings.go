@@ -210,25 +210,25 @@ func (m *configTUI) reviewLiveSetting(field runtimeSettingField) {
 
 func (m *configTUI) liveSettingsView() (title, body, shortcuts, actions string) {
 	s := &m.liveSettings
-	title = "在线运行设置 · " + s.account.Tenant + "/" + s.account.AppID
+	title = m.language.text("在线运行设置 · ") + s.account.Tenant + "/" + s.account.AppID
 	if m.screen == tuiLiveSettingsLoading {
 		if s.applying {
-			return title, "正在等待接收进程确认更新…", "", ""
+			return title, m.language.text("正在等待接收进程确认更新…"), "", ""
 		}
-		return title, "正在读取运行设置…", "Esc 取消", ""
+		return title, m.language.text("正在读取运行设置…"), m.language.text("Esc 取消"), ""
 	}
 	line := func(value string) string {
 		return ansi.Truncate(configTUIPlain(strings.ReplaceAll(value, "\n", " ")), m.width, "…")
 	}
 	field := s.fields[s.row]
-	process := line("进程 · " + s.process)
+	process := line(m.language.text("进程 · ") + s.process)
 	scope := line(field.Hint)
 	current := liveSettingLabel(field, field.Value)
 	switch m.screen {
 	case tuiLiveSettingsEdit:
-		heading := line(field.Label + " · 当前 " + current)
+		heading := line(field.Label + m.language.text(" · 当前 ") + current)
 		if field.Max > 0 {
-			return title, strings.Join([]string{heading, scope, m.input.View()}, "\n"), "Enter 预览修改 · Esc 返回", ""
+			return title, strings.Join([]string{heading, scope, m.input.View()}, "\n"), m.language.text("Enter 预览修改 · Esc 返回"), ""
 		}
 		lines := []string{heading, scope}
 		height := max(1, m.bodyHeight()-len(lines))
@@ -236,11 +236,11 @@ func (m *configTUI) liveSettingsView() (title, body, shortcuts, actions string) 
 		for i := first; i < min(len(field.Choices), first+height); i++ {
 			lines = append(lines, line(liveSettingMarker(i == s.choice)+field.Choices[i].Label))
 		}
-		return title, strings.Join(lines, "\n"), "↑↓ 选择 · Enter 预览修改 · Esc 返回", ""
+		return title, strings.Join(lines, "\n"), m.language.text("↑↓ 选择 · Enter 预览修改 · Esc 返回"), ""
 	case tuiLiveSettingsConfirm:
 		change := line(field.Label + " · " + current + " → " + liveSettingLabel(field, s.next))
 		app := line("App · " + s.account.Tenant + "/" + s.account.AppID)
-		return "确认在线运行设置", strings.Join([]string{app, process, change, scope}, "\n"), "y 确认即时应用 · Esc 返回", "设置写入此 App 的运行状态"
+		return m.language.text("确认在线运行设置"), strings.Join([]string{app, process, change, scope}, "\n"), m.language.text("y 确认即时应用 · Esc 返回"), m.language.text("设置写入此 App 的运行状态")
 	}
 	lines := []string{process, scope}
 	height := max(1, m.bodyHeight()-len(lines))
@@ -249,7 +249,7 @@ func (m *configTUI) liveSettingsView() (title, body, shortcuts, actions string) 
 		field := s.fields[i]
 		lines = append(lines, line(liveSettingMarker(i == s.row)+field.Label+" · "+liveSettingLabel(field, field.Value)))
 	}
-	return title, strings.Join(lines, "\n"), "↑↓ 移动 · Enter 编辑 · r 刷新 · Esc 返回草稿", ""
+	return title, strings.Join(lines, "\n"), m.language.text("↑↓ 移动 · Enter 编辑 · r 刷新 · Esc 返回草稿"), ""
 }
 
 func liveSettingLabel(field runtimeSettingField, value string) string {

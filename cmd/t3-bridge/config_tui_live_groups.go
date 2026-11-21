@@ -357,31 +357,31 @@ func (m *configTUI) liveGroupsBatchLines() []string {
 
 func (m *configTUI) liveGroupsView() (title, body, shortcuts, actions string) {
 	g := &m.liveGroups
-	title = "在线群权限 · " + g.account.Tenant + "/" + g.account.AppID
+	title = m.language.text("在线群权限 · ") + g.account.Tenant + "/" + g.account.AppID
 	line := func(value string) string {
 		return ansi.Truncate(configTUIPlain(strings.ReplaceAll(value, "\n", " ")), m.width, "…")
 	}
 	switch m.screen {
 	case tuiLiveGroupsLoading:
 		if g.applying {
-			return title, "正在等待接收进程确认更新…", "", ""
+			return title, m.language.text("正在等待接收进程确认更新…"), "", ""
 		}
-		return title, "正在读取在线群权限…", "Esc 取消", ""
+		return title, m.language.text("正在读取在线群权限…"), m.language.text("Esc 取消"), ""
 	case tuiLiveGroupsFilter:
-		return title, m.input.View(), "输入群名或 ID · Enter 搜索 · Esc 返回", ""
+		return title, m.input.View(), m.language.text("输入群名或 ID · Enter 搜索 · Esc 返回"), ""
 	case tuiLiveGroupsConfirm:
 		if g.batchReview {
 			lines := m.liveGroupsBatchLines()
 			height := m.bodyHeight()
 			first := min(g.choice, max(0, len(lines)-height))
 			body = strings.Join(lines[first:min(len(lines), first+height)], "\n")
-			return title, body, "↑↓ 浏览 · y 授权 · Esc 返回", ""
+			return title, body, m.language.text("↑↓ 浏览 · y 授权 · Esc 返回"), ""
 		}
-		target := "应用默认 @ 规则"
+		target := m.language.text("应用默认 @ 规则")
 		if g.target.ID != "" {
 			target = g.target.ID + " · " + g.target.Name
 		}
-		lines := []string{line("目标 · " + target), line("进程 · " + g.process)}
+		lines := []string{line(m.language.text("目标 · ") + target), line(m.language.text("进程 · ") + g.process)}
 		height := max(1, m.bodyHeight()-len(lines))
 		first := max(g.firstAction(), g.choice-height+1)
 		for i := first; i < min(len(configTUILiveGroupActions), first+height); i++ {
@@ -393,17 +393,17 @@ func (m *configTUI) liveGroupsView() (title, body, shortcuts, actions string) {
 			}
 			lines = append(lines, line(label))
 		}
-		return title, strings.Join(lines, "\n"), "↑↓ 选操作 · y 确认即时应用 · Esc 返回", "操作写入在线权限，与配置草稿独立"
+		return title, strings.Join(lines, "\n"), m.language.text("↑↓ 选操作 · y 确认即时应用 · Esc 返回"), m.language.text("操作写入在线权限，与配置草稿独立")
 	}
 	groups := g.filtered()
 	scopeStatus, scopeGuidance := groupMessageScopeText(g.view.MessageScope)
 	lines := []string{
-		line("飞书无 @ 群消息权限 · " + scopeStatus),
-		line("线上消息事件订阅 · " + groupMessageEventText(g.view.MessageEvent)),
+		line(m.language.text("飞书无 @ 群消息权限 · ") + scopeStatus),
+		line(m.language.text("线上消息事件订阅 · ") + groupMessageEventText(g.view.MessageEvent)),
 	}
 	if scopeGuidance != "" {
 		if ansi.StringWidth(scopeGuidance) > m.width {
-			scopeGuidance = "管理员私聊 /config mention authorize"
+			scopeGuidance = m.language.text("管理员私聊 /config mention authorize")
 		}
 		lines = append(lines, line(scopeGuidance))
 	}
@@ -411,9 +411,9 @@ func (m *configTUI) liveGroupsView() (title, body, shortcuts, actions string) {
 	bodyHeight := m.bodyHeight()
 	// Leave room for the selected row after up to three list details.
 	compact := bodyHeight-len(lines) <= 3
-	membership, empty := "暂无法读取机器人所在群，显示已知群权限。", "没有可显示的群。"
+	membership, empty := m.language.text("暂无法读取机器人所在群，显示已知群权限。"), m.language.text("没有可显示的群。")
 	if compact {
-		membership, empty = "入群未知", "无可显示群"
+		membership, empty = m.language.text("入群未知"), m.language.text("无可显示群")
 	}
 	if !g.view.JoinedAvailable {
 		details = append(details, membership)
@@ -422,7 +422,7 @@ func (m *configTUI) liveGroupsView() (title, body, shortcuts, actions string) {
 		details = append(details, empty)
 	}
 	if g.filter != "" {
-		details = append(details, "搜索 · "+g.filter)
+		details = append(details, m.language.text("搜索 · ")+g.filter)
 	}
 	if compact && len(details) > 0 {
 		details = []string{strings.Join(details, " · ")}
@@ -434,7 +434,7 @@ func (m *configTUI) liveGroupsView() (title, body, shortcuts, actions string) {
 	first := max(0, g.row-height+1)
 	batch := g.batchAvailable()
 	for i := first; i < min(len(groups)+1, first+height); i++ {
-		label := "应用默认 · " + liveGroupMentionLabel(g.view.DefaultRequiresMention)
+		label := m.language.text("应用默认 · ") + liveGroupMentionLabel(g.view.DefaultRequiresMention)
 		if i > 0 {
 			group := groups[i-1]
 			label = liveGroupEntryLabel(group, g.view.JoinedAvailable)
@@ -452,15 +452,15 @@ func (m *configTUI) liveGroupsView() (title, body, shortcuts, actions string) {
 		}
 		lines = append(lines, line(marker+label))
 	}
-	actions = "r 刷新 · Esc 返回草稿"
+	actions = m.language.text("r 刷新 · Esc 返回草稿")
 	if g.userGroupID != "" {
-		actions = "r 刷新 · Esc 返回我的群"
+		actions = m.language.text("r 刷新 · Esc 返回我的群")
 	}
 	if batch {
-		actions = fmt.Sprintf("Space 标记 · b 预览(%d) · r 刷新 · Esc", len(g.marked))
-		return title, strings.Join(lines, "\n"), "↑↓ 移动 · / 搜索 · Enter 操作", actions
+		actions = fmt.Sprintf(m.language.text("Space 标记 · b 预览(%d) · r 刷新 · Esc"), len(g.marked))
+		return title, strings.Join(lines, "\n"), m.language.text("↑↓ 移动 · / 搜索 · Enter 操作"), actions
 	}
-	return title, strings.Join(lines, "\n"), "↑↓ 移动 · / 搜索 · Enter 选择操作", actions
+	return title, strings.Join(lines, "\n"), m.language.text("↑↓ 移动 · / 搜索 · Enter 选择操作"), actions
 }
 
 func liveGroupEntryLabel(group bridge.GroupAccessEntry, joinedAvailable bool) string {
