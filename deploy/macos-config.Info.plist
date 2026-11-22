@@ -10,6 +10,8 @@
     <string>t3-bridge-config</string>
     <key>CFBundleIconFile</key>
     <string>t3-bridge.icns</string>
+    <key>CFBundleIconName</key>
+    <string>T3Bridge</string>
     <key>CFBundlePackageType</key>
     <string>APPL</string>
     <key>CFBundleVersion</key>

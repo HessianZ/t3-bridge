@@ -1,8 +1,9 @@
-{{define "workspace-brand"}}<img src="/workspace-icon.png" alt="" width="24" height="24">T3 Bridge{{end}}
+{{define "workspace-brand"}}<img src="/workspace-icon.png" alt="" width="20" height="20">T3 Bridge{{end}}
 
 {{define "workspace-language"}}
-  <div class="workspace-language" data-workspace-language>
-    <select aria-label="{{tr "语言"}}" data-error="{{tr "无法保存语言设置。"}}" data-reload="{{tr "切换语言会重新载入当前页面并丢弃未保存的内容。继续？"}}" disabled>
+  <div class="workspace-language title-control" data-workspace-language>
+    <span class="language-icon" aria-hidden="true"><span>文</span><span>EN</span></span>
+    <select aria-label="{{tr "语言"}}" title="{{tr "语言"}}" data-error="{{tr "无法保存语言设置。"}}" data-reload="{{tr "切换语言会重新载入当前页面并丢弃未保存的内容。继续？"}}" disabled>
       <option value="auto">{{tr "跟随系统"}}</option>
       <option value="en">English</option>
       <option value="zh-CN">简体中文</option>
@@ -15,11 +16,22 @@
 <header class="top">
   <a class="brand" href="/{{if $source}}?source={{$source}}{{end}}">{{template "workspace-brand"}}</a>
   {{if .LanguageControl}}<div class="top-controls">{{template "workspace-language"}}</div>{{end}}
+  {{if .AdvancedTool}}
+  <nav class="advanced-nav" aria-label="{{tr "高级工具导航"}}">
+    <a class="back-link" href="/{{if $source}}?source={{$source}}{{end}}#advanced">← {{tr "返回高级"}}</a>
+    <ol class="breadcrumb">
+      <li>{{tr "配置工作台"}}</li>
+      <li>{{tr "高级"}}</li>
+      <li aria-current="page">{{tr .Tool}}</li>
+    </ol>
+  </nav>
+  {{else}}
   <nav class="tabs" aria-label="{{tr "工作台页面"}}">
     <a href="/{{if $source}}?source={{$source}}{{end}}#accounts">{{tr "账号"}}</a>
     <a href="/{{if $source}}?source={{$source}}{{end}}#routes">{{tr "项目与路由"}}</a>
     <a href="/{{if $source}}?source={{$source}}{{end}}#runtime"{{if eq .Section "runtime"}} aria-current="page"{{end}}>{{tr "运行"}}</a>
     <a href="/{{if $source}}?source={{$source}}{{end}}#advanced"{{if eq .Section "advanced"}} aria-current="page"{{end}}>{{tr "高级"}}</a>
   </nav>
+  {{end}}
 </header>
 {{end}}

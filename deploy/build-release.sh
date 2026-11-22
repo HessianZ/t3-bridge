@@ -88,6 +88,9 @@ if [ "$target_os" = linux ]; then
         set -- "$@" deploy/t3-bridge.desktop
     fi
 fi
+if [ "$target_os:$flavor" = darwin:desktop ]; then
+    set -- "$@" deploy/t3-bridge.icns deploy/t3-bridge-assets.car
+fi
 if [ "$target_os" = windows ] && [ "$flavor" = desktop ]; then
     mkdir -p "$bundle/third_party/go-webview2/webviewloader"
     set -- "$@" third_party/go-webview2/LICENSE third_party/go-webview2/webviewloader/LICENSE

@@ -26,7 +26,10 @@
   <div class="top-controls">
   {{template "workspace-language"}}
   <details class="profile">
-    <summary title="{{sourceLabel .Source.Label}}">{{if .Source.Path}}{{fileName .Source.Path}}{{else}}{{sourceLabel .Source.Label}}{{end}}</summary>
+    <summary class="title-control" title="{{sourceLabel .Source.Label}}">
+      <span class="configuration-icon" aria-hidden="true"></span>
+      <span class="sr-only">{{tr "配置来源"}} · {{sourceLabel .Source.Label}}</span>
+    </summary>
     <nav aria-label="{{tr "配置来源"}}">
       {{range .Sources}}<a href="/?source={{.ID}}"{{if eq .ID $.Source.ID}} aria-current="page"{{end}}>{{sourceLabel .Label}}</a>{{end}}
       {{if .Profiles}}<a href="/profiles">{{tr "管理命名配置"}}</a>{{end}}

@@ -257,7 +257,6 @@ func configWorkspaceHandlerWithRuntime(host string, startupSources []webSource, 
 func configWorkspaceHandlerWithLegacy(host string, startupSources []webSource, profiles profileRegistry, runtimePage http.HandlerFunc, legacy *legacyCredentialWeb, bindings ...*qrRegistration) http.Handler {
 	page := newWorkspacePage("config web").Funcs(template.FuncMap{
 		"lines":                 func(values []string) string { return strings.Join(values, "\n") },
-		"fileName":              filepath.Base,
 		"validReplacementAppID": validReplacementAppID,
 		"newRoute": func() routeFields {
 			return routeFields{

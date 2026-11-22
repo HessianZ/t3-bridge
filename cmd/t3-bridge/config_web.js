@@ -29,7 +29,7 @@ function showWorkbenchPage() {
     if (route) route.open = true;
   }
   if (target) target.scrollIntoView({ block: "start" });
-  else if (directTab) window.scrollTo(0, 0);
+  else if (directTab) form.closest("main").scrollTop = 0;
 }
 window.addEventListener("hashchange", showWorkbenchPage);
 showWorkbenchPage();

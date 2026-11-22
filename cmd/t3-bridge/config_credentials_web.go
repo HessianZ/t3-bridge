@@ -49,7 +49,7 @@ func configCredentialsHandler(sources func() ([]webSource, error)) http.HandlerF
 		}
 		// Native same-origin form POSTs need a non-opaque Origin header.
 		w.Header().Set("Referrer-Policy", "same-origin")
-		w.Header().Set("Content-Security-Policy", "default-src 'none'; style-src 'unsafe-inline'; form-action 'self'; frame-ancestors 'none'; base-uri 'none'")
+		w.Header().Set("Content-Security-Policy", "default-src 'none'; style-src 'self' 'unsafe-inline'; img-src 'self'; form-action 'self'; frame-ancestors 'none'; base-uri 'none'")
 		var id, appID, action string
 		if r.Method == http.MethodPost {
 			var status int

@@ -151,10 +151,17 @@ static void stop_application(void) {
 
 @end
 
-void open_config_window(const char *address, int menu_bar) {
+void open_config_window(const char *address, int menu_bar, const void *icon, size_t icon_size) {
     @autoreleasepool {
         NSApplication *app = [NSApplication sharedApplication];
         [app setActivationPolicy:NSApplicationActivationPolicyRegular];
+        if (![[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleIconFile"]) {
+            NSData *iconData = [NSData dataWithBytes:icon length:icon_size];
+            NSImage *workspaceIcon = [[[NSImage alloc] initWithData:iconData] autorelease];
+            if (workspaceIcon) {
+                app.applicationIconImage = workspaceIcon;
+            }
+        }
         ConfigWindow *delegate = [[ConfigWindow alloc] init];
         delegate.origin = [NSURL URLWithString:[NSString stringWithUTF8String:address]];
         app.delegate = delegate;
@@ -222,13 +229,25 @@ void open_config_window(const char *address, int menu_bar) {
 
         WKWebViewConfiguration *config = [[[WKWebViewConfiguration alloc] init] autorelease];
         config.websiteDataStore = [WKWebsiteDataStore nonPersistentDataStore];
-        [config.userContentController addUserScript:[[[WKUserScript alloc]
-            initWithSource:@"document.documentElement.classList.add('mac-window')"
-            injectionTime:WKUserScriptInjectionTimeAtDocumentEnd forMainFrameOnly:YES] autorelease]];
         WKWebView *view = [[WKWebView alloc] initWithFrame:window.contentView.bounds configuration:config];
         view.navigationDelegate = delegate;
         view.UIDelegate = delegate;
         window.contentView = view;
+        [view layoutSubtreeIfNeeded];
+        NSButton *close = [window standardWindowButton:NSWindowCloseButton];
+        NSButton *zoom = [window standardWindowButton:NSWindowZoomButton];
+        NSRect contentFrame = [view convertRect:view.bounds toView:nil];
+        CGFloat controlsCenter = NSMaxY(contentFrame) - NSMidY([close convertRect:close.bounds toView:nil]);
+        CGFloat controlsEnd = NSMaxX([zoom convertRect:zoom.bounds toView:nil]) - NSMinX(contentFrame);
+        NSString *chrome = [NSString stringWithFormat:
+            @"{const root=document.documentElement;root.classList.add('mac-window');"
+             "root.style.setProperty('--mac-controls-center','%.2fpx');"
+             "root.style.setProperty('--mac-controls-end','%.2fpx');}",
+            controlsCenter > 0 && controlsCenter < 32 ? controlsCenter : 14,
+            controlsEnd > 0 && controlsEnd < 100 ? controlsEnd : 60];
+        [view.configuration.userContentController addUserScript:[[[WKUserScript alloc]
+            initWithSource:chrome injectionTime:WKUserScriptInjectionTimeAtDocumentStart
+            forMainFrameOnly:YES] autorelease]];
         [view loadRequest:[NSURLRequest requestWithURL:delegate.origin]];
         [window center];
         [delegate showWorkspace:nil];

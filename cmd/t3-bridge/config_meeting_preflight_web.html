@@ -9,9 +9,8 @@
 </head>
 <body>
 <div class="shell">
-{{template "workspace-header" (workspaceNav "advanced" .Source.ID)}}
+{{template "workspace-header" (advancedToolNav .Source.ID "会议权限预检")}}
 <main class="container tool-page inline-forms">
-  <nav aria-label="{{tr "会议权限预检导航"}}"><a href="/{{if .Source.ID}}?source={{.Source.ID}}{{end}}">{{tr "配置工作台"}}</a></nav>
   <h1>{{tr "会议权限预检"}}</h1>
   <p>{{tr "打开已保存配置只读取本机文件。提交检查后才向飞书或 Lark 查询所选应用的权限和已发布版本的事件配置。"}}</p>
   <p>{{tr "事件实际投递、平台会议功能资格和实际会议准入均未验证。"}}</p>

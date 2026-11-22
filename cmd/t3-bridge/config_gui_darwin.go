@@ -5,7 +5,7 @@ package main
 /*
 #cgo LDFLAGS: -framework AppKit -framework WebKit
 #include <stdlib.h>
-void open_config_window(const char *address, int menu_bar);
+void open_config_window(const char *address, int menu_bar, const void *icon, size_t icon_size);
 void close_config_window(void);
 int workspace_uses_chinese(void);
 */
@@ -13,10 +13,14 @@ import "C"
 
 import (
 	"context"
+	_ "embed"
 	"os"
 	"runtime"
 	"unsafe"
 )
+
+//go:embed t3-bridge-macos-icon.png
+var macWorkspaceIcon []byte
 
 func platformWorkspaceLanguage() workspaceLanguage {
 	if C.workspace_uses_chinese() != 0 {
@@ -42,7 +46,7 @@ func runConfigGUI(args []string) error {
 		if standaloneConfigApp == "1" {
 			menuBar = 1
 		}
-		C.open_config_window(url, menuBar)
+		C.open_config_window(url, menuBar, unsafe.Pointer(&macWorkspaceIcon[0]), C.size_t(len(macWorkspaceIcon)))
 		return nil
 	})
 }

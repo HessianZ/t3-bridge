@@ -1,5 +1,6 @@
 #!/bin/sh
 set -eu
+umask 022
 
 if [ "$(uname -s)" != Darwin ] || [ "$#" -gt 1 ]; then
     printf '%s\n' 'Usage on macOS: sh deploy/build-macos-config.sh [output.app]' >&2
@@ -30,6 +31,7 @@ app=$stage/Config.app
 mkdir -p "$app/Contents/MacOS" "$app/Contents/Resources"
 cp "$repo/deploy/macos-config.Info.plist" "$app/Contents/Info.plist"
 cp "$repo/deploy/t3-bridge.icns" "$app/Contents/Resources/"
+cp "$repo/deploy/t3-bridge-assets.car" "$app/Contents/Resources/Assets.car"
 cp "$repo/LICENSE" "$repo/THIRD_PARTY_NOTICES.md" "$app/Contents/Resources/"
 (
     cd "$repo"

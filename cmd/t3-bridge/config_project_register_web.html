@@ -13,9 +13,8 @@
 </head>
 <body>
 <div class="shell">
-{{template "workspace-header" (workspaceNav "advanced" .Source.ID)}}
+{{template "workspace-header" (advancedToolNav .Source.ID "登记 T3 项目")}}
 <main class="container tool-page">
-  <nav><a href="/?source={{.Source.ID}}">{{tr "配置工作台"}}</a></nav>
   <h1>{{tr "登记 T3 项目"}}</h1>
   <p>{{tr "已保存配置 ·"}} {{sourceLabel .Source.Label}}</p>
   {{if .Error}}<p role="alert">{{.Error}}</p>{{end}}

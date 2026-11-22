@@ -9,9 +9,8 @@
 </head>
 <body>
 <div class="shell">
-{{template "workspace-header" (workspaceNav "advanced" .Source.ID)}}
+{{template "workspace-header" (advancedToolNav .Source.ID "转接旧会话")}}
 <main class="container tool-page">
-  <nav aria-label="{{tr "旧会话转接导航"}}"><a href="/{{if .Source.ID}}?source={{.Source.ID}}{{end}}">{{tr "配置工作台"}}</a><a href="/runtime">{{tr "运行状态"}}</a></nav>
   <h1>{{tr "转接旧会话"}}</h1>
   <p>{{tr "请先停止原接收端。确认写入时，目标接收端也必须停止，目标状态目录须处于离线状态。"}}</p>
   <p>{{tr "目录查询和普通预览只读取本机文件。「预览并核验 T3」还会通过已保存的目标配置读取原线程信息。确认时仅在目标状态中登记转接元数据，接收端沿用现有授权。"}}</p>

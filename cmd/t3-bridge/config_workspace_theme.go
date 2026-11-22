@@ -24,6 +24,10 @@ type workspaceNavigation struct {
 	Section         string
 	Source          string
 	LanguageControl bool
+	// AdvancedTool renders only the "Advanced" context instead of the global tabs.
+	AdvancedTool bool
+	// Tool is the translation key of the current tool, used in the breadcrumb.
+	Tool string
 }
 
 type workspacePage struct {
@@ -52,6 +56,11 @@ func (page *workspacePage) Parse(markup string) *workspacePage {
 			"uiLanguage":  func() workspaceLanguage { return lang },
 			"workspaceNav": func(section, source string) workspaceNavigation {
 				return workspaceNavigation{Section: section, Source: source, LanguageControl: page.name != "credentials"}
+			},
+			// advancedToolNav keeps advanced sub-tools in the "Advanced" context only.
+			"advancedToolNav": func(source, tool string) workspaceNavigation {
+				return workspaceNavigation{Section: "advanced", Source: source, AdvancedTool: true,
+					Tool: tool, LanguageControl: page.name != "credentials"}
 			},
 		})
 		return template.Must(template.Must(base.Parse(workspaceHeader)).Parse(markup))

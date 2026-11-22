@@ -9,9 +9,8 @@
 </head>
 <body>
 <div class="shell">
-{{template "workspace-header" (workspaceNav "advanced" .Source.ID)}}
+{{template "workspace-header" (advancedToolNav .Source.ID "迁移旧命名工作区")}}
 <main class="container tool-page">
-  <nav aria-label="{{tr "工作区迁移导航"}}"><a href="/{{if .Source.ID}}?source={{.Source.ID}}{{end}}">{{tr "配置工作台"}}</a><a href="/runtime">{{tr "运行状态"}}</a></nav>
   <h1>{{tr "迁移旧命名工作区"}}</h1>
   {{if .Error}}<p class="error" role="alert">{{.Error}}</p>{{end}}
   {{if .Notice}}<p role="status">{{.Notice}}</p>{{end}}
